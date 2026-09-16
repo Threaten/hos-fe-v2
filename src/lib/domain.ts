@@ -33,6 +33,13 @@ export function tenantStatusLabel(status?: string | null): string {
   return "";
 }
 
+export function tenantBranchLabel(
+  tenant: Pick<Tenant, "name" | "status">,
+): string {
+  const status = tenantStatusLabel(tenant.status);
+  return status ? `${tenant.name} (${status})` : tenant.name;
+}
+
 /** Returns status label if closed/temporarily closed, or opening hours. */
 export function tenantHoursOrStatus(
   tenant: Pick<Tenant, "status" | "openingHours">,

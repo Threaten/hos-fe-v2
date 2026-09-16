@@ -4,15 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import {
-  Menu,
-  X,
-  Calendar,
-  Phone,
-  MapPin,
-  Clock,
-  Sparkles,
-} from "lucide-react";
+import { Menu, X, Calendar, Phone, MapPin, Clock } from "lucide-react";
 import {
   Sheet,
   SheetContent,
