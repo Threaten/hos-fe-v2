@@ -46,8 +46,20 @@ export function ShortAbout({ tenant }: { tenant: Tenant }) {
 
         <div className="story-note flex flex-col justify-between">
           <div>
-            <span className="story-flower" aria-hidden>
-              ✳
+            <span className="story-flower text-primary" aria-hidden="true">
+              <svg
+                viewBox="0 0 40 40"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                className="w-full h-full"
+              >
+                <line x1="20" y1="4" x2="20" y2="36" />
+                <line x1="4" y1="20" x2="36" y2="20" />
+                <line x1="8.69" y1="8.69" x2="31.31" y2="31.31" />
+                <line x1="8.69" y1="31.31" x2="31.31" y2="8.69" />
+              </svg>
             </span>
             <p className="drop-cap text-foreground/90 leading-relaxed text-base sm:text-lg">
               {tenant.shortAboutText ||
