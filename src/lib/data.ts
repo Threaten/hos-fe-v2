@@ -243,3 +243,39 @@ export async function createContactMessage(input: {
   );
   return data.createContactMessage;
 }
+
+const CREATE_SPIN_HISTORY = `
+  mutation CreateSpinHistory(
+    $occurredAt: String!
+    $reward: String!
+    $branch: String!
+  ) {
+    createSpinHistory(
+      data: {
+        occurredAt: $occurredAt
+        reward: $reward
+        branch: $branch
+      }
+    ) {
+      id
+      occurredAt
+      reward
+    }
+  }
+`;
+
+export async function createSpinHistory(input: {
+  occurredAt: string;
+  reward: string;
+  branchId: string;
+}): Promise<{ id: string }> {
+  const data = await gqlMutate<{ createSpinHistory: { id: string } }>(
+    CREATE_SPIN_HISTORY,
+    {
+      occurredAt: input.occurredAt,
+      reward: input.reward,
+      branch: input.branchId,
+    },
+  );
+  return data.createSpinHistory;
+}

@@ -3,12 +3,85 @@
 import {
   createContactMessage,
   createReservation,
+  createSpinHistory,
   upsertCustomer,
 } from "@/lib/data";
 
 export interface ActionResult {
   success: boolean;
   error?: string;
+}
+
+export interface StaffLoginResult {
+  success: boolean;
+  name?: string;
+  token?: string;
+  error?: string;
+}
+
+export async function staffLoginAction(
+  username: string,
+  password: string,
+  tenantDomain: string,
+): Promise<StaffLoginResult> {
+  try {
+    const backend = (
+      process.env.API_INTERNAL_URL || "http://127.0.0.1:3000"
+    ).replace(/\/$/, "");
+    const res = await fetch(`${backend}/api/users/external-users/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: username.trim(),
+        password,
+        tenantDomain,
+      }),
+    });
+
+    const json = await res.json();
+    if (!res.ok) {
+      return {
+        success: false,
+        error:
+          json?.errors?.[0]?.message ||
+          json?.message ||
+          "Invalid username or password.",
+      };
+    }
+
+    const displayName: string =
+      json?.user?.name || json?.user?.username || json?.user?.email || "Staff";
+
+    return {
+      success: true,
+      token: json.token as string,
+      name: displayName,
+    };
+  } catch (err) {
+    console.error("Staff login failed:", err);
+    return {
+      success: false,
+      error: "Unable to connect to authentication server. Please try again.",
+    };
+  }
+}
+
+export async function recordSpinAction(input: {
+  occurredAt: string;
+  reward: string;
+  branchId: string;
+}): Promise<ActionResult> {
+  try {
+    await createSpinHistory(input);
+    return { success: true };
+  } catch (err) {
+    console.error("Record spin history failed:", err);
+    return {
+      success: false,
+      error:
+        err instanceof Error ? err.message : "Failed to record spin history.",
+    };
+  }
 }
 
 export async function submitReservationAction(
