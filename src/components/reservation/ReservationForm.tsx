@@ -29,8 +29,8 @@ export function ReservationForm({ branchId }: { branchId: string }) {
           Reservation Request Received
         </h3>
         <p className="text-foreground/70 text-sm max-w-md mx-auto leading-relaxed">
-          Thank you. We&apos;ve received your table request and our host will
-          call you shortly to confirm your booking.
+          Thank you. We&apos;ve received your booking and will call you shortly
+          to confirm your booking.
         </p>
         <div className="pt-2">
           <button
@@ -76,7 +76,7 @@ export function ReservationForm({ branchId }: { branchId: string }) {
             name="name"
             autoComplete="name"
             required
-            placeholder="Jane Doe"
+            placeholder="Nguyen Van A"
           />
         </div>
         <div className="space-y-2">
@@ -136,7 +136,7 @@ export function ReservationForm({ branchId }: { branchId: string }) {
           id="notes"
           name="notes"
           rows={3}
-          placeholder="Seating preference, dietary requirements, occasion…"
+          placeholder="Special requests..."
         />
       </div>
 

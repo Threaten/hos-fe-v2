@@ -61,7 +61,7 @@ export function ContactForm({ branchId }: { branchId: string }) {
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="name">Full name</Label>
-          <Input id="name" name="name" required placeholder="Jane Doe" />
+          <Input id="name" name="name" required placeholder="Nguyen Van A" />
         </div>
         <div className="space-y-2">
           <Label htmlFor="phone">Phone number</Label>
@@ -76,7 +76,7 @@ export function ContactForm({ branchId }: { branchId: string }) {
           name="message"
           rows={5}
           required
-          placeholder="How can our hospitality team assist you today?"
+          placeholder="How can we assist you today?"
           value={rawMessage}
           onChange={(e) => setRawMessage(e.target.value)}
         />
