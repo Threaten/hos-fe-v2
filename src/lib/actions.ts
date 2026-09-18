@@ -1,13 +1,19 @@
 "use server";
 
-import { createContactMessage, createReservation, upsertCustomer } from "@/lib/data";
+import {
+  createContactMessage,
+  createReservation,
+  upsertCustomer,
+} from "@/lib/data";
 
 export interface ActionResult {
   success: boolean;
   error?: string;
 }
 
-export async function submitReservationAction(formData: FormData): Promise<ActionResult> {
+export async function submitReservationAction(
+  formData: FormData,
+): Promise<ActionResult> {
   try {
     const name = String(formData.get("name") || "").trim();
     const phone = String(formData.get("phone") || "").trim();
@@ -22,7 +28,11 @@ export async function submitReservationAction(formData: FormData): Promise<Actio
     }
 
     const customer = await upsertCustomer(name, phone);
-    const reservationDateTime = new Date(`${date}T${time}:00`).toISOString();
+    const timeWithSec = time.split(":").length === 2 ? `${time}:00` : time;
+    const parsedDate = new Date(`${date}T${timeWithSec}`);
+    const reservationDateTime = isNaN(parsedDate.getTime())
+      ? new Date().toISOString()
+      : parsedDate.toISOString();
 
     await createReservation({
       customerId: customer.id,
@@ -35,11 +45,17 @@ export async function submitReservationAction(formData: FormData): Promise<Actio
     return { success: true };
   } catch (err) {
     console.error("Reservation submission failed:", err);
-    return { success: false, error: "Something went wrong. Please try again." };
+    const message =
+      err instanceof Error
+        ? err.message
+        : "Something went wrong. Please try again.";
+    return { success: false, error: message };
   }
 }
 
-export async function submitContactAction(formData: FormData): Promise<ActionResult> {
+export async function submitContactAction(
+  formData: FormData,
+): Promise<ActionResult> {
   try {
     const name = String(formData.get("name") || "").trim();
     const phone = String(formData.get("phone") || "").trim();
@@ -56,6 +72,10 @@ export async function submitContactAction(formData: FormData): Promise<ActionRes
     return { success: true };
   } catch (err) {
     console.error("Contact submission failed:", err);
-    return { success: false, error: "Something went wrong. Please try again." };
+    const message =
+      err instanceof Error
+        ? err.message
+        : "Something went wrong. Please try again.";
+    return { success: false, error: message };
   }
 }

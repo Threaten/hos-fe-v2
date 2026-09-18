@@ -1,5 +1,10 @@
 import { gqlFetch, gqlMutate, restFetch } from "@/lib/graphql";
-import type { Customer, GalleryItem, HomeInformation, Tenant } from "@/types/payload";
+import type {
+  Customer,
+  GalleryItem,
+  HomeInformation,
+  Tenant,
+} from "@/types/payload";
 
 const TENANT_FIELDS = `
   id
@@ -91,10 +96,11 @@ const CREATE_CUSTOMER = `
 const CREATE_RESERVATION = `
   mutation CreateReservation(
     $customer: String!
-    $reservationDateTime: DateTime!
+    $reservationDateTime: String!
     $numberOfGuests: Float!
     $specialRequests: String
     $branch: String!
+    $status: Reservation_status_MutationInput!
   ) {
     createReservation(
       data: {
@@ -103,7 +109,7 @@ const CREATE_RESERVATION = `
         numberOfGuests: $numberOfGuests
         specialRequests: $specialRequests
         branch: $branch
-        status: Pending
+        status: $status
       }
     ) {
       id
@@ -112,9 +118,19 @@ const CREATE_RESERVATION = `
 `;
 
 const CREATE_CONTACT_MESSAGE = `
-  mutation CreateContactMessage($customer: String!, $message: String, $branch: String!) {
+  mutation CreateContactMessage(
+    $customer: String!
+    $message: String
+    $branch: String!
+    $status: ContactMessage_status_MutationInput!
+  ) {
     createContactMessage(
-      data: { customer: $customer, message: $message, branch: $branch, status: Pending }
+      data: {
+        customer: $customer
+        message: $message
+        branch: $branch
+        status: $status
+      }
     ) {
       id
     }
@@ -122,12 +138,19 @@ const CREATE_CONTACT_MESSAGE = `
 `;
 
 export async function fetchTenants(limit = 100): Promise<Tenant[]> {
-  const data = await gqlFetch<{ Tenants: { docs: Tenant[] } }>(GET_TENANTS, { limit });
+  const data = await gqlFetch<{ Tenants: { docs: Tenant[] } }>(GET_TENANTS, {
+    limit,
+  });
   return data?.Tenants?.docs ?? [];
 }
 
-export async function fetchTenantByDomain(domain: string): Promise<Tenant | null> {
-  const data = await gqlFetch<{ Tenants: { docs: Tenant[] } }>(GET_TENANT_BY_DOMAIN, { domain });
+export async function fetchTenantByDomain(
+  domain: string,
+): Promise<Tenant | null> {
+  const data = await gqlFetch<{ Tenants: { docs: Tenant[] } }>(
+    GET_TENANT_BY_DOMAIN,
+    { domain },
+  );
   return data?.Tenants?.docs?.[0] ?? null;
 }
 
@@ -136,22 +159,36 @@ export async function fetchHomeInformation(): Promise<HomeInformation | null> {
   return restFetch<HomeInformation>("/api/globals/home-information?depth=2");
 }
 
-export async function fetchGallery(branchId?: string, limit = 24): Promise<GalleryItem[]> {
-  const data = await gqlFetch<{ Galleries: { docs: GalleryItem[] } }>(GET_GALLERY, {
-    branch: branchId,
-    limit,
-  });
+export async function fetchGallery(
+  branchId?: string,
+  limit = 24,
+): Promise<GalleryItem[]> {
+  const data = await gqlFetch<{ Galleries: { docs: GalleryItem[] } }>(
+    GET_GALLERY,
+    {
+      branch: branchId,
+      limit,
+    },
+  );
   return data?.Galleries?.docs ?? [];
 }
 
-export async function getCustomerByPhone(phone: string): Promise<Customer | null> {
-  const data = await gqlFetch<{ Customers: { docs: Customer[] } }>(GET_CUSTOMER_BY_PHONE, {
-    phone,
-  });
+export async function getCustomerByPhone(
+  phone: string,
+): Promise<Customer | null> {
+  const data = await gqlFetch<{ Customers: { docs: Customer[] } }>(
+    GET_CUSTOMER_BY_PHONE,
+    {
+      phone,
+    },
+  );
   return data?.Customers?.docs?.[0] ?? null;
 }
 
-export async function createCustomer(name: string, phone: string): Promise<Customer> {
+export async function createCustomer(
+  name: string,
+  phone: string,
+): Promise<Customer> {
   const data = await gqlMutate<{ createCustomer: Customer }>(CREATE_CUSTOMER, {
     customerName: name,
     customerPhone: phone,
@@ -160,7 +197,10 @@ export async function createCustomer(name: string, phone: string): Promise<Custo
 }
 
 /** Finds an existing customer by phone, or creates one. */
-export async function upsertCustomer(name: string, phone: string): Promise<Customer> {
+export async function upsertCustomer(
+  name: string,
+  phone: string,
+): Promise<Customer> {
   const existing = await getCustomerByPhone(phone);
   if (existing) return existing;
   return createCustomer(name, phone);
@@ -173,13 +213,17 @@ export async function createReservation(input: {
   specialRequests?: string;
   branchId: string;
 }): Promise<{ id: string }> {
-  const data = await gqlMutate<{ createReservation: { id: string } }>(CREATE_RESERVATION, {
-    customer: input.customerId,
-    reservationDateTime: input.reservationDateTime,
-    numberOfGuests: input.numberOfGuests,
-    specialRequests: input.specialRequests,
-    branch: input.branchId,
-  });
+  const data = await gqlMutate<{ createReservation: { id: string } }>(
+    CREATE_RESERVATION,
+    {
+      customer: input.customerId,
+      reservationDateTime: input.reservationDateTime,
+      numberOfGuests: input.numberOfGuests,
+      specialRequests: input.specialRequests,
+      branch: input.branchId,
+      status: "Pending",
+    },
+  );
   return data.createReservation;
 }
 
@@ -188,10 +232,14 @@ export async function createContactMessage(input: {
   message?: string;
   branchId: string;
 }): Promise<{ id: string }> {
-  const data = await gqlMutate<{ createContactMessage: { id: string } }>(CREATE_CONTACT_MESSAGE, {
-    customer: input.customerId,
-    message: input.message,
-    branch: input.branchId,
-  });
+  const data = await gqlMutate<{ createContactMessage: { id: string } }>(
+    CREATE_CONTACT_MESSAGE,
+    {
+      customer: input.customerId,
+      message: input.message,
+      branch: input.branchId,
+      status: "Pending",
+    },
+  );
   return data.createContactMessage;
 }

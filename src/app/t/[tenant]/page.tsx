@@ -12,7 +12,7 @@ export default async function TenantHomePage({
   const tenant = await fetchTenantByDomain(slug);
   if (!tenant) notFound();
 
-  const gallery = await fetchGallery(tenant.id, 6);
+  const gallery = await fetchGallery(tenant.id, 8);
 
   return (
     <div>

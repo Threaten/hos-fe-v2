@@ -6,6 +6,83 @@ import { X, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 import { mediaUrl } from "@/lib/media";
 import type { GalleryItem, Tenant } from "@/types/payload";
 
+function getPhotoColSpan(index: number, total: number): string {
+  if (total <= 1) return "col-span-12";
+
+  if (total === 2) {
+    return index === 0
+      ? "col-span-12 lg:col-span-7"
+      : "col-span-12 lg:col-span-5";
+  }
+
+  if (total === 3) {
+    if (index === 0) return "col-span-12 lg:col-span-7";
+    if (index === 1) return "col-span-12 sm:col-span-6 lg:col-span-5";
+    return "col-span-12";
+  }
+
+  if (total === 4) {
+    if (index === 0) return "col-span-12 lg:col-span-7";
+    if (index === 1) return "col-span-12 lg:col-span-5";
+    return "col-span-12 sm:col-span-6 lg:col-span-6";
+  }
+
+  if (total === 5) {
+    if (index === 0) return "col-span-12 lg:col-span-7";
+    if (index === 1) return "col-span-12 lg:col-span-5";
+    return "col-span-12 sm:col-span-4 lg:col-span-4";
+  }
+
+  if (total === 6) {
+    if (index === 0) return "col-span-12 lg:col-span-7";
+    if (index === 1) return "col-span-12 lg:col-span-5";
+    if (index === 2 || index === 3 || index === 4) {
+      return "col-span-12 sm:col-span-4 lg:col-span-4";
+    }
+    return "col-span-12";
+  }
+
+  // 7 or more photos
+  if (index === 0) return "col-span-12 lg:col-span-7";
+  if (index === 1) return "col-span-12 lg:col-span-5";
+  if (index === 2 || index === 3 || index === 4) {
+    return "col-span-12 sm:col-span-4 lg:col-span-4";
+  }
+  if (index === 5 || index === 6) {
+    return "col-span-12 sm:col-span-6 lg:col-span-6";
+  }
+  return "col-span-12";
+}
+
+function getPhotoAspectRatio(index: number, total: number): string {
+  if (total === 1) return "aspect-[16/10]";
+  if (
+    (total === 3 && index === 2) ||
+    (total === 6 && index === 5) ||
+    index === 7
+  ) {
+    return "aspect-[16/9] sm:aspect-[21/9]";
+  }
+
+  switch (index) {
+    case 0:
+      return "aspect-[16/11]";
+    case 1:
+      return "aspect-[4/5]";
+    case 2:
+      return "aspect-[4/5]";
+    case 3:
+      return "aspect-square";
+    case 4:
+      return "aspect-[4/5]";
+    case 5:
+    case 6:
+      return "aspect-[16/10]";
+    default:
+      return "aspect-[16/10]";
+  }
+}
+
 export function GallerySection({
   tenant,
   items,
@@ -28,7 +105,7 @@ export function GallerySection({
     ...items,
   ]
     .filter((item) => mediaUrl(item.image))
-    .slice(0, 5);
+    .slice(0, 8);
 
   const closeLightbox = useCallback(() => setActiveIndex(null), []);
   const prevPhoto = useCallback(() => {
@@ -79,17 +156,19 @@ export function GallerySection({
         </div>
       </div>
 
-      {/* Salon Photo Wall */}
+      {/* Dense Salon Photo Wall */}
       <div className="diary-photographs">
         {photos.map((item, i) => {
           const formattedIndex = String(i + 1).padStart(2, "0");
+          const colSpan = getPhotoColSpan(i, photos.length);
+          const aspectRatio = getPhotoAspectRatio(i, photos.length);
           return (
             <figure
               key={item.id}
               role="button"
               tabIndex={0}
               aria-label={`View photo Plate ${formattedIndex}: ${item.caption || "A quiet moment"}`}
-              className={`diary-photo diary-photo-${i + 1} group cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary rounded-xs`}
+              className={`diary-photo ${colSpan} group cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary rounded-xs`}
               onClick={() => setActiveIndex(i)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
@@ -98,7 +177,9 @@ export function GallerySection({
                 }
               }}
             >
-              <div className="diary-image passe-partout rounded-xs overflow-hidden relative shadow-sm transition-shadow group-hover:shadow-md">
+              <div
+                className={`diary-image ${aspectRatio} rounded-xs overflow-hidden relative shadow-xs border border-border/30 transition-all duration-500 group-hover:shadow-md group-hover:border-border`}
+              >
                 <Image
                   src={mediaUrl(item.image)}
                   alt={
@@ -109,18 +190,20 @@ export function GallerySection({
                   fill
                   sizes={
                     i === 0
-                      ? "(min-width: 900px) 65vw, 100vw"
-                      : "(min-width: 900px) 40vw, 80vw"
+                      ? "(min-width: 1024px) 60vw, 100vw"
+                      : colSpan.includes("lg:col-span-4")
+                        ? "(min-width: 1024px) 33vw, 100vw"
+                        : "(min-width: 1024px) 45vw, 100vw"
                   }
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                 />
                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <span className="p-2.5 rounded-full bg-white/80 text-stone-900 backdrop-blur-xs shadow-md">
+                  <span className="p-2.5 rounded-full bg-white/85 text-stone-900 backdrop-blur-xs shadow-md">
                     <Maximize2 className="h-4 w-4" />
                   </span>
                 </div>
               </div>
-              <figcaption className="flex items-center justify-between text-xs text-foreground/75 pt-3">
+              <figcaption className="flex items-center justify-between text-xs text-foreground/75 pt-2.5">
                 <span className="font-heading text-foreground/70 tabular-nums">
                   Plate {formattedIndex}
                 </span>

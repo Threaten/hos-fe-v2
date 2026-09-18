@@ -24,8 +24,8 @@ export function ContactForm({ branchId }: { branchId: string }) {
           Message Received
         </h3>
         <p className="text-foreground/75 text-sm max-w-sm mx-auto leading-relaxed">
-          Thank you for reaching out. A member of our hospitality team will
-          review your message and reply promptly.
+          Thank you for reaching out. We will review your message and reply
+          promptly.
         </p>
         <div className="pt-3">
           <button
