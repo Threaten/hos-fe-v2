@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getOpeningState, type OpeningKind } from "@/app/utils/openingStatus";
+import {
+  getBranchStatus,
+  getOpeningState,
+  type OpeningKind,
+} from "@/app/utils/openingStatus";
 
 const DOT_COLOR: Record<OpeningKind, string> = {
   open: "var(--status-open)",
@@ -27,6 +31,12 @@ interface OpeningStatusProps {
   showDetail?: boolean;
   /** Also show the full hours, e.g. "15:00–22:00" */
   showHours?: boolean;
+  /**
+   * "live": open/closed right now ("Open now · until 22:00").
+   * "status": the CMS status with its hours ("Open · 15:00–22:00"); the hours
+   * turn red when an open branch is outside them.
+   */
+  variant?: "live" | "status";
   className?: string;
 }
 
@@ -34,10 +44,42 @@ export default function OpeningStatus({
   branch,
   showDetail = false,
   showHours = false,
+  variant = "live",
   className = "",
 }: OpeningStatusProps) {
   const now = useNow();
   if (!now) return null;
+
+  if (variant === "status") {
+    const status = getBranchStatus(branch, now);
+    if (!status.label && !status.hours) return null;
+    return (
+      <span className={`inline-flex items-center flex-wrap gap-x-1.5 ${className}`}>
+        {status.label && (
+          <>
+            <span
+              aria-hidden="true"
+              className="inline-block w-[7px] h-[7px] rounded-full shrink-0"
+              style={{ backgroundColor: DOT_COLOR[status.kind] }}
+            />
+            <span>{status.label}</span>
+          </>
+        )}
+        {status.hours && (
+          <>
+            {status.label && <span aria-hidden="true">·</span>}
+            <span
+              style={status.outsideHours ? { color: "var(--status-alert)" } : undefined}
+              title={status.outsideHours ? "Outside opening hours right now" : undefined}
+            >
+              {status.hours}
+              {status.outsideHours && <span className="sr-only"> (outside opening hours now)</span>}
+            </span>
+          </>
+        )}
+      </span>
+    );
+  }
 
   const state = getOpeningState(branch, now);
   if (state.kind === "unknown" && !(showHours && state.hours)) return null;

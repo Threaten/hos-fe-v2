@@ -67,6 +67,35 @@ function restaurantMinutesNow(now: Date): number {
   return h * 60 + m;
 }
 
+export interface BranchStatus {
+  /** The status set in the CMS, regardless of the time of day */
+  kind: Exclude<OpeningKind, "unknown"> | "unknown";
+  label: string;
+  hours?: string;
+  /** Status is "open" but the current time falls outside the opening hours */
+  outsideHours: boolean;
+}
+
+/**
+ * The branch's CMS status ("Open", "Temporarily closed") plus its hours, flagging
+ * when an open branch is currently outside those hours.
+ */
+export function getBranchStatus(
+  branch: { status?: string; openingHours?: string },
+  now: Date = new Date(),
+): BranchStatus {
+  const state = getOpeningState(branch, now);
+  const status = normalizeStatus(branch.status);
+
+  if (status && status !== "open") {
+    return { kind: state.kind, label: state.label, hours: state.hours, outsideHours: false };
+  }
+  if (!status && state.kind === "unknown") {
+    return { kind: "unknown", label: "", hours: state.hours, outsideHours: false };
+  }
+  return { kind: "open", label: "Open", hours: state.hours, outsideHours: state.kind === "closed" };
+}
+
 export function getOpeningState(
   branch: { status?: string; openingHours?: string },
   now: Date = new Date(),

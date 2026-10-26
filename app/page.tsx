@@ -287,16 +287,14 @@ export default function Welcome() {
                         }`}
                       >
                         <div className="flex flex-col w-full">
-                          <span className="flex items-baseline justify-between gap-3">
-                            <span className="text-[0.95rem]">
-                              {branch.name.toLowerCase()}
-                            </span>
-                            <OpeningStatus
-                              branch={branch}
-                              showDetail
-                              className="text-[0.72rem] not-italic text-gray-600 shrink-0"
-                            />
+                          <span className="text-[0.95rem]">
+                            {branch.name.toLowerCase()}
                           </span>
+                          <OpeningStatus
+                            branch={branch}
+                            variant="status"
+                            className="text-[0.72rem] not-italic text-gray-600 mt-0.5"
+                          />
                           {branch.address && (
                             <span className="text-[0.69rem] text-gray-500 not-italic">
                               {branch.address}
