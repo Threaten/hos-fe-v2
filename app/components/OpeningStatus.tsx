@@ -33,8 +33,8 @@ interface OpeningStatusProps {
   showHours?: boolean;
   /**
    * "live": open/closed right now ("Open now · until 22:00").
-   * "status": the CMS status with its hours ("Open · 15:00–22:00"); the hours
-   * turn red when an open branch is outside them.
+   * "status": "Open" / "Closed" / "We'll be back soon" with the hours
+   * ("Closed · 15:00–22:00").
    */
   variant?: "live" | "status";
   className?: string;
@@ -68,13 +68,7 @@ export default function OpeningStatus({
         {status.hours && (
           <>
             {status.label && <span aria-hidden="true">·</span>}
-            <span
-              style={status.outsideHours ? { color: "var(--status-alert)" } : undefined}
-              title={status.outsideHours ? "Outside opening hours right now" : undefined}
-            >
-              {status.hours}
-              {status.outsideHours && <span className="sr-only"> (outside opening hours now)</span>}
-            </span>
+            <span>{status.hours}</span>
           </>
         )}
       </span>

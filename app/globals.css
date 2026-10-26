@@ -26,7 +26,6 @@
   --status-open: oklch(60% 0.14 150);
   --status-closed: color-mix(in oklab, var(--color-ink) 45%, var(--paper));
   --status-paused: oklch(66% 0.15 60);
-  --status-alert: oklch(54% 0.19 27); /* hours shown while outside them */
 
   /* Legacy names, remapped so untouched components follow the new palette */
   --color-earth: var(--foreground);
