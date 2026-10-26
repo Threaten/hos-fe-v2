@@ -8,8 +8,8 @@ import Wordmark from "./Wordmark";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/menu", label: "Menu" },
   { href: "/about", label: "About" },
+  { href: "/menu", label: "Menu" },
   // { href: "/gallery", label: "Gallery" },
   { href: "/contact", label: "Contact" },
 ];
@@ -96,7 +96,9 @@ export default function Navbar() {
       <div
         id="mobile-menu"
         className={`lg:hidden fixed inset-0 z-200 flex flex-col bg-paper transition-opacity duration-500 ${
-          isMenuOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
+          isMenuOpen
+            ? "opacity-100 visible"
+            : "opacity-0 invisible pointer-events-none"
         }`}
         style={{ transitionTimingFunction: "var(--ease-out)" }}
       >
@@ -123,7 +125,10 @@ export default function Navbar() {
           </button>
         </div>
 
-        <nav aria-label="Main navigation menu" className="flex-1 flex flex-col justify-center hos-gutter">
+        <nav
+          aria-label="Main navigation menu"
+          className="flex-1 flex flex-col justify-center hos-gutter"
+        >
           <ul className="flex flex-col gap-2">
             {NAV_LINKS.map(({ href, label }) => {
               const isActive = pathname === href;
@@ -145,7 +150,11 @@ export default function Navbar() {
         </nav>
 
         <div className="hos-gutter pb-10">
-          <Link href="/reservation" className="hos-btn hos-btn-solid w-full" onClick={toggleMenu}>
+          <Link
+            href="/reservation"
+            className="hos-btn hos-btn-solid w-full"
+            onClick={toggleMenu}
+          >
             Book a table
           </Link>
         </div>
