@@ -42,7 +42,7 @@ export default function Navbar() {
           <Link
             href="/"
             className="justify-self-start text-[1.75rem] lg:text-[2.25rem] transition-opacity duration-300 hover:opacity-70"
-            style={{ color: "var(--color-ink)" }}
+            style={{ color: "var(--color-main)" }}
             aria-label={`${brandName} home`}
           >
             <Wordmark name={brandName} />
@@ -109,7 +109,7 @@ export default function Navbar() {
           <Link
             href="/"
             className="text-[1.75rem]"
-            style={{ color: "var(--color-ink)" }}
+            style={{ color: "var(--color-main)" }}
             onClick={toggleMenu}
           >
             <Wordmark name={brandName} />
