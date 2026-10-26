@@ -79,42 +79,37 @@ export default function Topbar() {
           }`}
           style={{ borderColor: "var(--color-line)" }}
         >
-          <ul className="hos-gutter py-6 md:py-8 grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(260px,340px))] md:justify-center gap-x-[22px] gap-y-6">
+          <ul className="hos-gutter py-6 md:py-8 grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(260px,340px))] md:justify-center gap-x-[22px] gap-y-0">
             {tenants.map((tenant) => {
               const isCurrent = currentTenant?.id === tenant.id;
               return (
-                <li key={tenant.id}>
+                // Each branch spans the same 4 subgrid rows (name, hours, address,
+                // phone) so the fields line up across columns
+                <li key={tenant.id} className="grid grid-rows-subgrid row-span-4 gap-y-0 pb-6 last:pb-0 md:pb-0">
                   <a
                     href={getTenantUrl(tenant.domain)}
-                    className="group block"
+                    className="group grid grid-rows-subgrid row-span-4 gap-y-0 text-[15px] leading-[1.3]"
+                    style={{ color: "var(--color-ink)" }}
                     aria-current={isCurrent ? "true" : undefined}
                   >
-                    <span
-                      className="block font-serif text-[1.75rem] leading-none mb-2 hos-link group-hover:decoration-current"
-                      style={{ color: tenant.mainColor || "var(--color-main)" }}
-                    >
-                      {tenant.name.toLowerCase()}
+                    <span className="block mb-2">
+                      <span
+                        className="font-serif text-[1.75rem] leading-none hos-link group-hover:decoration-current"
+                        style={{ color: tenant.mainColor || "var(--color-main)" }}
+                      >
+                        {tenant.name.toLowerCase()}
+                      </span>
                       {isCurrent && (
-                        <span className="font-sans text-[13px] align-middle ml-2" style={{ color: "var(--color-ink-muted)" }}>
+                        <span className="font-sans text-[13px] ml-2" style={{ color: "var(--color-ink-muted)" }}>
                           you are here
                         </span>
                       )}
                     </span>
-                    <OpeningStatus
-                      branch={tenant}
-                      showHours
-                      className="text-[14px] leading-[1.3] mb-1.5"
-                    />
-                    {tenant.address && (
-                      <span className="block text-[15px] leading-[1.3]" style={{ color: "var(--color-ink)" }}>
-                        {tenant.address}
-                      </span>
-                    )}
-                    {tenant.phone && (
-                      <span className="block text-[15px] leading-[1.3]" style={{ color: "var(--color-ink)" }}>
-                        T: {tenant.phone}
-                      </span>
-                    )}
+                    <span className="block text-[14px] mb-1.5">
+                      <OpeningStatus branch={tenant} showHours />
+                    </span>
+                    <span className="block">{tenant.address}</span>
+                    <span className="block">{tenant.phone && `T: ${tenant.phone}`}</span>
                   </a>
                 </li>
               );

@@ -92,13 +92,19 @@ const Footer: React.FC = () => {
             inert={!expanded}
           >
             <div className="overflow-hidden">
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8 pt-6">
+            {/* Each branch spans the same 6 subgrid rows, so name, address, status,
+                phone, email and socials line up across columns even when one
+                address wraps and another doesn't */}
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-0 pt-6">
               {tenants.map((tenant) => {
                 const isCurrent = currentTenant?.id === tenant.id;
                 const socials = buildSocials(tenant);
                 return (
-                  <li key={tenant.id}>
-                    <address className="not-italic">
+                  <li
+                    key={tenant.id}
+                    className="grid grid-rows-subgrid row-span-6 gap-y-0 pb-8 last:pb-0 md:pb-0 text-[15px] md:text-[16px] leading-[1.35]"
+                  >
+                    <div className="mb-2">
                       <a
                         href={getTenantUrl(tenant.domain)}
                         className="hos-link font-serif text-[1.75rem] leading-none"
@@ -112,49 +118,46 @@ const Footer: React.FC = () => {
                           you are here
                         </span>
                       )}
-                      <div className="mt-2 text-[15px] md:text-[16px] leading-[1.35]">
-                        {tenant.address && <p>{tenant.address}</p>}
-                        <OpeningStatus
-                          branch={tenant}
-                          showDetail
-                          showHours
-                          className="my-1"
-                        />
+                    </div>
+                    <address className="contents not-italic">
+                      <div>{tenant.address}</div>
+                      <div className="my-1">
+                        <OpeningStatus branch={tenant} showDetail showHours />
+                      </div>
+                      <div>
                         {tenant.phone && (
-                          <p>
+                          <>
                             T:{" "}
                             <a href={`tel:${tenant.phone.replace(/\s+/g, "")}`} className="hos-link">
                               {tenant.phone}
                             </a>
-                          </p>
-                        )}
-                        {tenant.email && (
-                          <p>
-                            <a href={`mailto:${tenant.email}`} className="hos-link break-all">
-                              {tenant.email}
-                            </a>
-                          </p>
+                          </>
                         )}
                       </div>
-                      {socials.length > 0 && (
-                        <div className="flex gap-3 mt-3">
-                          {socials.map((social) => (
-                            <a
-                              key={social.key}
-                              href={social.href}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="transition-opacity duration-300 hover:opacity-60"
-                              aria-label={`${tenant.name} on ${social.label}`}
-                            >
-                              <svg className="w-[18px] h-[18px]" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                {SOCIAL_ICONS[social.key]}
-                              </svg>
-                            </a>
-                          ))}
-                        </div>
-                      )}
+                      <div>
+                        {tenant.email && (
+                          <a href={`mailto:${tenant.email}`} className="hos-link break-all">
+                            {tenant.email}
+                          </a>
+                        )}
+                      </div>
                     </address>
+                    <div className="flex gap-3 mt-3">
+                      {socials.map((social) => (
+                        <a
+                          key={social.key}
+                          href={social.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="transition-opacity duration-300 hover:opacity-60"
+                          aria-label={`${tenant.name} on ${social.label}`}
+                        >
+                          <svg className="w-[18px] h-[18px]" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            {SOCIAL_ICONS[social.key]}
+                          </svg>
+                        </a>
+                      ))}
+                    </div>
                   </li>
                 );
               })}
