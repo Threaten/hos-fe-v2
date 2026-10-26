@@ -10,7 +10,7 @@ export type OpeningKind = "open" | "closed" | "temporarily-closed" | "unknown";
 
 export interface OpeningState {
   kind: OpeningKind;
-  /** Short status, e.g. "Open now", "Closed", "Temporarily closed" */
+  /** Short status, e.g. "Open now", "Closed", "We'll be back soon" */
   label: string;
   /** Supporting detail, e.g. "until 22:00", "opens 15:00" */
   detail?: string;
@@ -87,7 +87,7 @@ export function getBranchStatus(
 
   switch (state.kind) {
     case "temporarily-closed":
-      return { kind: state.kind, label: "We'll be back soon", hours };
+      return { kind: state.kind, label: state.label, hours };
     case "closed":
       return { kind: state.kind, label: "Closed", hours };
     case "open":
@@ -109,9 +109,13 @@ export function getOpeningState(
 
   // Anything other than "open" set in the CMS overrides the hours
   if (status && status !== "open") {
+    // Hours are irrelevant while a branch is temporarily closed, so omit them
+    if (status === "temporarily-closed") {
+      return { kind: "temporarily-closed", label: "We'll be back soon" };
+    }
     const label = status.replace(/-/g, " ");
     return {
-      kind: status === "temporarily-closed" ? "temporarily-closed" : "closed",
+      kind: "closed",
       label: label.charAt(0).toUpperCase() + label.slice(1),
       hours,
     };
