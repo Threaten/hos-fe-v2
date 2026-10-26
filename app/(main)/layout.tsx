@@ -8,7 +8,7 @@ import PageTransition from "./components/PageTransition";
 import { TenantProvider } from "../contexts/TenantContext";
 
 export const metadata: Metadata = {
-  title: "houseofsenses.vn",
+  title: { default: "House of Senses", template: "%s | House of Senses" },
   description: "House of Senses restaurants, menus, reservations, and branch information.",
 };
 

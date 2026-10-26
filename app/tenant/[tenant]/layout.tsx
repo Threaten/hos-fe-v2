@@ -6,6 +6,7 @@ import Breadcrumbs from "../../(main)/components/Breadcrumbs";
 import Footer from "../../(main)/components/Footer";
 import PageTransition from "../../(main)/components/PageTransition";
 import { TenantProvider } from "../../contexts/TenantContext";
+import { fetchTenantServer } from "@/app/utils/tenantServer";
 
 // Page-level metadata is generated dynamically by [[...slug]]/layout.tsx.
 // This fallback applies only if no child segment provides metadata.
@@ -15,13 +16,20 @@ export const metadata: Metadata = {
     "House of Senses branch pages with menus, reservations, contact details, and locations across Vietnam.",
 };
 
-export default function TenantLayout({
+export default async function TenantLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: Promise<{ tenant: string }>;
 }>) {
+  const { tenant: slug } = await params;
+  // Resolve the branch on the server so the header, footer and page copy are
+  // in the initial HTML that crawlers read, not filled in after hydration
+  const tenant = await fetchTenantServer(slug);
+
   return (
-    <TenantProvider>
+    <TenantProvider initialTenant={tenant}>
       <header className="relative z-50">
         <Topbar />
         <Navbar />

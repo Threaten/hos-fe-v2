@@ -17,15 +17,22 @@ const TenantContext = createContext<TenantContextType>({
   setTenant: () => {},
 });
 
-export function TenantProvider({ children }: { children: React.ReactNode }) {
-  const [tenant, setTenant] = useState<Tenant | null>(null);
-  const [loading, setLoading] = useState(true);
+export function TenantProvider({
+  children,
+  initialTenant = null,
+}: {
+  children: React.ReactNode;
+  /** Tenant fetched on the server, so the first HTML already names the branch */
+  initialTenant?: Tenant | null;
+}) {
+  const [tenant, setTenant] = useState<Tenant | null>(initialTenant);
+  const [loading, setLoading] = useState(!initialTenant);
   const params = useParams();
   const pathname = usePathname();
 
   useEffect(() => {
     const loadTenant = async () => {
-      setLoading(true);
+      if (!initialTenant) setLoading(true);
 
       // Check if we're on /tenant/[slug] route
       const tenantSlug = Array.isArray(params?.tenant)
@@ -34,7 +41,7 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
 
       if (tenantSlug && typeof tenantSlug === "string") {
         const data = await fetchTenantBySlug(tenantSlug);
-        setTenant(data);
+        setTenant((prev) => data ?? prev);
         setLoading(false);
         return;
       }
@@ -43,13 +50,13 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
       const subdomain = getCurrentSubdomain();
       if (subdomain && subdomain !== "www" && subdomain !== "admin") {
         const data = await fetchTenantBySlug(subdomain);
-        setTenant(data);
+        setTenant((prev) => data ?? prev);
         setLoading(false);
         return;
       }
 
-      // No tenant context
-      setTenant(null);
+      // No tenant context (keep a tenant the server already resolved)
+      setTenant(initialTenant);
       setLoading(false);
     };
 

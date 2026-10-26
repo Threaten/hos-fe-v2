@@ -13,24 +13,11 @@ import LuckyWheel from "../../../(main)/lucky-wheel/_components/LuckyWheel";
 import { API_URL } from "@/app/utils/constants";
 import Link from "next/link";
 import { resolveBackendMediaUrl } from "@/app/utils/media";
-import { fetchMenuByBranch, type Tenant, type GalleryItem } from "@/api/queries";
+import { fetchMenuByBranch, type GalleryItem } from "@/api/queries";
+import { fetchTenantServer } from "@/app/utils/tenantServer";
 
 interface PageProps {
   params: Promise<{ tenant: string; slug?: string[] }>;
-}
-
-async function fetchTenantServer(slug: string): Promise<Tenant | null> {
-  try {
-    const res = await fetch(
-      `${API_URL}/api/tenants?where[domain][equals]=${encodeURIComponent(slug)}&depth=2&limit=1`,
-      { next: { revalidate: 60 } },
-    );
-    if (!res.ok) return null;
-    const json = await res.json();
-    return json?.docs?.[0] ?? null;
-  } catch {
-    return null;
-  }
 }
 
 async function fetchGalleryServer(tenantId: string): Promise<GalleryItem[]> {

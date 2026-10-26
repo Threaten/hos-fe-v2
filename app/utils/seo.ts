@@ -1,334 +1,310 @@
-import type { Metadata } from 'next'
+import type { Metadata } from "next";
+import type { Tenant } from "@/api/queries";
+import { resolveBackendMediaUrl } from "@/app/utils/media";
+import { parseOpeningHours } from "@/app/utils/openingStatus";
+import {
+  SITE_URL,
+  displayName,
+  tenantSiteUrl,
+  type TenantSummary,
+} from "@/app/utils/tenantServer";
 
-const API_URL =
-  process.env.NODE_ENV === 'production'
-    ? process.env.NEXT_PUBLIC_API_URL || 'https://admin.houseofsenses.vn'
-    : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
-
-const BASE_DOMAIN = 'houseofsenses.vn'
-
-
-
-export interface TenantConfig {
-  name: string
-  slug: string
-  domain?: string
-  description?: string
-  logoUrl?: string
-  address?: string
-  latitude?: number
-  longitude?: number
-  phone?: string
-  email?: string
-  facebook?: string
-  instagram?: string
-  /** Manually overridden SEO title from CMS */
-  metaTitle?: string
-  /** Manually overridden SEO description from CMS */
-  metaDescription?: string
-  /** Manually overridden SEO image from CMS */
-  metaImageUrl?: string
-}
-
-/**
- * Get the canonical base URL for a tenant.
- * Development: http://{slug}.localhost:3001
- * Production:  https://{slug}.houseofsenses.vn
+/*
+ * SEO for houseofsenses.vn (the group) and {branch}.houseofsenses.vn (each
+ * restaurant). Google picks sitelinks itself; what we control is giving every
+ * page a distinct, descriptive title and description, a canonical URL, and
+ * structured data that ties the branches to the group.
  */
-export function getTenantBaseUrl(tenantConfig: TenantConfig | null): string {
-  const slug = tenantConfig?.domain || tenantConfig?.slug
-  if (!slug) return `https://${BASE_DOMAIN}`
 
-  if (process.env.NODE_ENV === 'development') {
-    return `http://${slug}.localhost:3001`
+const ORGANIZATION_ID = `${SITE_URL}/#organization`;
+const DEFAULT_IMAGE = `${SITE_URL}/media/IMG_0050.JPG`;
+
+/** Branch base URL; local subdomains in development so links stay testable */
+export function getTenantBaseUrl(domain: string): string {
+  if (process.env.NODE_ENV === "development") {
+    return `http://${domain}.localhost:3001`;
   }
-  return `https://${slug}.${BASE_DOMAIN}`
+  return tenantSiteUrl(domain);
 }
 
-/**
- * Fetch and cache tenant config server-side via Payload REST API.
- * Uses `domain` field as the slug identifier.
- */
-export async function fetchTenantConfigForSEO(
-  tenantSlug: string,
-): Promise<TenantConfig | null> {
-  try {
-    const url = `${API_URL}/api/tenants?where[domain][equals]=${encodeURIComponent(tenantSlug)}&depth=1&limit=1`
-    const response = await fetch(url, {
-      next: { revalidate: 3600 },
-    })
+interface PageInfo {
+  /** Title shown in search results and used by Google for the sitelink label */
+  label: string;
+  description: (name: string, city: string) => string;
+  noIndex?: boolean;
+}
 
-    if (!response.ok) return null
+/** Every indexable branch page, keyed by path */
+export const TENANT_PAGES: Record<string, PageInfo> = {
+  menu: {
+    label: "Menu",
+    description: (n, c) =>
+      `See the ${n} menu: dishes, drinks and set menus served at our restaurant in ${c}.`,
+  },
+  reservation: {
+    label: "Book a Table",
+    description: (n, c) =>
+      `Book a table at ${n} in ${c}. Choose a date, time and party size online and we'll confirm your reservation.`,
+  },
+  about: {
+    label: "About",
+    description: (n) =>
+      `The story behind ${n}: the room, the kitchen and the people who make every visit feel unhurried.`,
+  },
+  contact: {
+    label: "Contact",
+    description: (n, c) =>
+      `Contact ${n} in ${c}: address, phone, email, opening hours and directions.`,
+  },
+  gallery: {
+    label: "Gallery",
+    description: (n) => `Photos of ${n}: the dining room, dishes and evenings at the table.`,
+  },
+  "lucky-wheel": {
+    label: "Lucky Wheel",
+    description: (n) => `Spin the ${n} lucky wheel.`,
+    // A promotion, not something people search for
+    noIndex: true,
+  },
+};
 
-    const data = await response.json()
-    const tenant = data?.docs?.[0]
-
-    if (tenant) {
-      return {
-        name: tenant.name || 'House of Senses',
-        slug: tenant.domain || tenantSlug,
-        domain: tenant.domain,
-        // heroDescription is frontend display text, not an SEO description — use meta.description only
-        description: undefined,
-        logoUrl: tenant.logo?.url ? `${API_URL}${tenant.logo.url}` : undefined,
-        address: tenant.address || undefined,
-        latitude: tenant.location?.latitude ?? undefined,
-        longitude: tenant.location?.longitude ?? undefined,
-        phone: tenant.phone || undefined,
-        email: tenant.email || undefined,
-        facebook: tenant.facebook || undefined,
-        instagram: tenant.instagram || undefined,
-        metaTitle: tenant.meta?.title || undefined,
-        metaDescription: tenant.meta?.description || undefined,
-        metaImageUrl: tenant.meta?.image?.url
-          ? (tenant.meta.image.url.startsWith('http') ? tenant.meta.image.url : `${API_URL}${tenant.meta.image.url}`)
-          : undefined,
-      }
-    }
-  } catch {
-    // ignore
+function cityOf(address?: string): string {
+  if (address && /h[oồ] ch[ií] minh|hcmc|s[aà]i g[oò]n/i.test(address)) {
+    return "Ho Chi Minh City";
   }
-
-  return null
+  return "Vietnam";
 }
 
-/**
- * Page-level overrides passed to generateTenantMetadata.
- */
-export interface PageSEOOptions {
-  /** Page title, combined as "{title} | {tenantName}". */
-  title?: string
-  /** Page description. Overrides tenant description. */
-  description?: string
-  /** Absolute URL of the OG image */
-  ogImageUrl?: string
-  /** Page path relative to tenant root (e.g. "about", "gallery") */
-  path?: string
-  /** Open Graph type. Defaults to "website". */
-  type?: 'website' | 'article'
-  /** Exclude from search engine indexing */
-  noIndex?: boolean
+function tenantImage(tenant: Tenant): string {
+  return (
+    resolveBackendMediaUrl(tenant.meta?.image) ||
+    resolveBackendMediaUrl(tenant.heroImagesList?.[0]?.image) ||
+    DEFAULT_IMAGE
+  );
 }
 
-/**
- * Human-readable labels for well-known route segments.
- */
-const PAGE_LABELS: Record<string, string> = {
-  about: 'About',
-  gallery: 'Gallery',
-  menu: 'Menu',
-  contact: 'Contact',
-  reservation: 'Reservation',
+/** Keep descriptions inside the ~160 characters Google shows */
+function clamp(text: string, max = 160): string {
+  const t = text.replace(/\s+/g, " ").trim();
+  if (t.length <= max) return t;
+  const cut = t.slice(0, max - 1);
+  return `${cut.slice(0, cut.lastIndexOf(" "))}…`;
 }
 
-/** Page-specific descriptions appended when no override is provided. */
-const PAGE_DESCRIPTIONS: Record<string, (siteName: string) => string> = {
-  about: (n) => `Learn the story behind ${n}: the room, the kitchen, and the people shaping each service.`,
-  gallery: (n) => `Explore the ${n} gallery: restaurant spaces, dishes, and moments from service.`,
-  menu: (n) => `Discover the ${n} menu: seasonal dishes, drinks, and branch favorites.`,
-  contact: (n) => `Get in touch with ${n}. Find our location, phone number, email, and send us a message.`,
-  reservation: (n) => `Reserve your table at ${n}. Choose a branch, date, time, and party size online.`,
+function tenantHomeDescription(tenant: Tenant, name: string, city: string): string {
+  return (
+    tenant.meta?.description ||
+    tenant.heroDescription ||
+    `${name} is a House of Senses restaurant in ${city}. See the menu, opening hours and book a table online.`
+  );
 }
 
-/**
- * Generate Next.js Metadata for a tenant page.
- *
- * @param tenantSlug - The subdomain or domain field value for the tenant.
- * @param page - Optional page-level overrides.
- */
-export async function generateTenantMetadata(
-  tenantSlug: string,
-  page?: PageSEOOptions,
-): Promise<Metadata> {
-  const tenantConfig = await fetchTenantConfigForSEO(tenantSlug)
-  const baseUrl = getTenantBaseUrl(tenantConfig)
-  const siteName = tenantConfig?.name || 'House of Senses'
+/** Metadata for a branch page ("" = home, or a key of TENANT_PAGES) */
+export function buildTenantMetadata(tenant: Tenant, path = ""): Metadata {
+  const name = displayName(tenant.name);
+  const city = cityOf(tenant.address);
+  const baseUrl = getTenantBaseUrl(tenant.domain);
+  const page = path ? TENANT_PAGES[path] : undefined;
 
-  // Resolve page path label
-  const pathLabel = page?.path ? PAGE_LABELS[page.path] || page.path : undefined
-
-  // CMS override > page path label > "Tenant | House of Senses".
-  const rawTitle = page?.title || tenantConfig?.metaTitle || pathLabel
-  const title = rawTitle
-    ? `${rawTitle} | ${siteName}`
-    : `${siteName} | House of Senses`
-
-  // CMS meta.description > page-specific > fallback, then append address.
-  const pageDescFn = page?.path ? PAGE_DESCRIPTIONS[page.path] : undefined
-  const baseDescription =
-    page?.description ||
-    tenantConfig?.metaDescription ||
-    (pageDescFn ? pageDescFn(siteName) : null) ||
-    `${siteName} restaurant information, menus, reservations, and contact details.`
-  // Append address for location context, only once and only from the dedicated address field.
-  const description = tenantConfig?.address
-    ? `${baseDescription} Located at ${tenantConfig.address}.`
-    : baseDescription
-
-  // Build canonical URL.
-  const canonicalUrl = page?.path ? `${baseUrl}/${page.path}` : baseUrl
-
-  // CMS meta.image > explicit override > tenant logo > default.
-  const ogImageUrl =
-    tenantConfig?.metaImageUrl ||
-    page?.ogImageUrl ||
-    tenantConfig?.logoUrl ||
-    `https://houseofsenses.vn/media/IMG_0050.JPG`
-
-  const keywords = [
-    siteName,
-    'restaurant Vietnam',
-    'restaurant',
-    'bistro',
-    'Vietnamese cuisine',
-    'contemporary cuisine',
-    'international cuisine',
-    'coffee shop Vietnam',
-    'cafe Ho Chi Minh City',
-    'wine bar Vietnam',
-    'wine dining',
-    'date night restaurant Vietnam',
-    'romantic restaurant Ho Chi Minh City',
-    'couple dining',
-    'cozy restaurant',
-    'aesthetic cafe',
-    'vibe restaurant',
-    'upscale dining',
-    'luxury dining Vietnam',
-    'cocktail bar Ho Chi Minh City',
-    'brunch Ho Chi Minh City',
-    'dinner Ho Chi Minh City',
-    'Saigon restaurant',
-    'Saigon restaurant',
-    'HCMC restaurant',
-    'best restaurant Vietnam',
-    'intimate dining',
-    'special occasion restaurant',
-    'anniversary dinner Vietnam',
-    'foodie Vietnam',
-    'House of Senses',
-    'ẩm thực Sài Gòn',
-    'nhà hàng ngon Sài Gòn',
-    'nhà hàng lãng mạn',
-    'quán cafe đẹp',
-    'Xuan Hoa Ward',
-    'Phuong Xuan Hoa',
-    'phường Xuân Hòa',
-    'Quan 3',
-    'quận 3',
-    'District 3 Ho Chi Minh City',
-    'restaurant District 3 Saigon',
-    ...(page?.path ? [PAGE_LABELS[page.path] || page.path] : []),
-    ...(tenantConfig?.address ? [tenantConfig.address] : []),
-  ].filter(Boolean)
+  // Each page gets its own title; the CMS meta title only applies to the home page
+  const title = page
+    ? `${page.label} | ${name}`
+    : tenant.meta?.title || `${name} | House of Senses`;
+  const description = clamp(
+    page ? page.description(name, city) : tenantHomeDescription(tenant, name, city),
+  );
+  const url = page ? `${baseUrl}/${path}` : `${baseUrl}/`;
+  const image = tenantImage(tenant);
 
   return {
-    title,
+    title: { absolute: title },
     description,
-    keywords,
+    alternates: { canonical: url },
     openGraph: {
       title,
       description,
-      url: canonicalUrl,
-      siteName,
-      locale: 'vi_VN',
-      alternateLocale: 'en_US',
-      type: page?.type || 'website',
-      images: [
-        {
-          url: ogImageUrl,
-          width: 1200,
-          height: 630,
-          alt: title,
+      url,
+      siteName: name,
+      locale: "vi_VN",
+      alternateLocale: "en_US",
+      type: "website",
+      images: [{ url: image, alt: name }],
+    },
+    twitter: { card: "summary_large_image", title, description, images: [image] },
+    robots: page?.noIndex
+      ? { index: false, follow: true }
+      : {
+          index: true,
+          follow: true,
+          googleBot: {
+            index: true,
+            follow: true,
+            "max-image-preview": "large",
+            "max-snippet": -1,
+            "max-video-preview": -1,
+          },
         },
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      site: '@houseofsenses',
-      title,
-      description,
-      images: [ogImageUrl],
-    },
-    alternates: {
-      canonical: canonicalUrl,
-    },
-    robots: {
-      index: !page?.noIndex,
-      follow: !page?.noIndex,
-      googleBot: {
-        index: !page?.noIndex,
-        follow: !page?.noIndex,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
-    },
-    other: {
-      'geo.region': 'VN',
-      ...(tenantConfig?.address ? {
-        'geo.placename': tenantConfig.address,
-        'address': tenantConfig.address,
-      } : {}),
-      ...(tenantConfig?.latitude != null && tenantConfig?.longitude != null ? {
-        'geo.position': `${tenantConfig.latitude};${tenantConfig.longitude}`,
-        'ICBM': `${tenantConfig.latitude}, ${tenantConfig.longitude}`,
-      } : {}),
-      ...(tenantConfig?.phone ? { 'telephone': tenantConfig.phone } : {}),
-      ...(tenantConfig?.email ? { 'email': tenantConfig.email } : {}),
-    },
-  }
+  };
 }
 
-/**
- * Build a JSON-LD Restaurant schema object for a given tenant.
- * Render it with <JsonLd data={buildTenantJsonLd(config)} /> in a server layout.
- */
-export function buildTenantJsonLd(
-  tenantConfig: TenantConfig | null,
-  baseUrl: string,
-): object {
-  const name = tenantConfig?.name || 'House of Senses'
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Restaurant',
+function hasRealCoordinates(tenant: Tenant): boolean {
+  const lat = tenant.location?.latitude;
+  const lng = tenant.location?.longitude;
+  // 0,0 is the CMS default, not a real location
+  return lat != null && lng != null && !(lat === 0 && lng === 0);
+}
+
+function normalizeSocial(value: string | undefined, base: string): string | null {
+  const v = value?.trim();
+  if (!v) return null;
+  return /^https?:\/\//i.test(v) ? v : `${base}${v.replace(/^@/, "")}`;
+}
+
+/** schema.org graph for a branch page: WebSite + Restaurant (+ breadcrumbs on sub pages) */
+export function buildTenantJsonLd(tenant: Tenant, path = ""): object {
+  const name = displayName(tenant.name);
+  const baseUrl = getTenantBaseUrl(tenant.domain);
+  const restaurantId = `${baseUrl}/#restaurant`;
+  const page = path ? TENANT_PAGES[path] : undefined;
+  const isTemporarilyClosed = /temporar/i.test(tenant.status ?? "");
+  const hours = parseOpeningHours(tenant.openingHours);
+  const fmt = (m: number) =>
+    `${String(Math.floor((m % 1440) / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+
+  const sameAs = [
+    normalizeSocial(tenant.facebook, "https://www.facebook.com/"),
+    normalizeSocial(tenant.instagram, "https://www.instagram.com/"),
+    normalizeSocial(tenant.tiktok, "https://www.tiktok.com/@"),
+    normalizeSocial(tenant.youtube, "https://www.youtube.com/"),
+  ].filter(Boolean);
+
+  const restaurant: Record<string, unknown> = {
+    "@type": "Restaurant",
+    "@id": restaurantId,
     name,
-    url: baseUrl,
-    ...(tenantConfig?.logoUrl ? { logo: tenantConfig.logoUrl, image: tenantConfig.logoUrl } : {
-      image: 'https://houseofsenses.vn/media/IMG_0050.JPG',
-    }),
-    description: tenantConfig?.address
-      ? `${tenantConfig?.metaDescription || `${name} restaurant information, menu, reservations, and contact details.`} Located at ${tenantConfig.address}.`
-      : (tenantConfig?.metaDescription || `${name} restaurant information, menu, reservations, and contact details.`),
-    servesCuisine: ['Vietnamese', 'Contemporary', 'International'],
-    priceRange: '$$$',
-    currenciesAccepted: 'VND, USD',
-    paymentAccepted: 'Cash, Credit Card',
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: tenantConfig?.address || undefined,
-      addressCountry: 'VN',
-    },
-    ...(tenantConfig?.latitude != null && tenantConfig?.longitude != null ? {
-      geo: {
-        '@type': 'GeoCoordinates',
-        latitude: tenantConfig.latitude,
-        longitude: tenantConfig.longitude,
-      },
-      hasMap: `https://maps.google.com/?q=${tenantConfig.latitude},${tenantConfig.longitude}`,
-    } : {}),
-    ...(tenantConfig?.phone ? { telephone: tenantConfig.phone } : {}),
-    ...(tenantConfig?.email ? { email: tenantConfig.email } : {}),
-    ...(() => {
-      const sameAs: string[] = []
-      if (tenantConfig?.facebook) sameAs.push(tenantConfig.facebook.startsWith('http') ? tenantConfig.facebook : `https://www.facebook.com/${tenantConfig.facebook}`)
-      if (tenantConfig?.instagram) sameAs.push(tenantConfig.instagram.startsWith('http') ? tenantConfig.instagram : `https://www.instagram.com/${tenantConfig.instagram}`)
-      return sameAs.length ? { sameAs } : {}
-    })(),
-    parentOrganization: {
-      '@type': 'Organization',
-      name: 'House of Senses',
-      url: 'https://houseofsenses.vn',
-    },
+    alternateName: tenant.name,
+    url: `${baseUrl}/`,
+    description: tenantHomeDescription(tenant, name, cityOf(tenant.address)),
+    image: tenantImage(tenant),
+    servesCuisine: ["Vietnamese", "Contemporary", "International"],
+    hasMenu: `${baseUrl}/menu`,
+    acceptsReservations: `${baseUrl}/reservation`,
+    parentOrganization: { "@id": ORGANIZATION_ID },
+  };
+  if (tenant.address) {
+    restaurant.address = {
+      "@type": "PostalAddress",
+      streetAddress: tenant.address,
+      addressLocality: cityOf(tenant.address),
+      addressCountry: "VN",
+    };
   }
+  if (tenant.phone) restaurant.telephone = tenant.phone;
+  if (tenant.email) restaurant.email = tenant.email;
+  if (sameAs.length) restaurant.sameAs = sameAs;
+  if (hasRealCoordinates(tenant)) {
+    restaurant.geo = {
+      "@type": "GeoCoordinates",
+      latitude: tenant.location!.latitude,
+      longitude: tenant.location!.longitude,
+    };
+  }
+  // Publish hours only while the branch is operating normally
+  if (hours && !isTemporarilyClosed) {
+    restaurant.openingHoursSpecification = {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      opens: fmt(hours.open),
+      closes: fmt(hours.close),
+    };
+  }
+
+  const graph: object[] = [
+    {
+      "@type": "WebSite",
+      "@id": `${baseUrl}/#website`,
+      name,
+      alternateName: [tenant.name, `${name} by House of Senses`],
+      url: `${baseUrl}/`,
+      inLanguage: ["en", "vi"],
+      publisher: { "@id": ORGANIZATION_ID },
+    },
+    restaurant,
+  ];
+
+  if (page) {
+    graph.push({
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name, item: `${baseUrl}/` },
+        { "@type": "ListItem", position: 2, name: page.label, item: `${baseUrl}/${path}` },
+      ],
+    });
+  }
+
+  return { "@context": "https://schema.org", "@graph": graph };
+}
+
+/* ── Group site: houseofsenses.vn ── */
+
+export function buildRootMetadata(branches: TenantSummary[]): Metadata {
+  const names = branches.map((b) => displayName(b.name));
+  const title = "House of Senses | Restaurants in Ho Chi Minh City";
+  const description = clamp(
+    names.length
+      ? `House of Senses is a family of restaurants in Ho Chi Minh City: ${names.join(", ")}. Find a branch, see menus and opening hours, and book a table.`
+      : "House of Senses is a family of restaurants in Ho Chi Minh City. Find a branch, see menus and opening hours, and book a table.",
+  );
+  return {
+    title: { absolute: title },
+    description,
+    alternates: { canonical: `${SITE_URL}/` },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/`,
+      siteName: "House of Senses",
+      locale: "vi_VN",
+      alternateLocale: "en_US",
+      type: "website",
+      images: [{ url: DEFAULT_IMAGE, alt: "House of Senses" }],
+    },
+    twitter: { card: "summary_large_image", title, description, images: [DEFAULT_IMAGE] },
+    robots: { index: true, follow: true, googleBot: { "max-image-preview": "large", "max-snippet": -1 } },
+  };
+}
+
+export function buildRootJsonLd(branches: TenantSummary[], logoUrl?: string | null): object {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        name: "House of Senses",
+        alternateName: ["houseofsenses.vn", "House of Senses Vietnam"],
+        url: `${SITE_URL}/`,
+        inLanguage: ["en", "vi"],
+        publisher: { "@id": ORGANIZATION_ID },
+      },
+      {
+        "@type": "Organization",
+        "@id": ORGANIZATION_ID,
+        name: "House of Senses",
+        url: `${SITE_URL}/`,
+        ...(logoUrl ? { logo: logoUrl } : {}),
+        // Each branch is its own site; linking them here tells Google they belong together
+        subOrganization: branches.map((b) => ({
+          "@type": "Restaurant",
+          "@id": `${tenantSiteUrl(b.domain)}/#restaurant`,
+          name: displayName(b.name),
+          url: `${tenantSiteUrl(b.domain)}/`,
+          ...(b.address
+            ? { address: { "@type": "PostalAddress", streetAddress: b.address, addressCountry: "VN" } }
+            : {}),
+          ...(b.phone ? { telephone: b.phone } : {}),
+        })),
+      },
+    ],
+  };
 }
