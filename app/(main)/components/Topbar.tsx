@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import OpeningStatus from "@/app/components/OpeningStatus";
 import { fetchTenants, type Tenant } from "@/api/queries";
 import { getTenantUrl } from "@/app/utils/domain";
 import { useTenant } from "@/app/contexts/TenantContext";
@@ -99,6 +100,11 @@ export default function Topbar() {
                         </span>
                       )}
                     </span>
+                    <OpeningStatus
+                      branch={tenant}
+                      showHours
+                      className="text-[14px] leading-[1.3] mb-1.5"
+                    />
                     {tenant.address && (
                       <span className="block text-[15px] leading-[1.3]" style={{ color: "var(--color-ink)" }}>
                         {tenant.address}

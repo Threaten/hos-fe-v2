@@ -22,6 +22,11 @@
   --color-on-main: var(--paper);
   --color-line: color-mix(in oklab, var(--color-ink) 22%, transparent);
 
+  /* Opening status dots: semantic, so they stay the same on every branch */
+  --status-open: oklch(60% 0.14 150);
+  --status-closed: color-mix(in oklab, var(--color-ink) 45%, var(--paper));
+  --status-paused: oklch(66% 0.15 60);
+
   /* Legacy names, remapped so untouched components follow the new palette */
   --color-earth: var(--foreground);
   --color-earth-dark: color-mix(in oklab, var(--foreground) 80%, var(--color-main));

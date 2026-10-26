@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import OpeningStatus from "@/app/components/OpeningStatus";
 import { fetchTenants, type Tenant } from "@/api/queries";
 import { getTenantUrl } from "@/app/utils/domain";
 import { useTenant } from "@/app/contexts/TenantContext";
@@ -113,6 +114,12 @@ const Footer: React.FC = () => {
                       )}
                       <div className="mt-2 text-[15px] md:text-[16px] leading-[1.35]">
                         {tenant.address && <p>{tenant.address}</p>}
+                        <OpeningStatus
+                          branch={tenant}
+                          showDetail
+                          showHours
+                          className="my-1"
+                        />
                         {tenant.phone && (
                           <p>
                             T:{" "}

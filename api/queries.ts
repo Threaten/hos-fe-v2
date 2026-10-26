@@ -153,6 +153,10 @@ export interface Tenant {
     message?: string;
   };
   mainColor?: string;
+  /** "open" | "temporarily-closed" (REST) / "temporarily_closed" (GraphQL) */
+  status?: string;
+  /** Free text from the CMS, e.g. "15:00–22:00" */
+  openingHours?: string;
   meta?: {
     title?: string;
     description?: string;
@@ -266,6 +270,8 @@ const GET_TENANTS = `
         name
         domain
         mainColor
+        status
+        openingHours
         heroImagesList {
           image {
             url
@@ -341,6 +347,8 @@ const GET_TENANT = `
         name
         domain
         mainColor
+        status
+        openingHours
         heroImagesList {
           image {
             url
