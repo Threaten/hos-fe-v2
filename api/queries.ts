@@ -4,7 +4,7 @@
  */
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
-  "http://admin.houseofsenses.vn";
+  "https://admin.houseofsenses.vn";
 export const GRAPHQL_ENDPOINT =
   process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT?.replace(/\/$/, "") ||
   `${API_URL}/api/graphql`;
