@@ -93,7 +93,7 @@ const Gallery = () => {
             className="text-[clamp(2.5rem,8vw,5rem)] font-semibold leading-[0.9] tracking-tight"
             style={{
               color: "var(--foreground)",
-              fontFamily: "var(--font-arimo)",
+              fontFamily: "var(--font-body)",
             }}
           >
             the gallery

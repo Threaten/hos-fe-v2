@@ -117,7 +117,7 @@ export default function NewMenuModal({
                 src={resolveBackendMediaUrl(images[currentIndex].src)}
                 alt={`${tenantName || "Update"} page ${currentIndex + 1}`}
                 fill
-                quality={90}
+                priority
                 sizes="(max-width: 768px) 100vw, 80vw"
                 className="object-contain"
               />

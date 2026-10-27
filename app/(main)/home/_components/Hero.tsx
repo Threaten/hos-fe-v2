@@ -51,7 +51,7 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
   return (
     <section className="w-full bg-paper" aria-label={tenant?.name ?? "House of Senses"}>
       <h1
-        className="hos-gutter lowercase font-serif opacity-0 animate-reveal-up"
+        className="hos-gutter lowercase font-serif animate-rise"
         style={{
           fontSize: "var(--text-hero)",
           lineHeight: 0.84,

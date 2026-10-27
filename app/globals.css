@@ -66,16 +66,16 @@
   --color-ink: var(--color-ink);
   --color-paper: var(--paper);
   --color-line: var(--color-line);
-  --font-sans: var(--font-instrument-sans), "Helvetica Neue", Arial, sans-serif;
-  --font-serif: var(--font-instrument-serif), Georgia, serif;
-  --font-heading: var(--font-instrument-serif), Georgia, serif;
-  --font-mono: var(--font-instrument-sans), ui-monospace, monospace;
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-body);
+  --font-heading: var(--font-body);
+  --font-mono: var(--font-body);
 }
 
 html {
   scroll-behavior: smooth;
-  /* Older components reference these names */
-  --font-arimo: var(--font-instrument-serif), Georgia, serif;
+  /* Single site-wide typeface (system font, nothing to download) */
+  --font-body: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
 
 /* ── Minimum font size: nothing smaller than 12px ── */
@@ -87,7 +87,7 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-instrument-sans), "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-body);
   font-size: var(--text-body);
   line-height: var(--leading-body);
   font-weight: 400;
@@ -104,7 +104,7 @@ body {
   h5,
   h6,
   .font-heading {
-    font-family: var(--font-instrument-serif), Georgia, serif;
+    font-family: var(--font-body);
     font-weight: 400;
   }
 }
@@ -127,7 +127,7 @@ body {
   }
 
   .hos-display {
-    font-family: var(--font-instrument-serif), Georgia, serif;
+    font-family: var(--font-body);
     font-size: var(--text-display);
     line-height: var(--leading-display);
     font-weight: 400;
@@ -135,7 +135,7 @@ body {
   }
 
   .hos-label {
-    font-family: var(--font-instrument-sans), sans-serif;
+    font-family: var(--font-body);
     font-size: var(--text-label);
     line-height: 1.2;
     font-weight: 500;
@@ -149,7 +149,7 @@ body {
     gap: 0.6em;
     min-height: 47px;
     padding: 0 1.55em;
-    font-family: var(--font-instrument-serif), Georgia, serif;
+    font-family: var(--font-body);
     font-size: var(--text-button);
     line-height: 1;
     white-space: nowrap;
@@ -502,6 +502,20 @@ body {
 
 .animate-reveal-up {
   animation: revealUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Transform-only reveal: stays visible from first paint so it doesn't delay LCP */
+.animate-rise {
+  animation: rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(36px);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 .animate-line-grow {

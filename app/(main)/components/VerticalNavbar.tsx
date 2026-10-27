@@ -135,7 +135,7 @@ export default function VerticalNavbar() {
                   className="text-[16px] font-semibold tracking-[0.28em] uppercase leading-none transition-opacity duration-300 group-hover:opacity-60"
                   style={{
                     color: "var(--foreground)",
-                    fontFamily: "var(--font-arimo)",
+                    fontFamily: "var(--font-body)",
                   }}
                 >
                   {homeInfo?.name ?? "House of Senses"}

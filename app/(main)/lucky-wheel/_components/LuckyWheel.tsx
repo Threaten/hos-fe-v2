@@ -117,7 +117,7 @@ function LoginGate({
     padding: "10px 0",
     fontSize: "13px",
     color: "var(--foreground)",
-    fontFamily: "var(--font-ibm-plex-mono), monospace",
+    fontFamily: "var(--font-body)",
     letterSpacing: "0.03em",
   };
 
@@ -135,7 +135,7 @@ function LoginGate({
         </p>
         <h1
           className="text-[clamp(2rem,5vw,3rem)] font-semibold leading-tight tracking-tight text-center mb-10"
-          style={{ fontFamily: "var(--font-arimo), sans-serif" }}
+          style={{ fontFamily: "var(--font-body)" }}
         >
           Lucky Wheel
         </h1>
@@ -193,7 +193,7 @@ function LoginGate({
             style={{
               backgroundColor: loading ? "var(--color-tan)" : "var(--color-earth)",
               color: "#f2ede4",
-              fontFamily: "var(--font-arimo), sans-serif",
+              fontFamily: "var(--font-body)",
               cursor: loading ? "not-allowed" : "pointer",
               opacity: loading ? 0.7 : 1,
               border: "none",
@@ -291,7 +291,7 @@ function RewardModal({
         {isNoReward ? (
           <p
             className="text-3xl font-semibold"
-            style={{ fontFamily: "var(--font-arimo), sans-serif", color: "var(--color-sand)" }}
+            style={{ fontFamily: "var(--font-body)", color: "var(--color-sand)" }}
           >
             Better luck next time
           </p>
@@ -299,7 +299,7 @@ function RewardModal({
           <>
             <p
               className="text-[clamp(2rem,8vw,3.2rem)] font-semibold leading-tight"
-              style={{ fontFamily: "var(--font-arimo), sans-serif", color: "var(--foreground)" }}
+              style={{ fontFamily: "var(--font-body)", color: "var(--foreground)" }}
             >
               {result}
             </p>
@@ -407,7 +407,7 @@ export default function LuckyWheel() {
           </p>
           <h1
             className="text-[clamp(2.6rem,6vw,4.2rem)] font-semibold leading-[0.92] tracking-tight"
-            style={{ fontFamily: "var(--font-arimo), sans-serif", color: "var(--foreground)" }}
+            style={{ fontFamily: "var(--font-body)", color: "var(--foreground)" }}
           >
             Lucky Wheel
           </h1>
@@ -479,7 +479,7 @@ export default function LuckyWheel() {
                     dominantBaseline="middle"
                     style={{
                       fontSize: "9.5px",
-                      fontFamily: "var(--font-arimo), sans-serif",
+                      fontFamily: "var(--font-body)",
                       fontWeight: 600,
                       fill: color.text,
                       letterSpacing: "0.04em",
@@ -522,7 +522,7 @@ export default function LuckyWheel() {
           style={{
             backgroundColor: spinning ? "var(--color-tan)" : "var(--color-earth)",
             color: "#f2ede4",
-            fontFamily: "var(--font-arimo), sans-serif",
+            fontFamily: "var(--font-body)",
             cursor: spinning ? "not-allowed" : "pointer",
             opacity: spinning ? 0.65 : 1,
             outline: "none",
