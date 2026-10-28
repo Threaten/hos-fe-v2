@@ -7,6 +7,8 @@ import { API_URL } from "@/app/utils/constants";
 
 interface HeroProps {
   tenant?: Tenant | null;
+  /** Set false when something covers the hero on load (e.g. the updates modal) */
+  prioritizeImage?: boolean;
 }
 
 /**
@@ -42,7 +44,7 @@ function HeroTitle({ title }: { title: string }) {
   );
 }
 
-const Hero: React.FC<HeroProps> = ({ tenant }) => {
+const Hero: React.FC<HeroProps> = ({ tenant, prioritizeImage = true }) => {
   const title = tenant?.heroTitle || tenant?.name || "House of Senses";
   const images = (tenant?.heroImagesList ?? [])
     .filter((item) => item.image?.url)
@@ -80,7 +82,7 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
                   src={`${API_URL}${item.image!.url}`}
                   alt={item.image?.filename || ""}
                   fill
-                  priority={idx === 0}
+                  priority={prioritizeImage && idx === 0}
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />

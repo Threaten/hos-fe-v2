@@ -74,8 +74,8 @@
 
 html {
   scroll-behavior: smooth;
-  /* Single site-wide typeface (system font, nothing to download) */
-  --font-body: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  /* Single site-wide typeface */
+  --font-body: var(--font-instrument-serif), Georgia, "Times New Roman", serif;
 }
 
 /* ── Minimum font size: nothing smaller than 12px ── */

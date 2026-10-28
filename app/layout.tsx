@@ -1,5 +1,14 @@
 import type { Metadata } from "next";
+import { Instrument_Serif } from "next/font/google";
 import "./globals.css";
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin", "latin-ext"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-instrument-serif",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://houseofsenses.vn"),
@@ -18,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={instrumentSerif.variable}>
       <body>
         {children}
       </body>

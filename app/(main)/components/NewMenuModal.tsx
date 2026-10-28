@@ -28,6 +28,8 @@ export default function NewMenuModal({
   tenantName,
 }: NewMenuModalProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  // Thumbnails wait for the main image so they don't compete with it for bandwidth
+  const [mainLoaded, setMainLoaded] = useState(false);
 
   const handleNext = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % images.length);
@@ -72,7 +74,7 @@ export default function NewMenuModal({
   return (
     <div
       key={isOpen ? "open" : "closed"}
-      className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center"
       style={{ backgroundColor: "color-mix(in oklab, var(--foreground) 82%, transparent)" }}
       onClick={handleBackdropClick}
     >
@@ -80,7 +82,7 @@ export default function NewMenuModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="updates-heading"
-        className="relative w-full max-w-4xl mx-4 bg-paper overflow-hidden animate-slide-in-up"
+        className="relative w-full max-w-4xl mx-4 bg-paper overflow-hidden animate-rise"
       >
         <div className="flex items-start justify-between gap-6 px-5 md:px-8 pt-5 md:pt-7 pb-4">
           <div>
@@ -120,6 +122,7 @@ export default function NewMenuModal({
                 priority
                 sizes="(max-width: 768px) 100vw, 80vw"
                 className="object-contain"
+                onLoad={() => setMainLoaded(true)}
               />
             )}
           </div>
@@ -162,7 +165,7 @@ export default function NewMenuModal({
                     opacity: currentIndex === index ? 1 : 0.6,
                   }}
                 >
-                  {image.src?.url && (
+                  {mainLoaded && image.src?.url && (
                     <SkeletonImage
                       src={resolveBackendMediaUrl(image.src)}
                       alt=""

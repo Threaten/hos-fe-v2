@@ -53,7 +53,8 @@ export default async function TenantPage({ params }: PageProps) {
       }));
       return (
         <div>
-          <Hero tenant={tenant} />
+          {/* The updates modal opens over the hero on load, so its image gets the bandwidth */}
+          <Hero tenant={tenant} prioritizeImage={!tenant.newMenu?.length} />
           <ShortAbout tenant={tenant} />
           <TenantHomeInteractive
             transformedImages={transformedImages}
