@@ -5,7 +5,7 @@ import type React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTenant } from "@/app/contexts/TenantContext";
-import Wordmark from "./Wordmark";
+import Wordmark, { lastLineIndent } from "./Wordmark";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -40,22 +40,30 @@ export default function Navbar() {
         style={{ height: "var(--header-h)", "--rule-color": "var(--color-main)" } as React.CSSProperties}
       >
         <div className="h-full grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center">
-          <div className="justify-self-start flex flex-col items-start gap-2">
+          {/* The serif's tall ascent leaves empty space above the first line, so
+              the block is nudged up (in em of the wordmark) to sit optically centred */}
+          <div
+            className="justify-self-start flex flex-col items-start text-[1.75rem] lg:text-[2.25rem]"
+            style={{ marginTop: "-0.33em" }}
+          >
             <Link
               href="/"
-              className="text-[1.75rem] lg:text-[2.25rem] transition-opacity duration-300 hover:opacity-70"
+              className="transition-opacity duration-300 hover:opacity-70"
               style={{ color: "var(--color-main)" }}
               aria-label={`${brandName} home`}
             >
               <Wordmark name={brandName} />
             </Link>
-            <a
-              href="https://houseofsenses.vn"
-              className="hos-link text-[13px] leading-none"
-              style={{ color: "var(--color-ink-muted)" }}
-            >
-              House of Senses
-            </a>
+            {/* Starts where the wordmark's last line starts */}
+            <span className="block mt-2.5" style={{ paddingLeft: lastLineIndent(brandName) }}>
+              <a
+                href="https://houseofsenses.vn"
+                className="hos-link block text-[13px] leading-none"
+                style={{ color: "var(--color-ink-muted)" }}
+              >
+                House of Senses
+              </a>
+            </span>
           </div>
 
           <ul className="hidden lg:flex items-center gap-[22px]">
