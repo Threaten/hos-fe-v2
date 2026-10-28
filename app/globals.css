@@ -48,7 +48,7 @@
   /* Layout */
   /* Page gutter: one value everywhere, 20px on phones up to 64px on wide screens */
   --gutter: clamp(20px, 4.4vw, 64px);
-  --header-h: 88px;
+  --header-h: 100px;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --duration: 400ms;
 

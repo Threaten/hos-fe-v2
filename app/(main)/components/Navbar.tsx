@@ -35,18 +35,27 @@ export default function Navbar() {
     <>
       <nav
         aria-label="Site navigation"
-        className="relative z-40 bg-paper hos-gutter"
-        style={{ height: "var(--header-h)" }}
+        className="relative z-40 bg-paper hos-gutter border-b"
+        style={{ height: "var(--header-h)", borderColor: "var(--color-main)" }}
       >
         <div className="h-full grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center">
-          <Link
-            href="/"
-            className="justify-self-start text-[1.75rem] lg:text-[2.25rem] transition-opacity duration-300 hover:opacity-70"
-            style={{ color: "var(--color-main)" }}
-            aria-label={`${brandName} home`}
-          >
-            <Wordmark name={brandName} />
-          </Link>
+          <div className="justify-self-start flex flex-col items-start gap-1">
+            <Link
+              href="/"
+              className="text-[1.75rem] lg:text-[2.25rem] transition-opacity duration-300 hover:opacity-70"
+              style={{ color: "var(--color-main)" }}
+              aria-label={`${brandName} home`}
+            >
+              <Wordmark name={brandName} />
+            </Link>
+            <a
+              href="https://houseofsenses.vn"
+              className="hos-link text-[13px] leading-none"
+              style={{ color: "var(--color-ink-muted)" }}
+            >
+              House of Senses
+            </a>
+          </div>
 
           <ul className="hidden lg:flex items-center gap-[22px]">
             {NAV_LINKS.map(({ href, label }) => {

@@ -40,7 +40,7 @@ const Footer: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-y-12 gap-x-12">
         <a
           href="https://houseofsenses.vn"
-          className="self-start text-[3rem] md:text-[clamp(3.5rem,6vw,5.6rem)] transition-opacity duration-300 hover:opacity-80"
+          className="self-start lg:self-center text-[3rem] md:text-[clamp(3.5rem,6vw,5.6rem)] transition-opacity duration-300 hover:opacity-80"
           aria-label="House of Senses"
         >
           <Wordmark name="House of Senses" />
