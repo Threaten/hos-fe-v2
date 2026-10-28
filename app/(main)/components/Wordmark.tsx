@@ -5,7 +5,7 @@ import React from "react";
  * every other line indented. Short connectors ("of", "&") stay with the
  * following word so they never sit alone on a line.
  */
-export function toLines(name: string): string[] {
+function toLines(name: string): string[] {
   const words = name.trim().split(/\s+/).filter(Boolean);
   const lines: string[] = [];
   let carry = "";
@@ -30,11 +30,6 @@ interface WordmarkProps {
   name: string;
   className?: string;
   style?: React.CSSProperties;
-}
-
-/** Left indent of the wordmark's last line, in em of the wordmark's font size */
-export function lastLineIndent(name: string): string {
-  return toLines(name).length % 2 === 0 ? `${LINE_INDENT_EM}em` : "0";
 }
 
 export default function Wordmark({ name, className = "", style }: WordmarkProps) {
