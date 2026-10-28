@@ -39,7 +39,7 @@ export default function Navbar() {
         style={{ height: "var(--header-h)", "--rule-color": "var(--color-main)" } as React.CSSProperties}
       >
         <div className="h-full grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center">
-          <div className="justify-self-start flex flex-col items-start gap-1.5">
+          <div className="justify-self-start flex flex-col items-center gap-1.5">
             <Link
               href="/"
               className="font-serif text-[1.75rem] lg:text-[2.25rem] leading-none whitespace-nowrap transition-opacity duration-300 hover:opacity-70"
