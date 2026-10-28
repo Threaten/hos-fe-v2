@@ -35,6 +35,8 @@ const R = 145;
 const CX = 160;
 const CY = 160;
 const VIEWBOX = 320;
+/** On-screen size of the wheel; the SVG scales its 320-unit viewBox to fit */
+const WHEEL_SIZE = "min(460px, calc(100vw - 48px))";
 const SPIN_DURATION_MS = 4200;
 
 // ─── SVG Helpers ──────────────────────────────────────────────────────────────
@@ -428,7 +430,7 @@ export default function LuckyWheel() {
         </div>
 
         {/* ── Wheel ── */}
-        <div className="relative select-none" style={{ width: VIEWBOX, height: VIEWBOX }}>
+        <div className="relative select-none" style={{ width: WHEEL_SIZE, aspectRatio: "1 / 1" }}>
           {/* Pointer */}
           <div
             aria-hidden="true"
@@ -449,8 +451,8 @@ export default function LuckyWheel() {
 
           {/* SVG Wheel */}
           <svg
-            width={VIEWBOX}
-            height={VIEWBOX}
+            width="100%"
+            height="100%"
             viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`}
             style={{
               transform: `rotate(${rotation}deg)`,

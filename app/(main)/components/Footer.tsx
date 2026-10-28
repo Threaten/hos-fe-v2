@@ -122,7 +122,7 @@ const Footer: React.FC = () => {
                     <address className="contents not-italic">
                       <div>{tenant.address}</div>
                       <div className="my-1">
-                        <OpeningStatus branch={tenant} showDetail showHours />
+                        <OpeningStatus branch={tenant} showHours />
                       </div>
                       <div>
                         {tenant.phone && (
