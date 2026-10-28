@@ -310,7 +310,7 @@ const ContactForm = ({
               </div>
             </div>
 
-            <hr className="border-foreground/15" />
+            <hr className="hos-rule" />
 
             {/* Contact Info */}
             <div>
@@ -359,7 +359,7 @@ const ContactForm = ({
               </div>
             </div>
 
-            <hr className="border-foreground/15" />
+            <hr className="hos-rule" />
 
             {/* Social Media */}
             <div>

@@ -15,7 +15,7 @@ const CTA = () => {
 
   return (
     <section
-      className="hos-gutter bg-paper pt-20 md:pt-[112px] pb-20 md:pb-[100px] border-t"
+      className="hos-gutter bg-paper pt-20 md:pt-[112px] pb-20 md:pb-[100px] border-t hos-rule"
       style={{ borderColor: "var(--color-line)" }}
       aria-labelledby="cta-heading"
     >

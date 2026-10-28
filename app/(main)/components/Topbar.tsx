@@ -46,7 +46,7 @@ export default function Topbar() {
 
       {/* Branch switcher */}
       <div
-        className="relative w-full h-[34px] border-b hos-gutter flex items-center justify-center"
+        className="relative w-full h-[34px] border-b hos-rule hos-gutter flex items-center justify-center"
         style={{ borderColor: "var(--color-line)" }}
       >
         <button
@@ -74,7 +74,7 @@ export default function Topbar() {
 
         <div
           id="branch-switcher"
-          className={`absolute left-0 right-0 top-full z-50 bg-paper border-b transition-opacity duration-300 ${
+          className={`absolute left-0 right-0 top-full z-50 bg-paper border-b hos-rule transition-opacity duration-300 ${
             open ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
           }`}
           style={{ borderColor: "var(--color-line)" }}

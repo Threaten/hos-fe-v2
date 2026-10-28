@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import type React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTenant } from "@/app/contexts/TenantContext";
@@ -35,11 +36,11 @@ export default function Navbar() {
     <>
       <nav
         aria-label="Site navigation"
-        className="relative z-40 bg-paper hos-gutter border-b"
-        style={{ height: "var(--header-h)", borderColor: "var(--color-main)" }}
+        className="relative z-40 bg-paper hos-gutter border-b hos-rule"
+        style={{ height: "var(--header-h)", "--rule-color": "var(--color-main)" } as React.CSSProperties}
       >
         <div className="h-full grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center">
-          <div className="justify-self-start flex flex-col items-start gap-1">
+          <div className="justify-self-start flex flex-col items-start gap-2">
             <Link
               href="/"
               className="text-[1.75rem] lg:text-[2.25rem] transition-opacity duration-300 hover:opacity-70"

@@ -34,13 +34,13 @@ const Footer: React.FC = () => {
 
   return (
     <footer
-      className="w-full bg-paper hos-gutter pt-14 md:pt-[69px] pb-10 md:pb-[52px] border-t"
+      className="w-full bg-paper hos-gutter pt-14 md:pt-[69px] pb-10 md:pb-[52px] border-t hos-rule"
       style={{ color: "var(--color-ink)", borderColor: "var(--color-line)" }}
     >
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-y-12 gap-x-12">
         <a
           href="https://houseofsenses.vn"
-          className="self-start lg:self-center text-[3rem] md:text-[clamp(3.5rem,6vw,5.6rem)] transition-opacity duration-300 hover:opacity-80"
+          className="self-start justify-self-center lg:self-center text-[3rem] md:text-[clamp(3.5rem,6vw,5.6rem)] transition-opacity duration-300 hover:opacity-80"
           aria-label="House of Senses"
         >
           <Wordmark name="House of Senses" />
@@ -54,7 +54,7 @@ const Footer: React.FC = () => {
               onClick={() => setExpanded((v) => !v)}
               aria-expanded={expanded}
               aria-controls="footer-locations-list"
-              className="group w-full flex items-center justify-between gap-6 py-3 border-b text-left"
+              className="group w-full flex items-center justify-between gap-6 py-3 border-b hos-rule text-left"
               style={{ borderColor: "var(--color-line)" }}
             >
               <span className="font-serif text-[clamp(1.75rem,3vw,2.5rem)] leading-none" style={{ color: "var(--color-main)" }}>
@@ -168,7 +168,7 @@ const Footer: React.FC = () => {
       </div>
 
       <div
-        className="mt-14 md:mt-[69px] pt-5 border-t flex flex-col sm:flex-row sm:justify-between gap-1 text-[14px]"
+        className="mt-14 md:mt-[69px] pt-5 border-t hos-rule flex flex-col sm:flex-row sm:justify-between gap-1 text-[14px]"
         style={{ borderColor: "var(--color-line)", color: "var(--color-ink-muted)" }}
       >
         <p>

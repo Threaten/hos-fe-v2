@@ -72,6 +72,19 @@
   --font-mono: var(--font-body);
 }
 
+/* Separators fade out toward both ends. Colour comes from --rule-color
+   (defaults to the line colour); works on any single border side or <hr>. */
+.hos-rule {
+  border-image: linear-gradient(
+      90deg,
+      transparent,
+      var(--rule-color, var(--color-line)) 18%,
+      var(--rule-color, var(--color-line)) 82%,
+      transparent
+    )
+    1;
+}
+
 html {
   scroll-behavior: smooth;
   /* Single site-wide typeface */

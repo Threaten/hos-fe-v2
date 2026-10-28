@@ -676,7 +676,7 @@ const ReservationForm = ({
             </div>
           </div>
 
-          <hr style={{ borderColor: "var(--color-line)" }} />
+          <hr className="hos-rule" />
 
           {/* Contact Info */}
           <div>
@@ -725,7 +725,7 @@ const ReservationForm = ({
             </div>
           </div>
 
-          <hr style={{ borderColor: "var(--color-line)" }} />
+          <hr className="hos-rule" />
 
           {/* Social Media */}
           <div>
