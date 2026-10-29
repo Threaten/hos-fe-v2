@@ -20,7 +20,7 @@ const CTA = () => {
       aria-labelledby="cta-heading"
     >
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 md:gap-10">
-        <div className="max-w-[1093px]">
+        <div className="max-w-[1093px]" data-reveal>
           <p className="hos-label mb-3" style={{ color: "var(--foreground)" }}>
             Make it memorable
           </p>
@@ -32,7 +32,7 @@ const CTA = () => {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-[11px] shrink-0">
+        <div className="flex flex-wrap items-center gap-[11px] shrink-0" data-reveal style={{ ["--reveal-delay" as string]: "0.15s" }}>
           <Link
             href="/reservation"
             className="hos-btn hos-btn-solid"

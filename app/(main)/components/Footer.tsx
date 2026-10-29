@@ -42,12 +42,13 @@ const Footer: React.FC = () => {
           href="https://houseofsenses.vn"
           className="self-start justify-self-center lg:self-center text-[3rem] md:text-[clamp(3.5rem,6vw,5.6rem)] transition-opacity duration-300 hover:opacity-80"
           aria-label="House of Senses"
+          data-reveal
         >
           <Wordmark name="House of Senses" />
         </a>
 
         {/* Every branch, collapsible so the footer stays short as branches are added */}
-        <section aria-labelledby="footer-locations">
+        <section aria-labelledby="footer-locations" data-reveal style={{ ["--reveal-delay" as string]: "0.1s" }}>
           <h2 id="footer-locations">
             <button
               type="button"

@@ -106,7 +106,7 @@ export default function Navbar() {
         id="mobile-menu"
         className={`lg:hidden fixed inset-0 z-200 flex flex-col bg-paper transition-opacity duration-500 ${
           isMenuOpen
-            ? "opacity-100 visible"
+            ? "hos-menu-open opacity-100 visible"
             : "opacity-0 invisible pointer-events-none"
         }`}
         style={{ transitionTimingFunction: "var(--ease-out)" }}
@@ -139,10 +139,10 @@ export default function Navbar() {
           className="flex-1 flex flex-col justify-center hos-gutter"
         >
           <ul className="flex flex-col gap-2">
-            {NAV_LINKS.map(({ href, label }) => {
+            {NAV_LINKS.map(({ href, label }, i) => {
               const isActive = pathname === href;
               return (
-                <li key={href}>
+                <li key={href} className="hos-menu-item" style={{ "--i": i } as React.CSSProperties}>
                   <Link
                     href={href}
                     aria-current={isActive ? "page" : undefined}
@@ -158,7 +158,10 @@ export default function Navbar() {
           </ul>
         </nav>
 
-        <div className="hos-gutter pb-10">
+        <div
+          className="hos-gutter pb-10 hos-menu-item"
+          style={{ "--i": NAV_LINKS.length } as React.CSSProperties}
+        >
           <Link
             href="/reservation"
             className="hos-btn hos-btn-solid w-full"

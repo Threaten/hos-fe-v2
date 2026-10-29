@@ -60,12 +60,13 @@ export default function Moments({ images = [], tenant }: MomentsProps) {
         id="moments-heading"
         className="hos-display text-center hos-gutter"
         style={{ color: "var(--color-main)" }}
+        data-reveal
       >
         {name} moments
       </h2>
 
       <div className="hos-gutter mt-6 md:mt-[34px]">
-        <div className="relative mx-auto w-full max-w-[852px]">
+        <div className="relative mx-auto w-full max-w-[852px]" data-reveal style={{ ["--reveal-delay" as string]: "0.1s" }}>
           <ul
             ref={trackRef}
             onScroll={update}

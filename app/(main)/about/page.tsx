@@ -41,7 +41,7 @@ export default function AboutPage() {
 
       <div className="hos-gutter mt-10 md:mt-[56px]">
         <div
-          className="relative w-full aspect-[342/300] md:aspect-[1418/640] overflow-hidden"
+          className="hos-hero-media relative w-full aspect-[342/300] md:aspect-[1418/640] overflow-hidden"
           style={{ backgroundColor: "var(--paper-2)" }}
         >
           <SkeletonImage
@@ -57,7 +57,7 @@ export default function AboutPage() {
 
       <section className="hos-gutter py-16 md:py-[112px]">
         {tenant?.aboutus ? (
-          <div className="grid md:grid-cols-[50%_1fr]">
+          <div className="grid md:grid-cols-[50%_1fr]" data-reveal>
             <h2 className="hos-display mb-8 md:mb-0" style={{ color: "var(--color-main)" }}>
               The story so far
             </h2>
@@ -67,7 +67,7 @@ export default function AboutPage() {
             />
           </div>
         ) : (
-          <div className="grid md:grid-cols-[50%_1fr] gap-y-8">
+          <div className="grid md:grid-cols-[50%_1fr] gap-y-8" data-reveal>
             <h2 className="hos-display" style={{ color: "var(--color-main)" }}>
               Our story
             </h2>

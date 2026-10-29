@@ -32,12 +32,12 @@ const Gallery = ({ images = [], galleryText, tenant }: GalleryProps) => {
       style={{ backgroundColor: "var(--color-main)", color: "var(--color-on-main)" }}
       aria-labelledby="gallery-heading"
     >
-      <h2 id="gallery-heading" className="hos-display text-center text-balance md:max-w-[8.2em]">
+      <h2 id="gallery-heading" className="hos-display text-center text-balance md:max-w-[8.2em]" data-reveal>
         {title}
       </h2>
 
       {featuredImage && (
-        <div className="relative w-full md:w-[263px] aspect-[263/365] mt-8 md:mt-[33px] overflow-hidden">
+        <div className="relative w-full md:w-[263px] aspect-[263/365] mt-8 md:mt-[33px] overflow-hidden" data-reveal="image">
           <Image
             src={featuredImage.src}
             alt={featuredImage.alt || ""}
@@ -48,12 +48,13 @@ const Gallery = ({ images = [], galleryText, tenant }: GalleryProps) => {
         </div>
       )}
 
-      <p className="text-center mt-8 md:mt-[51px] max-w-[961px] text-pretty">{text}</p>
+      <p className="text-center mt-8 md:mt-[51px] max-w-[961px] text-pretty" data-reveal>{text}</p>
 
       <Link
         href="/about"
         className="hos-btn hos-btn-outline mt-10 md:mt-[15px] min-w-[140px] md:min-w-[157px]"
-        style={{ ["--btn-hover-ink" as string]: "var(--color-main)" }}
+        style={{ ["--btn-hover-ink" as string]: "var(--color-main)", ["--reveal-delay" as string]: "0.1s" }}
+        data-reveal
       >
         <span>About us</span>
       </Link>

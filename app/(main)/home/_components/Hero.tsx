@@ -28,7 +28,7 @@ function HeroTitle({ title }: { title: string }) {
           {i > 0 && (
             <span
               aria-hidden="true"
-              className="flex-1 self-baseline min-w-[0.6em] mx-[-0.02em]"
+              className="hos-hero-rule flex-1 self-baseline min-w-[0.6em] mx-[-0.02em]"
               style={{
                 height: "0.035em",
                 backgroundColor: "currentColor",
@@ -75,7 +75,7 @@ const Hero: React.FC<HeroProps> = ({ tenant, prioritizeImage = true }) => {
           ? images.map((item, idx) => (
               <div
                 key={item.id ?? idx}
-                className="relative w-full overflow-hidden aspect-[342/300] md:aspect-[698/731]"
+                className="hos-hero-media relative w-full overflow-hidden aspect-[342/300] md:aspect-[698/731]"
                 style={{ backgroundColor: "var(--paper-2)" }}
               >
                 <Image
