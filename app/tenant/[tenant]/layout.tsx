@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "../../globals.css";
 import Topbar from "../../(main)/components/Topbar";
 import Navbar from "../../(main)/components/Navbar";
+import SiteHeader from "../../(main)/components/SiteHeader";
 import Breadcrumbs from "../../(main)/components/Breadcrumbs";
 import Footer from "../../(main)/components/Footer";
 import PageTransition from "../../(main)/components/PageTransition";
@@ -30,10 +31,10 @@ export default async function TenantLayout({
 
   return (
     <TenantProvider initialTenant={tenant}>
-      <header className="relative z-50">
+      <SiteHeader>
         <Topbar />
         <Navbar />
-      </header>
+      </SiteHeader>
       <Breadcrumbs />
       <PageTransition>{children}</PageTransition>
       <Footer />

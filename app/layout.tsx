@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Instrument_Serif } from "next/font/google";
 import "./globals.css";
+import ScrollReveal from "./components/ScrollReveal";
 
 const instrumentSerif = Instrument_Serif({
   subsets: ["latin", "latin-ext"],
@@ -30,6 +31,7 @@ export default function RootLayout({
     <html lang="en" className={instrumentSerif.variable}>
       <body>
         {children}
+        <ScrollReveal />
       </body>
     </html>
   );

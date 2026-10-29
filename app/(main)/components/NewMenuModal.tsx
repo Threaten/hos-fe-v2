@@ -74,15 +74,15 @@ export default function NewMenuModal({
   return (
     <div
       key={isOpen ? "open" : "closed"}
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ backgroundColor: "color-mix(in oklab, var(--foreground) 82%, transparent)" }}
+      className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-center py-4 overflow-y-auto"
+      style={{ top: "var(--site-header-h, 0px)", backgroundColor: "color-mix(in oklab, var(--foreground) 82%, transparent)" }}
       onClick={handleBackdropClick}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="updates-heading"
-        className="relative w-full max-w-4xl mx-4 bg-paper overflow-hidden animate-rise"
+        className="relative w-full max-w-4xl mx-4 my-auto bg-paper overflow-hidden animate-rise"
       >
         <div className="flex items-start justify-between gap-6 px-5 md:px-8 pt-5 md:pt-7 pb-4">
           <div>

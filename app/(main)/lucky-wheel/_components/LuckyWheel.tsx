@@ -242,8 +242,9 @@ function RewardModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
+      className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-center"
       style={{
+        top: "var(--site-header-h, 0px)",
         backgroundColor: "rgba(15,14,11,0.55)",
         backdropFilter: "blur(4px)",
         paddingLeft: leftOffset,

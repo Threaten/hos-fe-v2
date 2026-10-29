@@ -87,6 +87,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* In-page anchors land below the sticky header */
+  scroll-padding-top: var(--site-header-h, 0px);
   /* Single site-wide typeface */
   --font-body: var(--font-instrument-serif), Georgia, "Times New Roman", serif;
 }

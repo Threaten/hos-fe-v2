@@ -66,7 +66,8 @@ const ImageLightbox = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm"
+      className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm"
+      style={{ top: "var(--site-header-h, 0px)" }}
       onClick={onClose}
     >
       {/* Close Button */}

@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import "../globals.css";
 import Topbar from "./components/Topbar";
 import Navbar from "./components/Navbar";
+import SiteHeader from "./components/SiteHeader";
 import Breadcrumbs from "./components/Breadcrumbs";
 import Footer from "./components/Footer";
 import PageTransition from "./components/PageTransition";
-import ScrollReveal from "../components/ScrollReveal";
 import { TenantProvider } from "../contexts/TenantContext";
 
 export const metadata: Metadata = {
@@ -20,14 +20,13 @@ export default function MainLayout({
 }>) {
   return (
     <TenantProvider>
-      <header className="relative z-50">
+      <SiteHeader>
         <Topbar />
         <Navbar />
-      </header>
+      </SiteHeader>
       <Breadcrumbs />
       <PageTransition>{children}</PageTransition>
       <Footer />
-      <ScrollReveal />
     </TenantProvider>
   );
 }
