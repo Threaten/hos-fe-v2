@@ -1,19 +1,14 @@
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4">
-      <h1 className="text-6xl font-bold text-gray-900 mb-4">404</h1>
-      <h2 className="text-2xl font-semibold text-foreground mb-2">
-        Page Not Found
-      </h2>
-      <p className="text-foreground/85 mb-8 text-center">
-        The page you're looking for doesn't exist.
+    <div className="hs-paper min-h-screen flex flex-col justify-center hos-gutter py-16 text-center">
+      <p className="hs-note mb-6">404</p>
+      <h1 className="hs-hero mx-auto max-w-[12ch]">this page wandered off.</h1>
+      <p className="hs-lead mt-8 mx-auto">The link may be old, or the page has moved.</p>
+      <p className="mt-9">
+        <a href="/" className="hs-btn hs-btn-solid">
+          Back to the start
+        </a>
       </p>
-      <a
-        href="/"
-        className="px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors duration-200"
-      >
-        Back to Home
-      </a>
     </div>
   );
 }

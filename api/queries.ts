@@ -89,17 +89,31 @@ async function restFetch<T>(path: string): Promise<T | null> {
  * Type Definitions
  */
 
+/** An uploaded photo as the CMS returns it */
+export interface CmsMedia {
+  url: string;
+  filename?: string;
+  alt?: string | null;
+  caption?: string | null;
+  width?: number | null;
+  height?: number | null;
+}
+
+/** One filter of the photo index ("The room", "The table"…) */
+export interface PhotoSet {
+  id?: string;
+  title: string;
+  photos?: CmsMedia[];
+}
+
 export interface Tenant {
   id: string;
   name: string;
   domain: string;
-  heroImagesList?: Array<{
-    image?: {
-      url: string;
-      filename: string;
-    };
-    id?: string;
-  }>;
+  /** Ordered photo sets; each is one filter on the home page and Gallery */
+  photoSets?: PhotoSet[];
+  /** The two photos beside the About page story */
+  aboutPhotos?: CmsMedia[];
   heroTitle?: string;
   heroSubtitle?: string;
   heroDescription?: string;
@@ -111,22 +125,23 @@ export interface Tenant {
   ctaText?: string;
   aboutTitle?: string;
   aboutSubtitle?: string;
-  shortAboutCollages?: Array<{
+  aboutusHero?: CmsMedia;
+  aboutus?: any;
+  /** PDF (or single image) shown as the flip book */
+  menu?: {
+    url: string;
+    filename: string;
+  };
+  /** Optional page images, used instead of `menu` when present */
+  menuPages?: Array<{
     image?: {
       url: string;
       filename: string;
     };
     id?: string;
   }>;
-  aboutusHero?: {
-    url: string;
-    filename: string;
-  };
-  aboutus?: any;
-  menu?: {
-    url: string;
-    filename: string;
-  };
+  /** Lucky wheel slices, in order */
+  spinWheelPrizes?: Array<{ label: string; id?: string }>;
   newMenu?: Array<{
     src?: {
       url: string;
@@ -180,44 +195,6 @@ export interface HomeInformation {
   } | null;
 }
 
-export interface GalleryItem {
-  id: string;
-  image?: {
-    url: string;
-    filename: string;
-    alt?: string;
-  };
-  caption?: string;
-  branch?: {
-    id: string;
-    name: string;
-  };
-}
-
-export interface MenuItem {
-  id: string;
-  title: string;
-  branch?: {
-    id: string;
-    name: string;
-    domain?: string;
-  };
-  file?: {
-    url: string;
-    filename: string;
-    originalName?: string;
-    mimeType?: string;
-  };
-  pages?: Array<{
-    url: string;
-    filename: string;
-    originalName?: string;
-    mimeType?: string;
-    id?: string;
-  }>;
-  status?: "Draft" | "Published" | "Archived";
-}
-
 interface TenantsResponse {
   Tenants: {
     docs: Tenant[];
@@ -236,17 +213,6 @@ interface HomeInformationResponse {
   HomeInformation: HomeInformation;
 }
 
-interface GalleryResponse {
-  Galleries: {
-    docs: GalleryItem[];
-    totalDocs: number;
-  };
-}
-
-interface MenusRestResponse {
-  docs: MenuItem[];
-  totalDocs: number;
-}
 
 interface CustomerResponse {
   Customers: {
@@ -272,34 +238,56 @@ const GET_TENANTS = `
         mainColor
         status
         openingHours
-        heroImagesList {
-          image {
+        photoSets {
+          id
+          title
+          photos {
             url
             filename
+            alt
+            caption
+            width
+            height
           }
-          id
         }
         heroTitle
         heroSubtitle
         heroDescription
         shortAboutTitle
         shortAboutText
+        galleryTitle
         galleryText
         ctaTitle
         ctaText
         aboutTitle
         aboutSubtitle
-        shortAboutCollages {
+        aboutPhotos {
+          url
+          filename
+          alt
+          caption
+        }
+        aboutus
+        aboutusHero {
+          url
+          filename
+          alt
+          caption
+        }
+        menu {
+          url
+          filename
+        }
+        menuPages {
           image {
             url
             filename
           }
           id
         }
-        aboutus
-        menu {
-          url
-          filename
+        spinWheelPrizes {
+          label
+          id
         }
         newMenu {
           src {
@@ -349,12 +337,17 @@ const GET_TENANT = `
         mainColor
         status
         openingHours
-        heroImagesList {
-          image {
+        photoSets {
+          id
+          title
+          photos {
             url
             filename
+            alt
+            caption
+            width
+            height
           }
-          id
         }
         heroTitle
         heroSubtitle
@@ -367,21 +360,33 @@ const GET_TENANT = `
         ctaText
         aboutTitle
         aboutSubtitle
-        shortAboutCollages {
+        aboutPhotos {
+          url
+          filename
+          alt
+          caption
+        }
+        aboutus
+        aboutusHero {
+          url
+          filename
+          alt
+          caption
+        }
+        menu {
+          url
+          filename
+        }
+        menuPages {
           image {
             url
             filename
           }
           id
         }
-        aboutus
-        aboutusHero {
-          url
-          filename
-        }
-        menu {
-          url
-          filename
+        spinWheelPrizes {
+          label
+          id
         }
         newMenu {
           src {
@@ -441,26 +446,6 @@ const GET_HOME_INFORMATION = `
   }
 `;
 
-const GET_GALLERY = `
-  query getGallery {
-    Galleries(limit: 100) {
-      docs {
-        id
-        image {
-          url
-          filename
-          alt
-        }
-        caption
-        branch {
-          id
-          name
-        }
-      }
-      totalDocs
-    }
-  }
-`;
 
 const GET_CUSTOMER = `
   query getCustomer($customerPhone: String) {
@@ -614,31 +599,13 @@ export const fetchHomeInformation = async () => {
   return data?.HomeInformation ?? null;
 };
 
-/**
- * Fetch gallery images
- * @param branchId - Optional branch ID to filter by specific branch
- * @returns Promise with gallery items
- */
-export const fetchGallery = async (branchId?: string) => {
-  const data = await gqlFetch<GalleryResponse>(GET_GALLERY);
-  let docs = data?.Galleries?.docs || [];
-  if (branchId && docs.length > 0) {
-    docs = docs.filter((item) => item.branch?.id === branchId);
-  }
-  return docs;
-};
 
-export const fetchMenus = async (branchId?: string) => {
-  const path = branchId
-    ? `/api/menus?where[branch][equals]=${encodeURIComponent(branchId)}&where[status][equals]=Published&depth=1&limit=100`
-    : "/api/menus?where[status][equals]=Published&depth=1&limit=100";
-  const data = await restFetch<MenusRestResponse>(path);
-  return data?.docs || [];
-};
-
-export const fetchMenuByBranch = async (branchId: string) => {
-  const docs = await fetchMenus(branchId);
-  return docs[0] || null;
+/** Flip book source for a branch: page images if uploaded, otherwise the menu file */
+export const getMenuSource = (tenant?: Pick<Tenant, "menu" | "menuPages"> | null) => {
+  const pages = (tenant?.menuPages ?? [])
+    .map((p) => p.image)
+    .filter((img): img is NonNullable<typeof img> => Boolean(img?.url));
+  return { file: pages[0] ?? tenant?.menu ?? null, pages };
 };
 
 /* END OF QUERIES */

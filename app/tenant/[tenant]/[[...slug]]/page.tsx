@@ -1,8 +1,6 @@
 import { notFound } from "next/navigation";
-import Hero from "../../../(main)/home/_components/Hero";
-import ShortAbout from "../../../(main)/home/_components/ShortAbout";
+import HomeSections from "../../../(main)/home/_components/HomeSections";
 import CTA from "../../../(main)/components/CTA";
-import Moments from "../../../(main)/home/_components/Moments";
 import TenantHomeInteractive from "./TenantHomeInteractive";
 import AboutPage from "../../../(main)/about/page";
 import GalleryPage from "../../../(main)/gallery/page";
@@ -10,28 +8,13 @@ import ContactForm from "../../../(main)/contact/_components/ContactForm";
 import ReservationForm from "../../../(main)/reservation/_components/ReservationForm";
 import TenantFlipbookWrapper from "../../../(main)/menu/_components/TenantFlipbookWrapper";
 import LuckyWheel from "../../../(main)/lucky-wheel/_components/LuckyWheel";
-import { API_URL } from "@/app/utils/constants";
 import Link from "next/link";
 import { resolveBackendMediaUrl } from "@/app/utils/media";
-import { fetchMenuByBranch, type GalleryItem } from "@/api/queries";
+import { getMenuSource } from "@/api/queries";
 import { fetchTenantServer } from "@/app/utils/tenantServer";
 
 interface PageProps {
   params: Promise<{ tenant: string; slug?: string[] }>;
-}
-
-async function fetchGalleryServer(tenantId: string): Promise<GalleryItem[]> {
-  try {
-    const res = await fetch(
-      `${API_URL}/api/gallery?where[branch][equals]=${encodeURIComponent(tenantId)}&depth=1&limit=6`,
-      { next: { revalidate: 60 } },
-    );
-    if (!res.ok) return [];
-    const json = await res.json();
-    return json?.docs ?? [];
-  } catch {
-    return [];
-  }
 }
 
 export default async function TenantPage({ params }: PageProps) {
@@ -44,34 +27,13 @@ export default async function TenantPage({ params }: PageProps) {
   switch (pathname) {
     case "":
     case "home": {
-      const galleryItems = await fetchGalleryServer(tenant.id);
-      const transformedImages = galleryItems.map((item: GalleryItem) => ({
-        src: resolveBackendMediaUrl(item.image),
-        alt: item.caption || item.image?.alt || "Gallery image",
-        branch: item.branch?.name || "",
-        caption: item.caption || "",
-      }));
+      const hasUpdates = (tenant.newMenu?.length ?? 0) > 0;
       return (
-        <div>
-          {/* The updates modal opens over the hero on load, so its image gets the bandwidth */}
-          <Hero tenant={tenant} prioritizeImage={!tenant.newMenu?.length} />
-          <ShortAbout tenant={tenant} />
-          <TenantHomeInteractive
-            transformedImages={transformedImages}
-            newMenu={tenant.newMenu ?? []}
-            tenantName={tenant.name}
-            galleryText={tenant.galleryText}
-            tenant={tenant}
-          />
-          <Moments
-            images={
-              transformedImages.length > 1
-                ? transformedImages.slice(1)
-                : transformedImages
-            }
-            tenant={tenant}
-          />
-        </div>
+        <>
+          {/* The updates modal opens over the page on load, so its image gets the bandwidth */}
+          <HomeSections tenant={tenant} prioritizeImages={!hasUpdates} />
+          <TenantHomeInteractive newMenu={tenant.newMenu ?? []} tenantName={tenant.name} />
+        </>
       );
     }
 
@@ -79,28 +41,24 @@ export default async function TenantPage({ params }: PageProps) {
       return <AboutPage />;
 
     case "menu": {
-      const menu = await fetchMenuByBranch(tenant.id);
-      const menuUrl = resolveBackendMediaUrl(
-        menu?.file || menu?.pages?.[0] || tenant.menu,
-      );
+      const menu = getMenuSource(tenant);
+      const menuUrl = resolveBackendMediaUrl(menu.file);
 
       if (!menuUrl) {
         return (
-          <section className="hos-gutter pt-12 md:pt-[78px] pb-24 md:pb-[160px]">
-            <p className="hos-label mb-3" style={{ color: "var(--foreground)" }}>
-              Our menu
-            </p>
-            <h1 className="hos-display max-w-[18ch]" style={{ color: "var(--color-main)" }}>
-              The menu is being set at the table. Check back soon.
-            </h1>
-            <p className="mt-5 max-w-[48ch]" style={{ color: "var(--color-ink)" }}>
-              {tenant.name} hasn&apos;t published its menu online yet. Call us
-              {tenant.phone ? ` on ${tenant.phone}` : ""} and we&apos;ll walk you
-              through what&apos;s cooking.
-            </p>
-            <Link href="/reservation" className="hos-btn hos-btn-solid mt-8">
-              Book a table
-            </Link>
+          <section className="hs-shell pt-14 md:pt-20">
+            <div className="hs-main">
+              <p className="hs-note mb-6">The menu</p>
+              <h1 className="hs-hero max-w-[12ch]">still being written.</h1>
+              <p className="hs-lead mt-8">
+                {tenant.name} hasn&apos;t published its menu online yet. Call us
+                {tenant.phone ? ` on ${tenant.phone}` : ""} and we&apos;ll walk you
+                through what&apos;s cooking.
+              </p>
+              <Link href="/reservation" className="hs-btn hs-btn-solid mt-9">
+                Book a table
+              </Link>
+            </div>
           </section>
         );
       }
@@ -109,7 +67,7 @@ export default async function TenantPage({ params }: PageProps) {
           <TenantFlipbookWrapper
             menuUrl={menuUrl}
             tenantName={tenant.name}
-            imagePages={menu?.pages}
+            imagePages={menu.pages}
           />
           <CTA />
         </div>

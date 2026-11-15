@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
 import SkeletonImage from "@/app/components/SkeletonImage";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { resolveBackendMediaUrl } from "@/app/utils/media";
 
 interface NewMenuImage {
@@ -71,49 +69,49 @@ export default function NewMenuModal({
     }
   };
 
+  const arrow = (
+    <path d="M10 3L5 8l5 5" strokeLinecap="square" />
+  );
+
   return (
     <div
       key={isOpen ? "open" : "closed"}
-      className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-center py-4 overflow-y-auto"
-      style={{ top: "var(--site-header-h, 0px)", backgroundColor: "color-mix(in oklab, var(--foreground) 82%, transparent)" }}
+      className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-center px-4 py-8 overflow-y-auto"
+      style={{ top: "var(--site-header-h, 0px)", backgroundColor: "color-mix(in oklab, var(--ink) 55%, transparent)" }}
       onClick={handleBackdropClick}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="updates-heading"
-        className="relative w-full max-w-4xl mx-4 my-auto bg-paper overflow-hidden animate-rise"
+        className="hs-paper hs-fade-in relative w-full max-w-4xl my-auto"
+        style={{ ["--reveal-delay" as string]: "0s", borderRadius: 3 }}
       >
-        <div className="flex items-start justify-between gap-6 px-5 md:px-8 pt-5 md:pt-7 pb-4">
+        <div className="flex items-start justify-between gap-6 px-5 md:px-9 pt-7 md:pt-9 pb-4">
           <div>
-            <h2 id="updates-heading" className="hos-display" style={{ color: "var(--color-main)" }}>
-              What&apos;s new
+            <p className="hs-note mb-2">Updates</p>
+            <h2 id="updates-heading" className="hs-title" style={{ color: "var(--ink)" }}>
+              What&apos;s new{tenantName ? ` at ${tenantName.toLowerCase()}` : ""}
             </h2>
-            {tenantName && (
-              <p className="mt-1" style={{ color: "var(--color-ink)" }}>
-                Recent notes from {tenantName.toLowerCase()}
-                {images.length > 1 && (
-                  <span style={{ color: "var(--color-ink-muted)" }}>
-                    {" "}· {currentIndex + 1} / {images.length}
-                  </span>
-                )}
+            {images.length > 1 && (
+              <p className="hs-label mt-2">
+                {currentIndex + 1} / {images.length}
               </p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="shrink-0 w-10 h-10 flex items-center justify-center transition-opacity duration-300 hover:opacity-60"
-            style={{ color: "var(--foreground)" }}
+            className="hs-icon-btn !w-9 !h-9 shrink-0"
             aria-label="Close updates"
           >
-            <X strokeWidth={1.25} className="w-7 h-7" />
+            <svg viewBox="0 0 16 16" className="w-4 h-4 rotate-45" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+              <path d="M8 2v12M2 8h12" />
+            </svg>
           </button>
         </div>
 
-        <div className="relative px-5 md:px-8">
-          <div
-            className="relative w-full h-[50vh] md:h-[60vh] flex items-center justify-center bg-paper"
-          >
+        <div className="relative px-5 md:px-9">
+          <div className="relative w-full h-[52vh] md:h-[60vh] flex items-center justify-center">
             {images[currentIndex]?.src?.url && (
               <SkeletonImage
                 src={resolveBackendMediaUrl(images[currentIndex].src)}
@@ -131,38 +129,37 @@ export default function NewMenuModal({
             <>
               <button
                 onClick={handlePrevious}
-                className="absolute left-8 md:left-12 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-paper flex items-center justify-center transition-transform duration-300 hover:scale-105"
-                style={{ color: "var(--foreground)" }}
+                className="hs-icon-btn absolute left-2 md:left-4 top-1/2 -translate-y-1/2"
                 aria-label="Previous update"
               >
-                <ChevronLeft strokeWidth={1.25} className="w-5 h-5" />
+                <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">{arrow}</svg>
               </button>
               <button
                 onClick={handleNext}
-                className="absolute right-8 md:right-12 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-paper flex items-center justify-center transition-transform duration-300 hover:scale-105"
-                style={{ color: "var(--foreground)" }}
+                className="hs-icon-btn absolute right-2 md:right-4 top-1/2 -translate-y-1/2"
                 aria-label="Next update"
               >
-                <ChevronRight strokeWidth={1.25} className="w-5 h-5" />
+                <svg viewBox="0 0 16 16" className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">{arrow}</svg>
               </button>
             </>
           )}
         </div>
 
-        {images.length > 1 && (
-          <div className="px-5 md:px-8 pt-4 pb-5 md:pb-7">
-            <div className="flex gap-[11px] overflow-x-auto pb-1">
+        {images.length > 1 ? (
+          <div className="px-5 md:px-9 pt-5 pb-7 md:pb-9">
+            <div className="flex gap-3 overflow-x-auto py-2 px-1">
               {images.map((image, index) => (
                 <button
                   key={image.id || index}
                   onClick={() => setCurrentIndex(index)}
                   aria-label={`Show update ${index + 1}`}
                   aria-current={currentIndex === index ? "true" : undefined}
-                  className="relative shrink-0 w-16 h-16 md:w-20 md:h-20 overflow-hidden transition-opacity duration-300"
+                  className="relative shrink-0 w-16 h-16 md:w-[72px] md:h-[72px] overflow-hidden transition-opacity duration-300"
                   style={{
-                    outline: currentIndex === index ? "1px solid var(--color-main)" : "none",
+                    outline: currentIndex === index ? "2px solid var(--pen)" : "none",
                     outlineOffset: 3,
-                    opacity: currentIndex === index ? 1 : 0.6,
+                    borderRadius: 3,
+                    opacity: currentIndex === index ? 1 : 0.55,
                   }}
                 >
                   {mainLoaded && image.src?.url && (
@@ -179,8 +176,9 @@ export default function NewMenuModal({
               ))}
             </div>
           </div>
+        ) : (
+          <div className="h-7 md:h-9" />
         )}
-        {images.length <= 1 && <div className="h-5 md:h-7" />}
       </div>
     </div>
   );

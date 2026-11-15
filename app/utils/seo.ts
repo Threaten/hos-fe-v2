@@ -78,7 +78,8 @@ function cityOf(address?: string): string {
 function tenantImage(tenant: Tenant): string {
   return (
     resolveBackendMediaUrl(tenant.meta?.image) ||
-    resolveBackendMediaUrl(tenant.heroImagesList?.[0]?.image) ||
+    resolveBackendMediaUrl(tenant.photoSets?.[0]?.photos?.[0]) ||
+    resolveBackendMediaUrl(tenant.aboutusHero) ||
     DEFAULT_IMAGE
   );
 }

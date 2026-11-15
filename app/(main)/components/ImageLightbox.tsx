@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect } from "react";
-import Image from "next/image";
 import SkeletonImage from "@/app/components/SkeletonImage";
 
 interface ImageLightboxProps {
@@ -64,120 +63,67 @@ const ImageLightbox = ({
 
   if (!isOpen) return null;
 
+  const chevron = (
+    <path d="M10 3L5 8l5 5" strokeLinecap="square" />
+  );
+
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-label={imageAlt}
+      className="fixed inset-x-0 bottom-0 z-50 flex flex-col hs-paper"
       style={{ top: "var(--site-header-h, 0px)" }}
       onClick={onClose}
     >
-      {/* Close Button */}
-      <button
-        onClick={onClose}
-        className="absolute top-4 right-4 z-50 text-white hover:text-gray-300 transition-colors p-2"
-        aria-label="Close lightbox"
-      >
-        <svg
-          className="w-8 h-8"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      </button>
+      <div className="hos-gutter flex items-center justify-between gap-4 py-4 shrink-0">
+        <span className="hs-ui truncate" style={{ color: "var(--ink)" }}>
+          {caption || branch || ""}
+          {caption && branch && <span style={{ color: "var(--ink-faint)" }}> · {branch}</span>}
+        </span>
+        <span className="flex items-center gap-4 shrink-0">
+          {currentIndex !== undefined && totalImages !== undefined && (
+            <span className="hs-ui tabular-nums" style={{ color: "var(--pen)" }}>
+              {currentIndex + 1} / {totalImages}
+            </span>
+          )}
+          <button onClick={onClose} className="hs-icon-btn !w-9 !h-9" aria-label="Close lightbox">
+            <svg viewBox="0 0 16 16" className="w-4 h-4 rotate-45" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+              <path d="M8 2v12M2 8h12" />
+            </svg>
+          </button>
+        </span>
+      </div>
 
-      {/* Navigation Arrows */}
-      {onPrev && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onPrev();
-          }}
-          className="absolute left-4 z-50 text-white hover:text-gray-300 transition-colors p-2"
-          aria-label="Previous image"
-        >
-          <svg
-            className="w-10 h-10"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+      <div className="relative flex-1 min-h-0 hos-gutter pb-6 flex items-center justify-center">
+        {onPrev && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onPrev();
+            }}
+            className="hs-icon-btn absolute left-3 md:left-6 z-10"
+            aria-label="Previous image"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </button>
-      )}
-
-      {onNext && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onNext();
-          }}
-          className="absolute right-4 z-50 text-white hover:text-gray-300 transition-colors p-2"
-          aria-label="Next image"
-        >
-          <svg
-            className="w-10 h-10"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+            <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">{chevron}</svg>
+          </button>
+        )}
+        {onNext && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onNext();
+            }}
+            className="hs-icon-btn absolute right-3 md:right-6 z-10"
+            aria-label="Next image"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </button>
-      )}
+            <svg viewBox="0 0 16 16" className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">{chevron}</svg>
+          </button>
+        )}
 
-      {/* Image Container */}
-      <div
-        className="relative max-w-7xl max-h-[90vh] w-full mx-4"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="relative w-full h-[85vh] flex items-center justify-center">
-          <SkeletonImage
-            src={imageSrc}
-            alt={imageAlt}
-            fill
-            quality={95}
-            sizes="90vw"
-            className="object-contain rounded-lg"
-          />
-        </div>
-
-        {/* Image Info */}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 rounded-b-lg">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              {branch && (
-                <span className="inline-block px-3 py-1 bg-white/20 text-white text-xs font-semibold rounded mb-2">
-                  {branch}
-                </span>
-              )}
-              {caption && (
-                <p className="text-white text-base font-medium">{caption}</p>
-              )}
-            </div>
-            {currentIndex !== undefined && totalImages !== undefined && (
-              <div className="text-white text-sm font-medium ml-4">
-                {currentIndex + 1} / {totalImages}
-              </div>
-            )}
-          </div>
-        </div>
+        <figure key={imageSrc} className="hs-fade-in relative w-full h-full max-w-6xl" style={{ ["--reveal-delay" as string]: "0s" }} onClick={(e) => e.stopPropagation()}>
+          <SkeletonImage src={imageSrc} alt={imageAlt} fill quality={90} sizes="90vw" className="object-contain" />
+        </figure>
       </div>
     </div>
   );

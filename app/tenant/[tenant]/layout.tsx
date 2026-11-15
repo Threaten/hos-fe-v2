@@ -3,7 +3,6 @@ import "../../globals.css";
 import Topbar from "../../(main)/components/Topbar";
 import Navbar from "../../(main)/components/Navbar";
 import SiteHeader from "../../(main)/components/SiteHeader";
-import Breadcrumbs from "../../(main)/components/Breadcrumbs";
 import Footer from "../../(main)/components/Footer";
 import PageTransition from "../../(main)/components/PageTransition";
 import { TenantProvider } from "../../contexts/TenantContext";
@@ -31,13 +30,16 @@ export default async function TenantLayout({
 
   return (
     <TenantProvider initialTenant={tenant}>
-      <SiteHeader>
-        <Topbar />
-        <Navbar />
-      </SiteHeader>
-      <Breadcrumbs />
-      <PageTransition>{children}</PageTransition>
-      <Footer />
+      <div className="hs-paper min-h-screen flex flex-col">
+        <SiteHeader>
+          <Topbar />
+          <Navbar />
+        </SiteHeader>
+        <main className="flex-1">
+          <PageTransition>{children}</PageTransition>
+        </main>
+        <Footer />
+      </div>
     </TenantProvider>
   );
 }

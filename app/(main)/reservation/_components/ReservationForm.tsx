@@ -131,113 +131,52 @@ function CalendarPicker({
     <div className="relative" ref={ref}>
       <button
         type="button"
+        id="date"
         onClick={() => setOpen((o) => !o)}
-        className={`w-full px-0 py-3 border-0 border-b focus:ring-0 outline-none transition-all bg-transparent text-left flex justify-between items-center ${
-          hasError ? "border-red-400" : ""
-        }`}
-        style={{
-          borderBottomColor: hasError
-            ? undefined
-            : "color-mix(in srgb, var(--color-tan) 40%, transparent)",
-          color: displayValue ? "var(--foreground)" : "var(--color-sand)",
-        }}
+        className="hs-input text-left flex justify-between items-center"
+        aria-invalid={hasError}
+        aria-expanded={open}
+        aria-haspopup="dialog"
+        style={{ color: displayValue ? "var(--ink)" : "var(--ink-faint)" }}
       >
-        <span className="text-[13px] tracking-[0.04em]">
-          {displayValue || "Select date"}
-        </span>
-        <svg
-          className="w-4 h-4 shrink-0"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          style={{ color: "var(--color-sand)", opacity: 0.85 }}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.5}
-            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-          />
+        <span>{displayValue || "Pick a day"}</span>
+        <svg className="w-4 h-4 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true" style={{ color: "var(--pen)" }}>
+          <rect x="2" y="3" width="12" height="11" />
+          <path d="M2 6.5h12M5 1.5v3M11 1.5v3" />
         </svg>
       </button>
 
       {open && (
         <div
-          className="absolute z-50 mt-1 p-4 w-72"
-          style={{
-            backgroundColor: "var(--background)",
-            border:
-              "1px solid color-mix(in srgb, var(--color-tan) 40%, transparent)",
-            boxShadow:
-              "0 8px 32px color-mix(in srgb, var(--color-earth) 8%, transparent)",
-          }}
+          role="dialog"
+          aria-label="Choose a date"
+          className="absolute z-50 mt-2 w-[19rem] max-w-[calc(100vw-48px)] p-4 border"
+          style={{ background: "var(--paper)", borderColor: "var(--line)", borderRadius: 3, boxShadow: "0 16px 32px -20px oklch(20% 0.01 60 / 0.35)" }}
         >
-          {/* Header */}
-          <div className="flex items-center justify-between mb-4">
-            <button
-              type="button"
-              onClick={prevMonth}
-              className="p-1 transition-opacity hover:opacity-50"
-              aria-label="Previous month"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                style={{ color: "var(--color-sand)" }}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M15 19l-7-7 7-7"
-                />
+          <div className="flex items-center justify-between mb-3">
+            <button type="button" onClick={prevMonth} className="w-9 h-9 flex items-center justify-center transition-transform hover:-translate-x-0.5" aria-label="Previous month" style={{ color: "var(--pen)" }}>
+              <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                <path d="M10 3L5 8l5 5" strokeLinecap="square" />
               </svg>
             </button>
-            <span
-              className="text-[11px] tracking-[0.18em] uppercase font-medium"
-              style={{ color: "var(--foreground)" }}
-            >
+            <span className="hs-ui" style={{ color: "var(--ink)" }}>
               {MONTH_NAMES[viewMonth]} {viewYear}
             </span>
-            <button
-              type="button"
-              onClick={nextMonth}
-              className="p-1 transition-opacity hover:opacity-50"
-              aria-label="Next month"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                style={{ color: "var(--color-sand)" }}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M9 5l7 7-7 7"
-                />
+            <button type="button" onClick={nextMonth} className="w-9 h-9 flex items-center justify-center transition-transform hover:translate-x-0.5" aria-label="Next month" style={{ color: "var(--pen)" }}>
+              <svg viewBox="0 0 16 16" className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                <path d="M10 3L5 8l5 5" strokeLinecap="square" />
               </svg>
             </button>
           </div>
 
-          {/* Day headers */}
-          <div className="grid grid-cols-7 mb-2">
+          <div className="grid grid-cols-7 mb-1">
             {DAY_NAMES.map((d) => (
-              <div
-                key={d}
-                className="text-center text-[9px] tracking-[0.15em] uppercase pb-1"
-                style={{ color: "var(--color-sand)" }}
-              >
+              <div key={d} className="hs-ui text-center text-[0.75rem] pb-1" style={{ color: "var(--ink-soft)" }}>
                 {d}
               </div>
             ))}
           </div>
 
-          {/* Days grid */}
           <div className="grid grid-cols-7 gap-y-1">
             {Array(firstDayOfWeek)
               .fill(null)
@@ -254,24 +193,17 @@ function CalendarPicker({
                   type="button"
                   disabled={disabled}
                   onClick={() => select(day)}
-                  className="w-8 h-8 mx-auto flex items-center justify-center text-[12px] rounded-full transition-opacity"
+                  aria-pressed={sel}
+                  aria-label={`${day} ${MONTH_NAMES[viewMonth]}`}
+                  className="w-9 h-9 mx-auto flex items-center justify-center text-[0.9rem] tabular-nums transition-colors"
                   style={{
-                    color: disabled
-                      ? "var(--color-tan)"
-                      : sel
-                        ? "var(--color-parchment)"
-                        : "var(--foreground)",
-                    backgroundColor: sel
-                      ? "var(--color-earth)"
-                      : tod && !sel
-                        ? "transparent"
-                        : "transparent",
-                    border:
-                      tod && !sel
-                        ? "1px solid color-mix(in srgb, var(--color-gold) 60%, transparent)"
-                        : "none",
+                    color: sel ? "var(--on-pen)" : "var(--ink)",
+                    backgroundColor: sel ? "var(--pen)" : "transparent",
+                    border: tod && !sel ? "1px solid var(--pen)" : "1px solid transparent",
+                    borderRadius: 3,
                     cursor: disabled ? "not-allowed" : "pointer",
-                    opacity: disabled ? 0.35 : 1,
+                    opacity: disabled ? 0.3 : 1,
+                    textDecoration: disabled ? "line-through" : "none",
                   }}
                 >
                   {day}
@@ -294,6 +226,7 @@ import {
   createReservation,
   type Tenant,
 } from "@/api/queries";
+import VisitNotes from "../../components/VisitNotes";
 
 interface FormData {
   name: string;
@@ -613,298 +546,88 @@ const ReservationForm = ({
     !!selectedHour &&
     Number(selectedHour) * 60 + Number(m) <= nowMinutes;
 
+  const activeTenant =
+    currentBranchTenant || tenants.find((t) => t.name === selectedBranch) || null;
+  const hourValue = formData.time ? formData.time.split(":")[0] : "";
+  const minuteValue = formData.time ? formData.time.split(":")[1] : "";
+
   return (
-    <div
-      className="hos-gutter pt-12 md:pt-[78px] pb-20 md:pb-[112px]"
-      style={{ backgroundColor: "var(--background)" }}
-    >
+    <div>
       {toast && (
-        <div
-          className={`fixed top-6 right-6 px-6 py-4 z-50 transition-all ${
-            toast.type === "success"
-              ? "bg-[var(--color-ink)] text-paper"
-              : "bg-red-700 text-paper"
-          }`}
-        >
-          <p className="text-sm tracking-wide">{toast.message}</p>
+        <div role="status" className={`hs-toast ${toast.type === "success" ? "hs-toast-success" : "hs-toast-error"}`}>
+          {toast.type === "success" ? "Table requested! We'll call to confirm shortly." : toast.message}
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-[50%_1fr] gap-16 lg:gap-0">
-        <div className="space-y-12 lg:pr-16">
-          <div>
-            <h1 className="hos-display mb-6" style={{ color: "var(--color-main)" }}>
-              Book a table
-            </h1>
-            <p className="text-[color:var(--color-ink)] leading-relaxed">
-              Choose a branch, date, and time. The team will confirm your table
-              shortly.
-            </p>
-          </div>
-
-          <div>
-            <h3 className="hos-label mb-4">
-              Hotline
-            </h3>
-            <label className="text-base text-[color:var(--color-ink)]">
-              For last-minute reservations or special occasion arrangements,
-              please contact us directly.
-            </label>
-            <div className="space-y-2 text-[color:var(--color-ink)] mt-4">
-              {(() => {
-                const tenant =
-                  currentBranchTenant ||
-                  tenants.find((t) => t.name === selectedBranch);
-                return (
-                  <>
-                    <p className="font-medium">
-                      {tenant?.name.toLowerCase() || "houseofsenses.vn"}
-                    </p>
-                    <a
-                      href={`tel:${tenant?.phone}`}
-                      className="text-[color:var(--color-ink)] hover:text-[color:var(--color-ink)]"
-                    >
-                      {tenant?.phone}
-                    </a>
-                    <br />
-                    <p className="hover:text-[color:var(--color-ink)]">
-                      {tenant?.address || "No address available"}
-                    </p>
-                  </>
-                );
-              })()}
-            </div>
-          </div>
-
-          <hr className="hos-rule" />
-
-          {/* Contact Info */}
-          <div>
-            <h3 className="hos-label mb-4">
-              Our Contact
-            </h3>
-            <div className="grid grid-cols-2 gap-8">
-              <div>
-                <p className="font-medium mb-1">Email</p>
-                {(() => {
-                  const tenant =
-                    currentBranchTenant ||
-                    tenants.find((t) => t.name === selectedBranch);
-                  const email = tenant?.email;
-                  return email ? (
-                    <a
-                      href={`mailto:${email}`}
-                      className="text-[color:var(--color-ink)] hover:text-[color:var(--color-ink)]"
-                    >
-                      {email}
-                    </a>
-                  ) : (
-                    <p className="text-[color:var(--color-ink-muted)]">No email available</p>
-                  );
-                })()}
-              </div>
-              <div>
-                <p className="font-medium mb-1">Phone</p>
-                {(() => {
-                  const tenant =
-                    currentBranchTenant ||
-                    tenants.find((t) => t.name === selectedBranch);
-                  const phone = tenant?.phone;
-                  return phone ? (
-                    <a
-                      href={`tel:${phone}`}
-                      className="text-[color:var(--color-ink)] hover:text-[color:var(--color-ink)]"
-                    >
-                      {phone}
-                    </a>
-                  ) : (
-                    <p className="text-[color:var(--color-ink-muted)]">No phone available</p>
-                  );
-                })()}
-              </div>
-            </div>
-          </div>
-
-          <hr className="hos-rule" />
-
-          {/* Social Media */}
-          <div>
-            <h3 className="hos-label mb-4">
-              Follow us
-            </h3>
-            <div className="flex gap-4">
-              {(() => {
-                const tenant =
-                  currentBranchTenant ||
-                  tenants.find((t) => t.name === selectedBranch);
-                return (
-                  <>
-                    {tenant?.facebook && (
-                      <a
-                        href={tenant.facebook}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[color:var(--color-ink)] hover:text-[color:var(--color-ink)] transition-all duration-300 hover:opacity-70"
-                        aria-label="Facebook"
-                      >
-                        <svg
-                          className="w-5 h-5"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                        </svg>
-                      </a>
-                    )}
-                    {tenant?.instagram && (
-                      <a
-                        href={tenant.instagram}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[color:var(--color-ink)] hover:text-[color:var(--color-ink)] transition-all duration-300 hover:opacity-70"
-                        aria-label="Instagram"
-                      >
-                        <svg
-                          className="w-5 h-5"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                        </svg>
-                      </a>
-                    )}
-                    {tenant?.tiktok && (
-                      <a
-                        href={tenant.tiktok}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[color:var(--color-ink)] hover:text-[color:var(--color-ink)] transition-all duration-300 hover:opacity-70"
-                        aria-label="TikTok"
-                      >
-                        <svg
-                          className="w-5 h-5"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
-                        </svg>
-                      </a>
-                    )}
-                    {tenant?.youtube && (
-                      <a
-                        href={tenant.youtube}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[color:var(--color-ink)] hover:text-[color:var(--color-ink)] transition-all duration-300 hover:opacity-70"
-                        aria-label="YouTube"
-                      >
-                        <svg
-                          className="w-5 h-5"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                        </svg>
-                      </a>
-                    )}
-                  </>
-                );
-              })()}
-            </div>
-          </div>
+      <section className="hs-shell pt-14 md:pt-20 pb-14 md:pb-20">
+        <div className="hs-main grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(0,300px)] gap-x-10 gap-y-8 items-start">
+          <h1 className="hs-hero animate-rise text-center lg:text-left">book a table</h1>
+          <p className="text-[1.1875rem] leading-[1.25] tracking-[-0.015em] xl:pt-3 text-center lg:text-left max-w-[34ch] mx-auto lg:mx-0 animate-rise" style={{ color: "var(--pen)" }}>
+            Pick a day and a time and we&apos;ll call to confirm. For tonight,
+            or anything special, just ring us.
+          </p>
         </div>
+      </section>
 
-        {/* Right Side - Form */}
-        <div
-          className="lg:border-l lg:pl-16"
-          style={{
-            borderColor:
-              "color-mix(in srgb, var(--color-tan) 35%, transparent)",
-          }}
-        >
-          <h2 className="hos-display mb-8" style={{ color: "var(--color-main)" }}>
-            Your reservation
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Name */}
-            <div>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full px-0 py-3 border-0 border-b focus:ring-0 outline-none transition-all bg-transparent text-[13px] tracking-[0.04em] placeholder:text-(--color-sand)"
-                style={{
-                  borderBottomColor: errors.name
-                    ? "rgb(239 68 68)"
-                    : "color-mix(in srgb, var(--color-tan) 40%, transparent)",
-                  color: "var(--foreground)",
-                }}
-                placeholder="Full Name"
-              />
-              {errors.name && (
-                <p
-                  className="mt-1 text-[11px]"
-                  style={{ color: "rgb(239 68 68)" }}
-                >
-                  {errors.name}
-                </p>
-              )}
+      <section className="hs-shell" aria-labelledby="reservation-heading">
+        <h2 id="reservation-heading" className="hs-label mb-8 lg:mb-0">
+          <span className="hs-rail-sticky block">Your reservation</span>
+        </h2>
+        <div className="hs-main grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(0,300px)] gap-x-10 gap-y-16">
+        <div>
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="flex flex-col gap-8 max-w-[720px]"
+            data-reveal
+          >
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-7">
+              <div className="hs-field">
+                <label htmlFor="name" className="hs-label">Your name</label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  autoComplete="name"
+                  className="hs-input"
+                  aria-invalid={!!errors.name}
+                  aria-describedby={errors.name ? "name-error" : undefined}
+                />
+                {errors.name && <p id="name-error" className="hs-error">{errors.name}</p>}
+              </div>
+
+              <div className="hs-field">
+                <label htmlFor="phone" className="hs-label">Phone</label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  autoComplete="tel"
+                  inputMode="tel"
+                  placeholder="09xx xxx xxx"
+                  className="hs-input"
+                  aria-invalid={!!errors.phone}
+                  aria-describedby={errors.phone ? "phone-error" : undefined}
+                />
+                {errors.phone && <p id="phone-error" className="hs-error">{errors.phone}</p>}
+              </div>
             </div>
 
-            {/* Phone */}
-            <div>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className="w-full px-0 py-3 border-0 border-b focus:ring-0 outline-none transition-all bg-transparent text-[13px] tracking-[0.04em] placeholder:text-(--color-sand)"
-                style={{
-                  borderBottomColor: errors.phone
-                    ? "rgb(239 68 68)"
-                    : "color-mix(in srgb, var(--color-tan) 40%, transparent)",
-                  color: "var(--foreground)",
-                }}
-                placeholder="Phone Number"
-                autoComplete="tel"
-                inputMode="tel"
-              />
-              {errors.phone && (
-                <p
-                  className="mt-1 text-[11px]"
-                  style={{ color: "rgb(239 68 68)" }}
-                >
-                  {errors.phone}
-                </p>
-              )}
-            </div>
-
-            {/* Branch */}
-            <div>
+            <div className="hs-field">
+              <label htmlFor="branch" className="hs-label">Which home</label>
               <select
                 id="branch"
                 name="branch"
                 value={formData.branch}
                 onChange={handleChange}
                 disabled={!!currentTenant}
-                className="w-full px-0 py-3 border-0 border-b focus:ring-0 outline-none transition-all bg-transparent appearance-none text-[13px] tracking-[0.04em]"
-                style={{
-                  borderBottomColor: errors.branch
-                    ? "rgb(239 68 68)"
-                    : "color-mix(in srgb, var(--color-tan) 40%, transparent)",
-                  color: "var(--foreground)",
-                  opacity: currentTenant ? 0.55 : 1,
-                  backgroundImage: currentTenant
-                    ? "none"
-                    : "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238a7d6a'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E\")",
-                  backgroundPosition: "right center",
-                  backgroundRepeat: "no-repeat",
-                  backgroundSize: "1.5em 1.5em",
-                  pointerEvents: currentTenant ? "none" : "auto",
-                }}
+                className="hs-input"
+                aria-invalid={!!errors.branch}
               >
                 {tenants.map((tenant) => (
                   <option key={tenant.id} value={tenant.name}>
@@ -912,229 +635,144 @@ const ReservationForm = ({
                   </option>
                 ))}
               </select>
-              {errors.branch && (
-                <p
-                  className="mt-1 text-[11px]"
-                  style={{ color: "rgb(239 68 68)" }}
-                >
-                  {errors.branch}
-                </p>
-              )}
-              {formData.branch && (
-                <p
-                  className="mt-2 text-[11px] leading-relaxed"
-                  style={{ color: "var(--color-sand)" }}
-                >
-                  {branchAddresses[formData.branch]}
-                </p>
+              {errors.branch && <p className="hs-error">{errors.branch}</p>}
+              {formData.branch && branchAddresses[formData.branch] && (
+                <p className="hs-meta mt-1">{branchAddresses[formData.branch]}</p>
               )}
             </div>
 
-            {/* Date */}
-            <div>
-              <CalendarPicker
-                value={formData.date}
-                hasError={!!errors.date}
-                onChange={(value) => {
-                  setFormData((prev) => ({ ...prev, date: value }));
-                  setErrors((prev) => ({
-                    ...prev,
-                    date: undefined,
-                    time: validateNotInPast(value, formData.time) ?? undefined,
-                  }));
-                }}
-              />
-              {errors.date && (
-                <p
-                  className="mt-1 text-[11px]"
-                  style={{ color: "rgb(239 68 68)" }}
-                >
-                  {errors.date}
-                </p>
-              )}
-            </div>
-
-            {/* Time */}
-            <div>
-              <div
-                className="flex items-center gap-2 border-b py-3 transition-all"
-                style={{
-                  borderBottomColor: errors.time
-                    ? "rgb(239 68 68)"
-                    : "color-mix(in srgb, var(--color-tan) 40%, transparent)",
-                }}
-              >
-                <select
-                  value={formData.time ? formData.time.split(":")[0] : ""}
-                  onChange={(e) => {
-                    const minute = formData.time
-                      ? formData.time.split(":")[1]
-                      : "00";
-                    const time = `${e.target.value}:${minute || "00"}`;
-                    setFormData((prev) => ({ ...prev, time }));
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-7">
+              <div className="hs-field">
+                <label htmlFor="date" className="hs-label">Day</label>
+                <CalendarPicker
+                  value={formData.date}
+                  hasError={!!errors.date}
+                  onChange={(value) => {
+                    setFormData((prev) => ({ ...prev, date: value }));
                     setErrors((prev) => ({
                       ...prev,
-                      time: validateNotInPast(formData.date, time) ?? undefined,
+                      date: undefined,
+                      time: validateNotInPast(value, formData.time) ?? undefined,
                     }));
                   }}
-                  className="flex-1 bg-transparent border-0 outline-none focus:ring-0 appearance-none cursor-pointer text-[13px]"
-                  style={{
-                    color:
-                      formData.time && formData.time.split(":")[0]
-                        ? "var(--foreground)"
-                        : "var(--color-sand)",
-                  }}
-                >
-                  <option value="" disabled>
-                    Hour
-                  </option>
-                  {[16, 17, 18, 19, 20, 21, 22].map((h) => (
-                    <option
-                      key={h}
-                      value={String(h).padStart(2, "0")}
-                      disabled={isHourPast(h)}
-                    >
-                      {String(h).padStart(2, "0")}
-                    </option>
-                  ))}
-                </select>
-                <span
-                  className="text-[12px] font-medium"
-                  style={{ color: "var(--color-tan)" }}
-                >
-                  :
-                </span>
-                <select
-                  value={formData.time ? formData.time.split(":")[1] : ""}
-                  onChange={(e) => {
-                    const hour = formData.time
-                      ? formData.time.split(":")[0]
-                      : "16";
-                    const time = `${hour || "16"}:${e.target.value}`;
-                    setFormData((prev) => ({ ...prev, time }));
-                    setErrors((prev) => ({
-                      ...prev,
-                      time: validateNotInPast(formData.date, time) ?? undefined,
-                    }));
-                  }}
-                  className="flex-1 bg-transparent border-0 outline-none focus:ring-0 appearance-none cursor-pointer text-[13px]"
-                  style={{
-                    color:
-                      formData.time && formData.time.split(":")[1]
-                        ? "var(--foreground)"
-                        : "var(--color-sand)",
-                  }}
-                >
-                  <option value="" disabled>
-                    Min
-                  </option>
-                  {[
-                    "00",
-                    "05",
-                    "10",
-                    "15",
-                    "20",
-                    "25",
-                    "30",
-                    "35",
-                    "40",
-                    "45",
-                    "50",
-                    "55",
-                  ].map((m) => (
-                    <option key={m} value={m} disabled={isMinutePast(m)}>
-                      {m}
-                    </option>
-                  ))}
-                </select>
-                <svg
-                  className="w-4 h-4 shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  style={{ color: "var(--color-sand)", opacity: 0.85 }}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+                />
+                {errors.date && <p className="hs-error">{errors.date}</p>}
               </div>
-              {errors.time && (
-                <p
-                  className="mt-1 text-[11px]"
-                  style={{ color: "rgb(239 68 68)" }}
-                >
-                  {errors.time}
-                </p>
-              )}
-              <p
-                className="mt-2 text-[11px]"
-                style={{ color: "var(--color-sand)" }}
-              >
-                Last order: 30 minutes before closing.
-              </p>
+
+              <div className="hs-field">
+                <span className="hs-label" id="time-label">Time</span>
+                <div className="flex items-center gap-2" role="group" aria-labelledby="time-label">
+                  <select
+                    aria-label="Hour"
+                    value={hourValue}
+                    onChange={(e) => {
+                      const minute = formData.time ? formData.time.split(":")[1] : "00";
+                      const time = `${e.target.value}:${minute || "00"}`;
+                      setFormData((prev) => ({ ...prev, time }));
+                      setErrors((prev) => ({
+                        ...prev,
+                        time: validateNotInPast(formData.date, time) ?? undefined,
+                      }));
+                    }}
+                    className="hs-input tabular-nums"
+                    aria-invalid={!!errors.time}
+                    style={{ color: hourValue ? "var(--ink)" : "var(--ink-faint)" }}
+                  >
+                    <option value="" disabled>
+                      hour
+                    </option>
+                    {[16, 17, 18, 19, 20, 21, 22].map((h) => (
+                      <option key={h} value={String(h).padStart(2, "0")} disabled={isHourPast(h)}>
+                        {String(h).padStart(2, "0")}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="hs-ui text-[1.2rem]" style={{ color: "var(--pen)" }} aria-hidden="true">:</span>
+                  <select
+                    aria-label="Minute"
+                    value={minuteValue}
+                    onChange={(e) => {
+                      const hour = formData.time ? formData.time.split(":")[0] : "16";
+                      const time = `${hour || "16"}:${e.target.value}`;
+                      setFormData((prev) => ({ ...prev, time }));
+                      setErrors((prev) => ({
+                        ...prev,
+                        time: validateNotInPast(formData.date, time) ?? undefined,
+                      }));
+                    }}
+                    className="hs-input tabular-nums"
+                    aria-invalid={!!errors.time}
+                    style={{ color: minuteValue ? "var(--ink)" : "var(--ink-faint)" }}
+                  >
+                    <option value="" disabled>
+                      min
+                    </option>
+                    {["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"].map((m) => (
+                      <option key={m} value={m} disabled={isMinutePast(m)}>
+                        {m}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {errors.time && <p className="hs-error">{errors.time}</p>}
+                <p className="hs-meta mt-1">Last order 30 minutes before closing.</p>
+              </div>
             </div>
 
-            {/* Quantity */}
-            <div>
-              <select
-                id="quantity"
-                name="quantity"
-                value={formData.quantity}
-                onChange={handleChange}
-                className="w-full px-0 py-3 border-0 border-b focus:ring-0 outline-none transition-all bg-transparent appearance-none text-[13px] tracking-[0.04em]"
-                style={{
-                  borderBottomColor:
-                    "color-mix(in srgb, var(--color-tan) 40%, transparent)",
-                  color: "var(--foreground)",
-                  backgroundImage:
-                    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238a7d6a'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E\")",
-                  backgroundPosition: "right center",
-                  backgroundRepeat: "no-repeat",
-                  backgroundSize: "1.5em 1.5em",
-                }}
-              >
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
-                  <option key={num} value={num}>
-                    {num} {num === 1 ? "Guest" : "Guests"}
-                  </option>
-                ))}
-              </select>
+            <div className="hs-field">
+              <span className="hs-label" id="guests-label">How many of you</span>
+              <div className="flex flex-wrap gap-2" role="radiogroup" aria-labelledby="guests-label">
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => {
+                  const on = formData.quantity === num;
+                  return (
+                    <button
+                      key={num}
+                      type="button"
+                      role="radio"
+                      aria-checked={on}
+                      aria-label={`${num} ${num === 1 ? "guest" : "guests"}`}
+                      onClick={() => setFormData((prev) => ({ ...prev, quantity: num }))}
+                      className="hs-ui w-11 h-11 text-[0.9375rem] tabular-nums transition-[background-color,color] duration-300"
+                      style={{
+                        border: "1px solid var(--pen)",
+                        borderRadius: 3,
+                        backgroundColor: on ? "var(--pen)" : "transparent",
+                        color: on ? "var(--on-pen)" : "var(--pen)",
+                      }}
+                    >
+                      {num}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
-            {/* Notes */}
-            <div>
+            <div className="hs-field">
+              <label htmlFor="notes" className="hs-label">Anything we should know? <span style={{ color: "var(--ink-faint)" }}>(optional)</span></label>
               <textarea
                 id="notes"
                 name="notes"
                 value={formData.notes}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-0 py-3 border-0 border-b focus:ring-0 outline-none transition-all bg-transparent resize-none text-[13px] tracking-[0.04em] placeholder:text-(--color-sand)"
-                style={{
-                  borderBottomColor:
-                    "color-mix(in srgb, var(--color-tan) 40%, transparent)",
-                  color: "var(--foreground)",
-                }}
-                placeholder="Special Requests (Optional)"
+                placeholder="a birthday, a quiet corner, no coriander…"
+                className="hs-input"
               />
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isSubmitting}
-              className="hos-btn hos-btn-solid w-full mt-8 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="hs-btn hs-btn-solid self-start mt-2"
               aria-label="Submit reservation"
             >
-              {isSubmitting ? "Submitting..." : "Reserve a table"}
+              {isSubmitting ? "Sending…" : "Reserve my table"}
             </button>
           </form>
         </div>
-      </div>
+        <VisitNotes tenant={activeTenant} />
+        </div>
+      </section>
     </div>
   );
 };

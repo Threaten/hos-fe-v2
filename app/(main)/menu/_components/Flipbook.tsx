@@ -1,21 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import {
-  fetchMenuByBranch,
-  fetchTenants,
-  type MenuItem,
-  type Tenant,
-} from "@/api/queries";
+import { fetchTenants, getMenuSource, type Tenant } from "@/api/queries";
 import { resolveBackendMediaUrl } from "@/app/utils/media";
 import TenantFlipbook from "./TenantFlipbook";
 
 const Flipbook = ({ initialBranch }: { initialBranch?: string }) => {
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [selectedTenantId, setSelectedTenantId] = useState("");
-  const [selectedMenu, setSelectedMenu] = useState<MenuItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isMenuLoading, setIsMenuLoading] = useState(false);
 
   const initialBranchName = useMemo(() => {
     if (!initialBranch) return "";
@@ -50,54 +43,26 @@ const Flipbook = ({ initialBranch }: { initialBranch?: string }) => {
 
   const selectedTenant = tenants.find((tenant) => tenant.id === selectedTenantId);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const loadMenu = async () => {
-      if (!selectedTenantId) {
-        setSelectedMenu(null);
-        return;
-      }
-
-      setIsMenuLoading(true);
-      try {
-        const menu = await fetchMenuByBranch(selectedTenantId);
-        if (!cancelled) setSelectedMenu(menu);
-      } finally {
-        if (!cancelled) setIsMenuLoading(false);
-      }
-    };
-
-    loadMenu();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [selectedTenantId]);
-
-  const menuUrl = resolveBackendMediaUrl(
-    selectedMenu?.file || selectedMenu?.pages?.[0] || selectedTenant?.menu,
-  );
+  const menu = getMenuSource(selectedTenant);
+  const menuUrl = resolveBackendMediaUrl(menu.file);
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center hos-gutter pb-16">
-      <div className="shrink-0 mt-12 md:mt-[78px] flex flex-col items-center gap-3">
-        <label htmlFor="menu-branch" className="hos-label" style={{ color: "var(--foreground)" }}>
-          Our menu
+    <div className="w-full min-h-screen flex flex-col items-center">
+      <div className="shrink-0 hos-gutter pt-14 md:pt-24 flex flex-col items-center gap-4 text-center">
+        <label htmlFor="menu-branch" className="hs-note">
+          The menu at
         </label>
         <select
           id="menu-branch"
           value={selectedTenantId}
           onChange={(event) => setSelectedTenantId(event.target.value)}
-          className="font-serif text-[length:var(--text-display)] leading-[1.1] pl-2 pr-12 border-b outline-none bg-transparent appearance-none cursor-pointer"
+          className="hs-hero lowercase text-[clamp(3rem,7vw,6.5rem)] pl-2 pr-[0.7em] bg-transparent appearance-none cursor-pointer outline-none text-center"
           style={{
             backgroundImage:
-              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23374151'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E\")",
+              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 12' fill='none' stroke='%23333' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3l7 6 7-6'/%3E%3C/svg%3E\")",
             backgroundPosition: "right center",
             backgroundRepeat: "no-repeat",
-            backgroundSize: "0.6em 0.6em",
-            color: "var(--color-main)",
-            borderColor: "var(--color-line)",
+            backgroundSize: "0.4em",
           }}
         >
           {tenants.map((tenant) => (
@@ -109,29 +74,25 @@ const Flipbook = ({ initialBranch }: { initialBranch?: string }) => {
       </div>
 
       {isLoading && (
-        <div className="mt-10" style={{ color: "var(--color-ink)" }}>Loading menus...</div>
-      )}
-
-      {!isLoading && isMenuLoading && (
-        <div className="mt-10" style={{ color: "var(--color-ink)" }}>Opening selected menu...</div>
+        <p className="hs-note mt-12 animate-pulse">Finding the menus…</p>
       )}
 
       {!isLoading && !selectedTenant && (
-        <div className="mt-10" style={{ color: "var(--color-ink)" }}>No branches found.</div>
+        <p className="hs-lead mt-12">No branches found.</p>
       )}
 
-      {!isLoading && !isMenuLoading && selectedTenant && !menuUrl && (
-        <div className="mt-10" style={{ color: "var(--color-ink)" }}>
-          No published menu for this branch yet.
-        </div>
+      {!isLoading && selectedTenant && !menuUrl && (
+        <p className="hs-lead mt-12 text-center hos-gutter">
+          This branch hasn&apos;t published its menu online yet.
+        </p>
       )}
 
-      {!isLoading && !isMenuLoading && selectedTenant && menuUrl && (
+      {!isLoading && selectedTenant && menuUrl && (
         <TenantFlipbook
-          key={selectedMenu?.id || selectedTenant.id}
+          key={selectedTenant.id}
           menuUrl={menuUrl}
           tenantName={selectedTenant.name}
-          imagePages={selectedMenu?.pages}
+          imagePages={menu.pages}
           showHeading={false}
         />
       )}

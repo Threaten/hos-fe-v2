@@ -8,6 +8,7 @@ import {
   createContactMessage,
   type Tenant,
 } from "@/api/queries";
+import VisitNotes from "../../components/VisitNotes";
 
 interface FormData {
   name: string;
@@ -233,277 +234,87 @@ const ContactForm = ({
     }
   };
 
+  const activeTenant =
+    currentBranchTenant || tenants.find((t) => t.name === selectedBranch) || null;
+
   return (
-    <div className="bg-paper hos-gutter pt-12 md:pt-[78px] pb-20 md:pb-[112px]">
-      {/* Toast Notification */}
+    <div>
       {toast && (
-        <div
-          className={`fixed top-6 right-6 px-6 py-4 z-50 transition-all text-paper ${
-            toast.type === "success"
-              ? "bg-[var(--color-ink)]"
-              : "bg-red-700"
-          }`}
-        >
-          <p className="">{toast.message}</p>
+        <div role="status" className={`hs-toast ${toast.type === "success" ? "hs-toast-success" : "hs-toast-error"}`}>
+          {toast.type === "success" ? "Got it! We'll be in touch soon." : toast.message}
         </div>
       )}
 
       {isLoading ? (
-        <div className="flex justify-center items-center min-h-[400px]">
-          <div className="text-foreground/90">Loading...</div>
-        </div>
+        <p className="hs-note min-h-[400px] flex items-center justify-center animate-pulse">Loading…</p>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-[50%_1fr] gap-16 lg:gap-0">
-          {/* Left Side - Info */}
-          <div className="space-y-12 lg:pr-16">
-            {/* Title Section */}
-            <div>
-              <h1 className="hos-display mb-6" style={{ color: "var(--color-main)" }}>
-                Get in touch
-              </h1>
-              <p className="text-foreground/90 leading-relaxed">
-                Have a question or feedback? We&apos;d love to hear from you.
-                Fill out the form and we&apos;ll get back to you as soon as
-                possible.
-              </p>
-            </div>
-
-            {/* Branch Info */}
-            <div>
-              <h3 className="hos-label mb-4">
-                {currentBranchTenant ? "Our Location" : "Our Locations"}
-              </h3>
-              <div className="space-y-6">
-                {currentBranchTenant ? (
-                  <div>
-                    <p className="font-serif text-[1.6rem] leading-none mb-2" style={{ color: "var(--color-main)" }}>
-                      {currentBranchTenant.name.toLowerCase()}
-                    </p>
-                    {currentBranchTenant.address && (
-                      <p className="text-foreground/90">
-                        {currentBranchTenant.address}
-                      </p>
-                    )}
-                    {currentBranchTenant.phone && (
-                      <p className="text-foreground/90">
-                        {currentBranchTenant.phone}
-                      </p>
-                    )}
-                  </div>
-                ) : tenants && tenants.length > 0 ? (
-                  tenants.map((tenant) => (
-                    <div key={tenant.id}>
-                      <p className="font-serif text-[1.6rem] leading-none mb-2" style={{ color: "var(--color-main)" }}>
-                        {tenant.name.toLowerCase()}
-                      </p>
-                      {tenant.address && (
-                        <p className="text-foreground/90">{tenant.address}</p>
-                      )}
-                      {tenant.phone && (
-                        <p className="text-foreground/90">{tenant.phone}</p>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-foreground/90">Loading locations...</p>
-                )}
-              </div>
-            </div>
-
-            <hr className="hos-rule" />
-
-            {/* Contact Info */}
-            <div>
-              <h3 className="hos-label mb-4">
-                Our Contact
-              </h3>
-              <div className="grid grid-cols-2 gap-8">
-                <div>
-                  <p className="font-medium mb-1">Email</p>
-                  {(() => {
-                    const tenant =
-                      currentBranchTenant ||
-                      tenants.find((t) => t.name === selectedBranch);
-                    const email = tenant?.email;
-                    return email ? (
-                      <a
-                        href={`mailto:${email}`}
-                        className="text-foreground/90 hover:text-foreground"
-                      >
-                        {email}
-                      </a>
-                    ) : (
-                      <p className="text-foreground/65">No email available</p>
-                    );
-                  })()}
-                </div>
-                <div>
-                  <p className="font-medium mb-1">Phone</p>
-                  {(() => {
-                    const tenant =
-                      currentBranchTenant ||
-                      tenants.find((t) => t.name === selectedBranch);
-                    const phone = tenant?.phone;
-                    return phone ? (
-                      <a
-                        href={`tel:${phone}`}
-                        className="text-foreground/90 hover:text-foreground"
-                      >
-                        {phone}
-                      </a>
-                    ) : (
-                      <p className="text-foreground/65">No phone available</p>
-                    );
-                  })()}
-                </div>
-              </div>
-            </div>
-
-            <hr className="hos-rule" />
-
-            {/* Social Media */}
-            <div>
-              <h3 className="hos-label mb-4">
-                Follow us
-              </h3>
-              <div className="flex gap-4">
-                {(() => {
-                  const tenant =
-                    currentBranchTenant ||
-                    tenants.find((t) => t.name === selectedBranch);
-                  return (
-                    <>
-                      {tenant?.facebook && (
-                        <a
-                          href={tenant.facebook}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-foreground/90 hover:text-foreground transition-all duration-300 hover:opacity-70"
-                        >
-                          <svg
-                            className="w-5 h-5"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                          </svg>
-                        </a>
-                      )}
-                      {tenant?.instagram && (
-                        <a
-                          href={tenant.instagram}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-foreground/90 hover:text-foreground transition-all duration-300 hover:opacity-70"
-                        >
-                          <svg
-                            className="w-5 h-5"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                          </svg>
-                        </a>
-                      )}
-                      {tenant?.tiktok && (
-                        <a
-                          href={tenant.tiktok}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-foreground/90 hover:text-foreground transition-all duration-300 hover:opacity-70"
-                        >
-                          <svg
-                            className="w-5 h-5"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
-                          </svg>
-                        </a>
-                      )}
-                      {tenant?.youtube && (
-                        <a
-                          href={tenant.youtube}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-foreground/90 hover:text-foreground transition-all duration-300 hover:opacity-70"
-                        >
-                          <svg
-                            className="w-5 h-5"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                          </svg>
-                        </a>
-                      )}
-                    </>
-                  );
-                })()}
-              </div>
-            </div>
+        <>
+        <section className="hs-shell pt-14 md:pt-20 pb-14 md:pb-20">
+          <div className="hs-main grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(0,300px)] gap-x-10 gap-y-8 items-start">
+            <h1 className="hs-hero animate-rise text-center lg:text-left">get in touch</h1>
+            <p className="text-[1.1875rem] leading-[1.25] tracking-[-0.015em] xl:pt-3 text-center lg:text-left max-w-[34ch] mx-auto lg:mx-0 animate-rise" style={{ color: "var(--pen)" }}>
+              A question, a kind word, or a party of twelve? Leave us a note and
+              we&apos;ll get back to you soon.
+            </p>
           </div>
+        </section>
+        <section className="hs-shell" aria-labelledby="note-heading">
+          <h2 id="note-heading" className="hs-label mb-8 lg:mb-0">
+            <span className="hs-rail-sticky block">Leave us a note</span>
+          </h2>
+          <div className="hs-main grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(0,300px)] gap-x-10 gap-y-16">
+          <div>
+            <form
+              onSubmit={handleSubmit}
+              noValidate
+              className="flex flex-col gap-8 max-w-[640px]"
+              data-reveal
+            >
 
-          {/* Right Side - Form */}
-          <div className="lg:border-l lg:pl-16 border-[color:var(--color-line)]">
-            <h2 className="hos-display mb-8" style={{ color: "var(--color-main)" }}>
-              Send us a message
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Name */}
-              <div>
+              <div className="hs-field">
+                <label htmlFor="name" className="hs-label">Your name</label>
                 <input
                   type="text"
                   id="name"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className={`w-full px-0 py-3 border-0 border-b focus:ring-0 focus:border-foreground outline-none transition-all bg-transparent ${
-                    errors.name ? "border-red-500" : "border-foreground/20"
-                  }`}
-                  placeholder="Name"
+                  autoComplete="name"
+                  className="hs-input"
+                  aria-invalid={!!errors.name}
+                  aria-describedby={errors.name ? "name-error" : undefined}
                 />
-                {errors.name && (
-                  <p className="mt-1 text-sm text-red-500">{errors.name}</p>
-                )}
+                {errors.name && <p id="name-error" className="hs-error">{errors.name}</p>}
               </div>
 
-              {/* Phone */}
-              <div>
+              <div className="hs-field">
+                <label htmlFor="phone" className="hs-label">Phone</label>
                 <input
                   type="tel"
                   id="phone"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className={`w-full px-0 py-3 border-0 border-b focus:ring-0 focus:border-foreground outline-none transition-all bg-transparent ${
-                    errors.phone ? "border-red-500" : "border-foreground/20"
-                  }`}
-                  placeholder="Phone"
+                  autoComplete="tel"
+                  inputMode="tel"
+                  placeholder="09xx xxx xxx"
+                  className="hs-input"
+                  aria-invalid={!!errors.phone}
+                  aria-describedby={errors.phone ? "phone-error" : undefined}
                 />
-                {errors.phone && (
-                  <p className="mt-1 text-sm text-red-500">{errors.phone}</p>
-                )}
+                {errors.phone && <p id="phone-error" className="hs-error">{errors.phone}</p>}
               </div>
 
-              {/* Branch */}
-              <div>
+              <div className="hs-field">
+                <label htmlFor="branch" className="hs-label">Which home</label>
                 <select
                   id="branch"
                   name="branch"
                   value={formData.branch}
                   onChange={handleChange}
                   disabled={!!currentBranchTenant}
-                  className={`w-full px-0 py-3 border-0 border-b focus:ring-0 focus:border-foreground outline-none transition-all bg-transparent appearance-none text-foreground ${
-                    errors.branch ? "border-red-500" : "border-foreground/20"
-                  } ${currentBranchTenant ? "opacity-60 cursor-not-allowed" : ""}`}
-                  style={{
-                    backgroundImage:
-                      "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23374151'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E\")",
-                    backgroundPosition: "right center",
-                    backgroundRepeat: "no-repeat",
-                    backgroundSize: "1.5em 1.5em",
-                  }}
+                  className="hs-input"
+                  aria-invalid={!!errors.branch}
                 >
                   {tenants.map((tenant) => (
                     <option key={tenant.id} value={tenant.name}>
@@ -511,42 +322,35 @@ const ContactForm = ({
                     </option>
                   ))}
                 </select>
-                {errors.branch && (
-                  <p className="mt-1 text-sm text-red-500">{errors.branch}</p>
-                )}
-                {formData.branch && (() => {
-                  const t = currentBranchTenant || tenants.find((t) => t.name === formData.branch);
-                  return t?.address ? (
-                    <p className="mt-2 text-sm text-foreground/90">{t.address}</p>
-                  ) : null;
-                })()}
+                {errors.branch && <p className="hs-error">{errors.branch}</p>}
               </div>
 
-              {/* Message */}
-              <div>
+              <div className="hs-field">
+                <label htmlFor="message" className="hs-label">Message <span style={{ color: "var(--ink-faint)" }}>(optional)</span></label>
                 <textarea
                   id="message"
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
                   rows={4}
-                  className="w-full px-0 py-3 border-0 border-b border-foreground/20 focus:ring-0 focus:border-foreground outline-none transition-all bg-transparent resize-none"
-                  placeholder="Message (Optional)"
+                  className="hs-input"
                 />
               </div>
 
-              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="hos-btn hos-btn-solid w-full mt-8 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="hs-btn hs-btn-solid self-start mt-2"
                 aria-label="Send contact message"
               >
-                {isSubmitting ? "Sending..." : "Send Message"}
+                {isSubmitting ? "Sending…" : "Send the note"}
               </button>
             </form>
           </div>
-        </div>
+          <VisitNotes tenant={activeTenant} />
+          </div>
+        </section>
+        </>
       )}
     </div>
   );

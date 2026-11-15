@@ -6,31 +6,49 @@ import { createSpinHistory, API_URL } from "@/api/queries";
 
 // ─── Wheel Configuration ──────────────────────────────────────────────────────
 
-const SEGMENTS = [
-  { lines: ["Free", "Dessert"] },
-  { lines: ["10% Off"] },
-  { lines: ["Free", "Cocktail"] },
-  { lines: ["5%", "Off"] },
-  { lines: ["Free", "Starter"] },
-  { lines: ["3%", "Off"] },
-  { lines: ["Free", "Drink"] },
-  { lines: ["Chef's", "Surprise"] },
+/** Used when the branch has not set its own prizes in the CMS */
+const DEFAULT_PRIZES = [
+  "Free Dessert",
+  "10% Off",
+  "Free Cocktail",
+  "5% Off",
+  "Free Starter",
+  "3% Off",
+  "Free Drink",
+  "Chef's Surprise",
 ];
 
-// Alternating warm-earth tones from brand palette
-const COLORS = [
-  { bg: "#6b5e38", text: "#f2ede4" }, // deep earth → cream text
-  { bg: "#c8b98a", text: "#3d3018" }, // light gold → dark text
-  { bg: "#8a7a50", text: "#f2ede4" }, // medium earth → cream text
-  { bg: "#ddd0b3", text: "#3d3018" }, // parchment → dark text
-  { bg: "#6b5e38", text: "#f2ede4" },
-  { bg: "#c8b98a", text: "#3d3018" },
-  { bg: "#8a7a50", text: "#f2ede4" },
-  { bg: "#ddd0b3", text: "#3d3018" },
-];
+/** Labels that mean "no reward" rather than a prize */
+const isNoReward = (label: string) => /^try again$/i.test(label.trim());
 
-const NUM = SEGMENTS.length;
-const ANGLE_DEG = 360 / NUM; // 45° each
+/** Split a prize label into at most two short lines for its slice */
+function toLines(label: string): string[] {
+  const words = label.trim().split(/\s+/);
+  if (words.length < 2 || label.length <= 8) return [label.trim()];
+  // Break where the two lines come out most even
+  let best = 1;
+  let bestDiff = Infinity;
+  for (let i = 1; i < words.length; i++) {
+    const diff = Math.abs(words.slice(0, i).join(" ").length - words.slice(i).join(" ").length);
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      best = i;
+    }
+  }
+  return [words.slice(0, best).join(" "), words.slice(best).join(" ")];
+}
+
+/**
+ * Slices alternate the branch colour and paper. With an odd count the last
+ * slice would touch the first in the same colour, so it gets a third tone.
+ */
+function sliceColor(i: number, count: number) {
+  if (count % 2 === 1 && i === count - 1) return { bg: "var(--paper)", text: "var(--ink)" };
+  return i % 2 === 0
+    ? { bg: "var(--pen)", text: "var(--paper)" }
+    : { bg: "var(--paper-2)", text: "var(--pen)" };
+}
+
 const R = 145;
 const CX = 160;
 const CY = 160;
@@ -47,10 +65,10 @@ function polarToXY(angleDeg: number, radius: number) {
   return { x: CX + radius * Math.cos(rad), y: CY + radius * Math.sin(rad) };
 }
 
-/** Build a pie-slice SVG path for segment `i`. */
-function slicePath(i: number): string {
-  const start = i * ANGLE_DEG;
-  const end = (i + 1) * ANGLE_DEG;
+/** Build a pie-slice SVG path for segment `i` of slices `angle` degrees wide. */
+function slicePath(i: number, angle: number): string {
+  const start = i * angle;
+  const end = (i + 1) * angle;
   const s = polarToXY(start, R);
   const e = polarToXY(end, R);
   return `M ${CX} ${CY} L ${s.x} ${s.y} A ${R} ${R} 0 0 1 ${e.x} ${e.y} Z`;
@@ -110,99 +128,49 @@ function LoginGate({
     }
   };
 
-  const inputStyle: React.CSSProperties = {
-    width: "100%",
-    background: "transparent",
-    border: "none",
-    borderBottom: "1px solid color-mix(in srgb, var(--color-tan) 45%, transparent)",
-    outline: "none",
-    padding: "10px 0",
-    fontSize: "13px",
-    color: "var(--foreground)",
-    fontFamily: "var(--font-body)",
-    letterSpacing: "0.03em",
-  };
-
   return (
-    <div
-      className="flex flex-col items-center justify-center px-6"
-      style={{ minHeight: "calc(100vh - 80px)" }}
-    >
-      <div className="w-full max-w-sm">
-        <p
-          className="text-[10px] tracking-[0.38em] uppercase mb-5 text-center"
-          style={{ color: "var(--color-tan)" }}
-        >
-          — members only
-        </p>
-        <h1
-          className="text-[clamp(2rem,5vw,3rem)] font-semibold leading-tight tracking-tight text-center mb-10"
-          style={{ fontFamily: "var(--font-body)" }}
-        >
-          Lucky Wheel
-        </h1>
+    <div className="flex flex-col items-center justify-center hos-gutter py-16" style={{ minHeight: "70vh" }}>
+      <div className="w-full max-w-md text-center animate-rise">
+        <p className="hs-note mb-3">members only</p>
+        <h1 className="hs-hero text-[clamp(3rem,8vw,6.5rem)] mb-10">lucky wheel</h1>
 
-        <form onSubmit={submit} noValidate>
-          <div className="mb-6">
-            <label
-              className="block text-[10px] tracking-[0.3em] uppercase mb-2"
-              style={{ color: "var(--color-tan)" }}
-            >
-              Email
-            </label>
+        <form
+          onSubmit={submit}
+          noValidate
+          className="text-left flex flex-col gap-7 border-t pt-8"
+          style={{ borderColor: "var(--line)" }}
+        >
+          <div className="hs-field">
+            <label htmlFor="wheel-email" className="hs-label">Email</label>
             <input
+              id="wheel-email"
               type="email"
               autoComplete="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              style={inputStyle}
-              placeholder="your@email.com"
+              className="hs-input"
+              placeholder="you@email.com"
             />
           </div>
 
-          <div className="mb-8">
-            <label
-              className="block text-[10px] tracking-[0.3em] uppercase mb-2"
-              style={{ color: "var(--color-tan)" }}
-            >
-              Password
-            </label>
+          <div className="hs-field">
+            <label htmlFor="wheel-password" className="hs-label">Password</label>
             <input
+              id="wheel-password"
               type="password"
               autoComplete="current-password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              style={inputStyle}
-              placeholder="••••••••"
+              className="hs-input"
             />
           </div>
 
-          {error && (
-            <p
-              className="text-[11px] mb-5 tracking-wide"
-              style={{ color: "#b04040" }}
-            >
-              {error}
-            </p>
-          )}
+          {error && <p className="hs-error" role="alert">{error}</p>}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 text-xs tracking-[0.28em] uppercase transition-opacity"
-            style={{
-              backgroundColor: loading ? "var(--color-tan)" : "var(--color-earth)",
-              color: "#f2ede4",
-              fontFamily: "var(--font-body)",
-              cursor: loading ? "not-allowed" : "pointer",
-              opacity: loading ? 0.7 : 1,
-              border: "none",
-              outline: "none",
-            }}
-          >
-            {loading ? "signing in…" : "sign in"}
+          <button type="submit" disabled={loading} className="hs-btn hs-btn-solid w-full">
+            {loading ? "Signing in…" : "Sign in"}
           </button>
         </form>
       </div>
@@ -219,7 +187,7 @@ function RewardModal({
   result: string;
   onClose: () => void;
 }) {
-  const isNoReward = result === "Try Again";
+  const noReward = isNoReward(result);
   const [leftOffset, setLeftOffset] = useState(0);
 
   // Read the actual sidebar/main padding at runtime so fixed overlay centers
@@ -245,8 +213,7 @@ function RewardModal({
       className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-center"
       style={{
         top: "var(--site-header-h, 0px)",
-        backgroundColor: "rgba(15,14,11,0.55)",
-        backdropFilter: "blur(4px)",
+        backgroundColor: "color-mix(in oklab, var(--ink) 60%, transparent)",
         paddingLeft: leftOffset,
       }}
       onClick={onClose}
@@ -255,79 +222,33 @@ function RewardModal({
       aria-label="Your reward"
     >
       <div
-        className="relative flex flex-col items-center justify-center text-center px-12 py-16"
-        style={{
-          background: "var(--background)",
-          maxWidth: 480,
-          width: "calc(100% - 48px)",
-          animation: "modalIn 0.35s cubic-bezier(0.22,1,0.36,1)",
-        }}
+        className="hs-paper hs-fade-in relative flex flex-col items-center justify-center text-center px-10 py-14"
+        style={{ ["--reveal-delay" as string]: "0s", borderRadius: 3, maxWidth: 480, width: "calc(100% - 48px)" }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close */}
         <button
           onClick={onClose}
           aria-label="Close"
-          style={{
-            position: "absolute",
-            top: 16,
-            right: 20,
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            color: "var(--color-tan)",
-            fontSize: "20px",
-            lineHeight: 1,
-            padding: 4,
-          }}
+          className="absolute top-3 right-3 w-11 h-11 flex items-center justify-center transition-transform duration-300 hover:rotate-90"
+          style={{ color: "var(--ink-soft)" }}
         >
-          ×
+          <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+            <path d="M4 4.5c5 5 10 10.4 16 15" />
+            <path d="M19.5 4c-5 5.4-10 10.6-15.5 16" />
+          </svg>
         </button>
 
-        <p
-          className="text-[10px] tracking-[0.38em] uppercase mb-6"
-          style={{ color: "var(--color-tan)" }}
-        >
-          — your reward
-        </p>
+        <p className="hs-note mb-4">{noReward ? "oh no" : "you won"}</p>
 
-        {isNoReward ? (
-          <p
-            className="text-3xl font-semibold"
-            style={{ fontFamily: "var(--font-body)", color: "var(--color-sand)" }}
-          >
-            Better luck next time
-          </p>
+        {noReward ? (
+          <p className="hs-display" style={{ color: "var(--ink)" }}>Better luck next time</p>
         ) : (
           <>
-            <p
-              className="text-[clamp(2rem,8vw,3.2rem)] font-semibold leading-tight"
-              style={{ fontFamily: "var(--font-body)", color: "var(--foreground)" }}
-            >
-              {result}
-            </p>
-
-            <div
-              className="w-16 my-8"
-              style={{ height: 1, backgroundColor: "color-mix(in srgb, var(--color-tan) 35%, transparent)" }}
-            />
-
-            <p
-              className="text-[11px] tracking-wide leading-relaxed"
-              style={{ color: "var(--color-sand)" }}
-            >
-              Show this screen to your server to redeem your reward.
-            </p>
+            <p className="hs-hero text-[clamp(2.6rem,9vw,4rem)]">{result}</p>
+            <p className="hs-lead mt-6 text-center">Show this screen to your server to redeem it.</p>
           </>
         )}
       </div>
-
-      <style>{`
-        @keyframes modalIn {
-          from { opacity: 0; transform: scale(0.94) translateY(10px); }
-          to   { opacity: 1; transform: scale(1) translateY(0); }
-        }
-      `}</style>
     </div>
   );
 }
@@ -336,6 +257,13 @@ function RewardModal({
 
 export default function LuckyWheel() {
   const { tenant } = useTenant();
+
+  const prizes = (tenant?.spinWheelPrizes ?? []).map((p) => p.label?.trim()).filter(Boolean) as string[];
+  const segments = (prizes.length >= 2 ? prizes : DEFAULT_PRIZES).map((label) => ({ label, lines: toLines(label) }));
+  const count = segments.length;
+  const angle = 360 / count;
+  // Narrower slices need smaller type to keep labels inside them
+  const fontSize = count <= 8 ? 11 : count <= 10 ? 10 : 9;
 
   // Auth state
   const [token, setToken] = useState<string | null>(null);
@@ -358,10 +286,10 @@ export default function LuckyWheel() {
     setSpinning(true);
     setResult(null);
 
-    const selectedIndex = Math.floor(Math.random() * NUM);
+    const selectedIndex = Math.floor(Math.random() * count);
 
     const targetOffset =
-      (360 - (selectedIndex + 0.5) * ANGLE_DEG + 360) % 360;
+      (360 - (selectedIndex + 0.5) * angle + 360) % 360;
     const currentMod = rotationRef.current % 360;
     const delta = (targetOffset - currentMod + 360) % 360;
     const newRotation = rotationRef.current + 5 * 360 + delta;
@@ -370,7 +298,7 @@ export default function LuckyWheel() {
     setRotation(newRotation);
 
     setTimeout(async () => {
-      const reward = SEGMENTS[selectedIndex].lines.join(" ");
+      const reward = segments[selectedIndex].label;
       setResult(reward);
       setSpinning(false);
 
@@ -396,36 +324,11 @@ export default function LuckyWheel() {
 
   return (
     <>
-      <div
-        className="flex flex-col items-center justify-start px-6 py-16"
-        style={{ minHeight: "calc(100vh - 80px)" }}
-      >
-        {/* ── Header ── */}
-        <div className="text-center mb-10">
-          <p
-            className="text-[10px] tracking-[0.38em] uppercase mb-5"
-            style={{ color: "var(--color-tan)" }}
-          >
-            — try your luck
-          </p>
-          <h1
-            className="text-[clamp(2.6rem,6vw,4.2rem)] font-semibold leading-[0.92] tracking-tight"
-            style={{ fontFamily: "var(--font-body)", color: "var(--foreground)" }}
-          >
-            Lucky Wheel
-          </h1>
-          {userName && (
-            <p
-              className="mt-4 text-[12px] tracking-wide"
-              style={{ color: "var(--color-tan)" }}
-            >
-              welcome, {userName}
-            </p>
-          )}
-          <p
-            className="mt-3 text-[13px] leading-relaxed max-w-xs mx-auto"
-            style={{ color: "var(--color-sand)" }}
-          >
+      <div className="flex flex-col items-center justify-start hos-gutter pt-12 md:pt-16">
+        <div className="text-center mb-12 animate-rise">
+          <p className="hs-note mb-3">{userName ? `good luck, ${userName}` : "try your luck"}</p>
+          <h1 className="hs-hero text-[clamp(3rem,8vw,6.5rem)]">lucky wheel</h1>
+          <p className="hs-lead mt-5 mx-auto text-center">
             One spin per visit. Show your reward to the team to redeem it.
           </p>
         </div>
@@ -444,9 +347,8 @@ export default function LuckyWheel() {
               height: 0,
               borderLeft: "11px solid transparent",
               borderRight: "11px solid transparent",
-              borderTop: "22px solid #3d3018",
+              borderTop: "24px solid var(--ink)",
               zIndex: 10,
-              filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.15))",
             }}
           />
 
@@ -460,38 +362,37 @@ export default function LuckyWheel() {
               transition: spinning
                 ? `transform ${SPIN_DURATION_MS}ms cubic-bezier(0.17, 0.67, 0.12, 0.99)`
                 : "none",
-              filter: "drop-shadow(0 6px 20px rgba(61,48,24,0.18))",
+              filter: "drop-shadow(0 14px 22px oklch(25% 0.03 60 / 0.22))",
             }}
             aria-label="Lucky wheel"
             role="img"
           >
-            <circle cx={CX} cy={CY} r={R + 2} fill="none" stroke="#3d3018" strokeWidth={4} />
+            <circle cx={CX} cy={CY} r={R + 2} fill="none" style={{ stroke: "var(--ink)" }} strokeWidth={3.5} />
 
-            {SEGMENTS.map((seg, i) => {
-              const midAngle = (i + 0.5) * ANGLE_DEG;
-              const textPos = polarToXY(midAngle, R * 0.63);
+            {segments.map((seg, i) => {
+              const midAngle = (i + 0.5) * angle;
+              const textPos = polarToXY(midAngle, R * (count > 8 ? 0.68 : 0.63));
               const rot = textRotation(midAngle);
-              const color = COLORS[i];
+              const color = sliceColor(i, count);
               const isMultiLine = seg.lines.length > 1;
               return (
                 <g key={i}>
-                  <path d={slicePath(i)} fill={color.bg} stroke="#f2ede4" strokeWidth={1.5} />
+                  <path d={slicePath(i, angle)} style={{ fill: color.bg, stroke: "var(--ink)" }} strokeWidth={1.4} />
                   <text
                     transform={`translate(${textPos.x},${textPos.y}) rotate(${rot})`}
                     textAnchor="middle"
                     dominantBaseline="middle"
                     style={{
-                      fontSize: "9.5px",
+                      fontSize: `${fontSize}px`,
                       fontFamily: "var(--font-body)",
                       fontWeight: 600,
                       fill: color.text,
-                      letterSpacing: "0.04em",
                       pointerEvents: "none",
                       userSelect: "none",
                     }}
                   >
                     {seg.lines.map((line, j) => (
-                      <tspan key={j} x="0" dy={j === 0 ? (isMultiLine ? "-7" : "0") : "14"}>
+                      <tspan key={j} x="0" dy={j === 0 ? (isMultiLine ? `${-fontSize * 0.62}` : "0") : `${fontSize * 1.25}`}>
                         {line}
                       </tspan>
                     ))}
@@ -500,20 +401,20 @@ export default function LuckyWheel() {
               );
             })}
 
-            {SEGMENTS.map((_, i) => {
-              const spoke = polarToXY(i * ANGLE_DEG, R);
+            {segments.map((_, i) => {
+              const spoke = polarToXY(i * angle, R);
               return (
                 <line
                   key={`spoke-${i}`}
                   x1={CX} y1={CY} x2={spoke.x} y2={spoke.y}
-                  stroke="#f2ede4" strokeWidth={1.5}
+                  style={{ stroke: "var(--ink)" }} strokeWidth={1.4}
                 />
               );
             })}
 
-            <circle cx={CX} cy={CY} r={20} fill="#3d3018" />
-            <circle cx={CX} cy={CY} r={15} fill="#f2ede4" />
-            <circle cx={CX} cy={CY} r={4} fill="#3d3018" />
+            <circle cx={CX} cy={CY} r={20} style={{ fill: "var(--ink)" }} />
+            <circle cx={CX} cy={CY} r={15} style={{ fill: "var(--paper)" }} />
+            <circle cx={CX} cy={CY} r={4} style={{ fill: "var(--pen)" }} />
           </svg>
         </div>
 
@@ -521,19 +422,10 @@ export default function LuckyWheel() {
         <button
           onClick={spin}
           disabled={spinning}
-          className="mt-10 px-14 py-3 text-xs tracking-[0.28em] uppercase transition-opacity"
-          style={{
-            backgroundColor: spinning ? "var(--color-tan)" : "var(--color-earth)",
-            color: "#f2ede4",
-            fontFamily: "var(--font-body)",
-            cursor: spinning ? "not-allowed" : "pointer",
-            opacity: spinning ? 0.65 : 1,
-            outline: "none",
-            border: "none",
-          }}
+          className="hs-btn hs-btn-solid mt-12 min-w-[200px]"
           aria-label={spinning ? "Spinning…" : "Spin the wheel"}
         >
-          {spinning ? "spinning…" : "spin"}
+          {spinning ? "spinning…" : "Spin!"}
         </button>
       </div>
 

@@ -5,6 +5,9 @@ import type React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTenant } from "@/app/contexts/TenantContext";
+import OpeningStatus from "@/app/components/OpeningStatus";
+import BranchSwitcher, { BranchEntry, useBranches } from "./BranchSwitcher";
+import { ArrowRight } from "./Icons";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -18,7 +21,8 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
   const { tenant } = useTenant();
-  const brandName = tenant?.name ?? "House of Senses";
+  const branches = useBranches();
+  const brandName = (tenant?.name ?? "House of Senses").toLowerCase();
 
   // Close the mobile menu on navigation and lock page scroll while it is open
   useEffect(() => setIsMenuOpen(false), [pathname]);
@@ -30,147 +34,134 @@ export default function Navbar() {
   }, [isMenuOpen]);
 
   const toggleMenu = () => setIsMenuOpen((v) => !v);
+  const isActive = (href: string) => (href === "/" ? pathname === "/" || pathname === "/home" : pathname === href);
 
   return (
     <>
-      <nav
-        aria-label="Site navigation"
-        className="relative z-40 bg-paper hos-gutter border-b hos-rule"
-        style={{ height: "var(--header-h)", "--rule-color": "var(--color-main)" } as React.CSSProperties}
-      >
-        <div className="h-full grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center">
-          <div className="justify-self-start flex flex-col items-center gap-1.5">
-            <Link
-              href="/"
-              className="font-serif text-[1.75rem] lg:text-[2.25rem] leading-none whitespace-nowrap transition-opacity duration-300 hover:opacity-70"
-              style={{ color: "var(--color-main)" }}
-              aria-label={`${brandName} home`}
-            >
-              {brandName}
-            </Link>
-            <a
-              href="https://houseofsenses.vn"
-              className="hos-link text-[13px] leading-none"
-              style={{ color: "var(--color-ink-muted)" }}
-            >
-              House of Senses
-            </a>
-          </div>
-
-          <ul className="hidden lg:flex items-center gap-[22px]">
-            {NAV_LINKS.map(({ href, label }) => {
-              const isActive = pathname === href;
-              return (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    aria-current={isActive ? "page" : undefined}
-                    className="hos-link text-[18px] leading-[1.3]"
-                    style={{ color: "var(--color-ink)" }}
-                  >
-                    {label}
-                  </Link>
-                </li>
-              );
-            })}
+      <nav aria-label="Site navigation" className="relative z-40 hs-paper hos-gutter" style={{ height: "var(--header-h)" }}>
+        <div className="h-full grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center gap-6">
+          {/* Desktop: page links on the left */}
+          <ul className="hidden lg:flex items-center gap-6 justify-self-start">
+            {NAV_LINKS.map(({ href, label }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  aria-current={isActive(href) ? "page" : undefined}
+                  className="hs-ui hs-nav-link text-[0.9375rem]"
+                  style={{ color: "var(--pen)" }}
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
           </ul>
 
-          <div className="justify-self-end flex items-center">
-            <Link
-              href="/reservation"
-              className="hos-btn hos-btn-solid hidden lg:inline-flex"
-              style={{ minHeight: 45, paddingInline: 23 }}
-              aria-label="Make a reservation"
-            >
+          {/* Wordmark: left on mobile, centred on desktop */}
+          <Link
+            href="/"
+            className="justify-self-start lg:justify-self-center text-[1.75rem] lg:text-[2rem] leading-none tracking-[-0.045em] whitespace-nowrap transition-opacity duration-300 hover:opacity-70"
+            style={{ color: "var(--pen)" }}
+            aria-label={`${brandName} home`}
+          >
+            {brandName}
+          </Link>
+
+          <div className="justify-self-end flex items-center gap-6">
+            {tenant && (
+              <span className="hs-ui hidden xl:inline-flex" style={{ color: "var(--ink-soft)" }}>
+                <OpeningStatus branch={tenant} showDetail />
+              </span>
+            )}
+            <div className="hidden lg:block">
+              <BranchSwitcher />
+            </div>
+            <Link href="/reservation" className="hs-btn hs-btn-solid hs-btn-sm hidden lg:inline-flex" aria-label="Make a reservation">
               Book a table
+              <ArrowRight />
             </Link>
 
             <button
               onClick={toggleMenu}
-              className="lg:hidden flex flex-col items-center justify-center gap-[3px] w-6 h-6"
-              style={{ backgroundColor: "var(--color-ink)" }}
+              className="lg:hidden hs-icon-btn !w-9 !h-9"
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
             >
-              <span className="block w-3 h-px bg-paper" />
-              <span className="block w-3 h-px bg-paper" />
-              <span className="block w-3 h-px bg-paper" />
+              <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                <path d="M8 2v12M2 8h12" />
+              </svg>
             </button>
           </div>
         </div>
       </nav>
 
-      {/* Mobile fullscreen menu */}
+      {/* Mobile menu */}
       <div
         id="mobile-menu"
-        className={`lg:hidden fixed inset-0 z-200 flex flex-col bg-paper transition-opacity duration-500 ${
-          isMenuOpen
-            ? "hos-menu-open opacity-100 visible"
-            : "opacity-0 invisible pointer-events-none"
+        className={`lg:hidden fixed inset-0 z-200 flex flex-col hs-paper transition-opacity duration-500 ${
+          isMenuOpen ? "hos-menu-open opacity-100 visible" : "opacity-0 invisible pointer-events-none"
         }`}
         style={{ transitionTimingFunction: "var(--ease-out)" }}
+        inert={!isMenuOpen}
       >
-        <div
-          className="flex items-center justify-between hos-gutter shrink-0"
-          style={{ height: "var(--header-h)" }}
-        >
-          <Link
-            href="/"
-            className="font-serif text-[1.75rem] leading-none whitespace-nowrap"
-            style={{ color: "var(--color-main)" }}
-            onClick={toggleMenu}
-          >
+        <div className="flex items-center justify-between hos-gutter shrink-0" style={{ height: "var(--header-h)" }}>
+          <Link href="/" className="text-[1.75rem] leading-none tracking-[-0.045em]" style={{ color: "var(--pen)" }} onClick={toggleMenu}>
             {brandName}
           </Link>
-          <button
-            onClick={toggleMenu}
-            className="relative w-6 h-6 flex items-center justify-center"
-            style={{ backgroundColor: "var(--color-ink)" }}
-            aria-label="Close menu"
-          >
-            <span className="absolute block w-3.5 h-px bg-paper rotate-45" />
-            <span className="absolute block w-3.5 h-px bg-paper -rotate-45" />
+          <button onClick={toggleMenu} className="hs-icon-btn !w-9 !h-9" aria-label="Close menu">
+            <svg viewBox="0 0 16 16" className="w-4 h-4 rotate-45" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+              <path d="M8 2v12M2 8h12" />
+            </svg>
           </button>
         </div>
 
-        <nav
-          aria-label="Main navigation menu"
-          className="flex-1 flex flex-col justify-center hos-gutter"
-        >
-          <ul className="flex flex-col gap-2">
-            {NAV_LINKS.map(({ href, label }, i) => {
-              const isActive = pathname === href;
-              return (
-                <li key={href} className="hos-menu-item" style={{ "--i": i } as React.CSSProperties}>
-                  <Link
-                    href={href}
-                    aria-current={isActive ? "page" : undefined}
-                    className="hos-link font-serif text-[clamp(2.75rem,13vw,4.5rem)] leading-[1.05]"
-                    style={{ color: "var(--color-main)" }}
-                    onClick={toggleMenu}
-                  >
-                    {label}
-                  </Link>
-                </li>
-              );
-            })}
+        <nav aria-label="Main navigation menu" className="flex-1 overflow-y-auto hos-gutter pt-10 pb-8 flex flex-col">
+          <ul className="flex flex-col">
+            {NAV_LINKS.map(({ href, label }, i) => (
+              <li key={href} className="hos-menu-item" style={{ "--i": i } as React.CSSProperties}>
+                <Link
+                  href={href}
+                  aria-current={isActive(href) ? "page" : undefined}
+                  className="hs-display hs-nav-link inline-block lowercase py-0.5"
+                  style={{ color: "var(--pen)" }}
+                  onClick={toggleMenu}
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
           </ul>
+
+          {tenant && (
+            <p className="hs-ui mt-10 hos-menu-item" style={{ color: "var(--ink-soft)", "--i": NAV_LINKS.length } as React.CSSProperties}>
+              <OpeningStatus branch={tenant} showDetail />
+            </p>
+          )}
+
+          {branches.length > 1 && (
+            <div className="mt-10 hos-menu-item" style={{ "--i": NAV_LINKS.length + 1 } as React.CSSProperties}>
+              <p className="hs-label mb-5">
+                Our homes<span className="hs-count">{branches.length}</span>
+              </p>
+              <ul className="flex flex-col gap-7">
+                {branches.map((b) => (
+                  <li key={b.id}>
+                    <BranchEntry tenant={b} isCurrent={tenant?.id === b.id} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </nav>
 
-        <div
-          className="hos-gutter pb-10 hos-menu-item"
-          style={{ "--i": NAV_LINKS.length } as React.CSSProperties}
-        >
-          <Link
-            href="/reservation"
-            className="hos-btn hos-btn-solid w-full"
-            onClick={toggleMenu}
-          >
+        <div className="hos-gutter pb-8 pt-4 shrink-0">
+          <Link href="/reservation" className="hs-btn hs-btn-solid w-full" onClick={toggleMenu}>
             Book a table
+            <ArrowRight />
           </Link>
         </div>
       </div>
     </>
   );
 }
+

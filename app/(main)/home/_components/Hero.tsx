@@ -1,100 +1,61 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import Link from "next/link";
 import type { Tenant } from "@/api/queries";
-import { API_URL } from "@/app/utils/constants";
+import OpeningStatus from "@/app/components/OpeningStatus";
+import { ArrowRight } from "../../components/Icons";
+import { mapsUrl } from "@/app/utils/maps";
 
 interface HeroProps {
   tenant?: Tenant | null;
-  /** Set false when something covers the hero on load (e.g. the updates modal) */
-  prioritizeImage?: boolean;
 }
 
-/**
- * Splits "Red_Space" / "red___space" into words joined by a stretched rule,
- * matching the reference's "red ____ space" lockup. Titles without "_" render
- * as plain words.
- */
-function HeroTitle({ title }: { title: string }) {
-  const parts = title.split(/_+/).filter(Boolean);
-  if (parts.length < 2) {
-    return <span className="block text-center">{title}</span>;
-  }
+/** Big headline in the branch colour, with the practical details beside it */
+const Hero: React.FC<HeroProps> = ({ tenant }) => {
+  // The CMS writes titles like "Red_Space"; the underscore is a line break
+  const title = (tenant?.heroTitle || tenant?.name || "House of Senses").toLowerCase();
+  const lines = title.split(/_+/).map((p) => p.trim()).filter(Boolean);
+  const name = tenant?.name ?? "House of Senses";
+  const description = tenant?.heroDescription;
+
   return (
-    <span className="flex items-baseline w-full">
-      {parts.map((part, i) => (
-        <React.Fragment key={`${part}-${i}`}>
-          {i > 0 && (
-            <span
-              aria-hidden="true"
-              className="hos-hero-rule flex-1 self-baseline min-w-[0.6em] mx-[-0.02em]"
-              style={{
-                height: "0.035em",
-                backgroundColor: "currentColor",
-                borderRadius: "0.02em",
-                transform: "translateY(0.09em)",
-              }}
-            />
+    <section className="hs-shell pt-14 md:pt-20 pb-16 md:pb-28" aria-label={name}>
+      <div className="hs-main grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(0,300px)] gap-x-10 gap-y-8 items-start">
+        <h1 className="hs-hero animate-rise text-center lg:text-left">
+          {lines.map((line, i) => (
+            <span key={`${line}-${i}`} className="block">
+              {line}
+              {i < lines.length - 1 && <span className="sr-only"> </span>}
+            </span>
+          ))}
+        </h1>
+
+        <div className="xl:pt-3 text-center lg:text-left mx-auto lg:mx-0 max-w-[34ch] animate-rise" style={{ color: "var(--pen)" }}>
+          {tenant?.heroSubtitle && <p className="hs-ui mb-4">{tenant.heroSubtitle}</p>}
+          {description && <p className="text-[1.1875rem] leading-[1.25] tracking-[-0.015em]">{description}</p>}
+          {tenant && (
+            <p className="text-[1.1875rem] leading-[1.25] tracking-[-0.015em] mt-4">
+              <OpeningStatus branch={tenant} showDetail />
+              {tenant.address && (
+                <>
+                  {" "}at{" "}
+                  <a href={mapsUrl(tenant)} target="_blank" rel="noopener noreferrer" className="hs-link">
+                    {tenant.address.toLowerCase()}
+                  </a>
+                </>
+              )}
+            </p>
           )}
-          <span className="whitespace-nowrap">{part.trim()}</span>
-        </React.Fragment>
-      ))}
-    </span>
-  );
-}
-
-const Hero: React.FC<HeroProps> = ({ tenant, prioritizeImage = true }) => {
-  const title = tenant?.heroTitle || tenant?.name || "House of Senses";
-  const images = (tenant?.heroImagesList ?? [])
-    .filter((item) => item.image?.url)
-    .slice(0, 2);
-
-  return (
-    <section className="w-full bg-paper" aria-label={tenant?.name ?? "House of Senses"}>
-      <h1
-        className="hos-gutter lowercase font-serif animate-rise"
-        style={{
-          fontSize: "var(--text-hero)",
-          lineHeight: 0.84,
-          letterSpacing: "-0.05em",
-          color: "var(--color-main)",
-          paddingTop: "0.11em",
-          // descenders ("p") meet the image row, as in the reference
-          paddingBottom: "0.035em",
-        }}
-      >
-        <span className="sr-only">{title.replace(/_+/g, " ")}</span>
-        <span aria-hidden="true">
-          <HeroTitle title={title} />
-        </span>
-      </h1>
-
-      <div className="hos-gutter grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-[22px]">
-        {images.length > 0
-          ? images.map((item, idx) => (
-              <div
-                key={item.id ?? idx}
-                className="hos-hero-media relative w-full overflow-hidden aspect-[342/300] md:aspect-[698/731]"
-                style={{ backgroundColor: "var(--paper-2)" }}
-              >
-                <Image
-                  src={`${API_URL}${item.image!.url}`}
-                  alt={item.image?.filename || ""}
-                  fill
-                  priority={prioritizeImage && idx === 0}
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-              </div>
-            ))
-          : [0, 1].map((idx) => (
-              <div
-                key={idx}
-                className="w-full aspect-[342/300] md:aspect-[698/731]"
-                style={{ backgroundColor: "var(--paper-2)" }}
-              />
-            ))}
+          <div className="flex flex-wrap justify-center lg:justify-start gap-2.5 mt-7">
+            <Link href="/reservation" className="hs-btn hs-btn-solid hs-btn-sm">
+              Book a table <ArrowRight />
+            </Link>
+            <Link href="/menu" className="hs-btn hs-btn-sm">
+              The menu <ArrowRight />
+            </Link>
+          </div>
+        </div>
       </div>
     </section>
   );

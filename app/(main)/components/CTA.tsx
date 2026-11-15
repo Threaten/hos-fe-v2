@@ -2,52 +2,31 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
 import { useTenant } from "@/app/contexts/TenantContext";
+import { ArrowRight } from "./Icons";
 
+/** Closing invitation to come by */
 const CTA = () => {
   const { tenant } = useTenant();
 
-  const tenantName = tenant ? tenant.name.toLowerCase() : "houseofsenses.vn";
+  const tenantName = tenant ? tenant.name.toLowerCase() : "house of senses";
   const ctaTitle = tenant?.ctaTitle || `Plan a visit to ${tenantName}`;
-  const ctaText =
-    tenant?.ctaText || "Choose a branch, book a table, or browse the latest menu.";
+  const ctaText = tenant?.ctaText || "Choose a branch, book a table, or browse the latest menu.";
 
   return (
-    <section
-      className="hos-gutter bg-paper pt-20 md:pt-[112px] pb-20 md:pb-[100px] border-t hos-rule"
-      style={{ borderColor: "var(--color-line)" }}
-      aria-labelledby="cta-heading"
-    >
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 md:gap-10">
-        <div className="max-w-[1093px]" data-reveal>
-          <p className="hos-label mb-3" style={{ color: "var(--foreground)" }}>
-            Make it memorable
-          </p>
-          <h2 id="cta-heading" className="hos-display text-balance" style={{ color: "var(--color-main)" }}>
-            {ctaTitle}
-          </h2>
-          <p className="mt-4 max-w-[60ch]" style={{ color: "var(--color-ink)" }}>
-            {ctaText}
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-[11px] shrink-0" data-reveal style={{ ["--reveal-delay" as string]: "0.15s" }}>
-          <Link
-            href="/reservation"
-            className="hos-btn hos-btn-solid"
-            aria-label={`Make a reservation at ${tenantName}`}
-          >
-            Book a table
+    <section className="hs-shell pt-[var(--section)]" aria-labelledby="cta-heading">
+      <p className="hs-label mb-6 lg:mb-0 text-center lg:text-left">Visit</p>
+      <div className="hs-main text-center lg:text-left" data-reveal>
+        <h2 id="cta-heading" className="hs-display max-w-[18ch] mx-auto lg:mx-0" style={{ color: "var(--ink)" }}>
+          {ctaTitle}
+        </h2>
+        <p className="hs-lead mt-6 mx-auto lg:mx-0">{ctaText}</p>
+        <div className="flex flex-wrap justify-center lg:justify-start gap-2.5 mt-8">
+          <Link href="/reservation" className="hs-btn hs-btn-solid" aria-label={`Make a reservation at ${tenantName}`}>
+            Book a table <ArrowRight />
           </Link>
-          <Link
-            href="/menu"
-            className="hos-btn hos-btn-outline"
-            style={{ color: "var(--color-main)" }}
-            aria-label={`View ${tenantName}'s menu`}
-          >
-            <span>Explore menu</span>
-            <ArrowUpRight aria-hidden="true" strokeWidth={1.25} className="w-[1.05em] h-[1.05em]" />
+          <Link href="/menu" className="hs-btn" aria-label={`View ${tenantName}'s menu`}>
+            See the menu <ArrowRight />
           </Link>
         </div>
       </div>

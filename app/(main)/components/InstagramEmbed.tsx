@@ -41,42 +41,36 @@ export function buildSocials(tenant?: Tenant | null): SocialNetwork[] {
   );
 }
 
-/** Reference "Follow us": one outline button, secondary networks as text links. */
+/** Every network as a big lowercase link in the branch colour */
 export default function InstagramEmbed({ tenant }: InstagramEmbedProps) {
   const socials = buildSocials(tenant);
   if (socials.length === 0) return null;
-
-  const [primary, ...rest] = socials;
   const name = tenant?.name || "House of Senses";
 
   return (
-    <div className="flex flex-col items-center gap-5" style={{ color: "var(--color-main)" }}>
-      <a
-        href={primary.href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="hos-btn hos-btn-outline min-w-[114px] md:min-w-[157px]"
-        aria-label={`Follow ${name} on ${primary.label}`}
-      >
-        <span>Follow us</span>
-      </a>
-      {rest.length > 0 && (
-        <ul className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-[15px]" style={{ color: "var(--color-ink)" }}>
-          {rest.map((social) => (
-            <li key={social.key}>
-              <a
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hos-link"
-                aria-label={`${name} on ${social.label}`}
-              >
-                {social.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <section className="hs-shell pt-[var(--section)]" aria-labelledby="follow-heading">
+      <h2 id="follow-heading" className="hs-label mb-6 lg:mb-0 text-center lg:text-left">
+        Follow along
+      </h2>
+      <ul className="hs-main flex flex-wrap justify-center lg:justify-start gap-x-8 md:gap-x-12 gap-y-2" data-reveal>
+        {socials.map((social) => (
+          <li key={social.key}>
+            <a
+              href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hs-display hs-nav-link inline-flex items-start gap-2 lowercase"
+              style={{ color: "var(--pen)" }}
+              aria-label={`${name} on ${social.label}`}
+            >
+              {social.label}
+              <svg viewBox="0 0 16 16" className="w-[0.32em] h-[0.32em] mt-[0.12em]" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
+                <path d="M4 12L12 4M5 4h7v7" strokeLinecap="square" />
+              </svg>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

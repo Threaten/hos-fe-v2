@@ -28,7 +28,7 @@ const ReservationContent = () => {
 
 const Reservation = () => {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<p className="hs-note hos-gutter pt-16 animate-pulse">Loading…</p>}>
       <ReservationContent />
     </Suspense>
   );

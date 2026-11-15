@@ -1,16 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Gallery from "../../../(main)/home/_components/Gallery";
+import { useState } from "react";
 import NewMenuModal from "../../../(main)/components/NewMenuModal";
-import type { Tenant } from "@/api/queries";
-
-interface GalleryImage {
-  src: string;
-  alt: string;
-  branch: string;
-  caption: string;
-}
 
 interface NewMenuImage {
   src?: {
@@ -20,42 +11,16 @@ interface NewMenuImage {
   id?: string;
 }
 
-interface TenantHomeInteractiveProps {
-  transformedImages: GalleryImage[];
-  newMenu: NewMenuImage[];
-  tenantName: string;
-  galleryText?: string;
-  tenant: Tenant | null;
-}
-
+/** Client-only part of the branch home page: the "what's new" modal */
 export default function TenantHomeInteractive({
-  transformedImages,
   newMenu,
   tenantName,
-  galleryText,
-  tenant,
-}: TenantHomeInteractiveProps) {
-  const [showNewMenuModal, setShowNewMenuModal] = useState(
-    newMenu != null && newMenu.length > 0,
-  );
-
-  const handleCloseModal = () => {
-    setShowNewMenuModal(false);
-  };
-
+}: {
+  newMenu: NewMenuImage[];
+  tenantName: string;
+}) {
+  const [open, setOpen] = useState(newMenu != null && newMenu.length > 0);
   return (
-    <>
-      <Gallery
-        images={transformedImages}
-        galleryText={galleryText}
-        tenant={tenant}
-      />
-      <NewMenuModal
-        images={newMenu}
-        isOpen={showNewMenuModal}
-        onClose={handleCloseModal}
-        tenantName={tenantName}
-      />
-    </>
+    <NewMenuModal images={newMenu} isOpen={open} onClose={() => setOpen(false)} tenantName={tenantName} />
   );
 }

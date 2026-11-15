@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import HTMLFlipBook from "react-pageflip";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import SkeletonImage from "@/app/components/SkeletonImage";
 import { resolveBackendMediaUrl, type BackendMedia } from "@/app/utils/media";
 
@@ -89,7 +88,24 @@ export default function TenantFlipbook({
 
   const nextPage = () => {
     if (flipBookRef.current && currentPage < totalPages - (isMobile ? 1 : 2)) {
-      flipBookRef.current.pageFlip().flipNext();
+      const book = flipBookRef.current.pageFlip();
+      if (isMobile) {
+        // Single-page mode: play the "back" turn in reverse, so the current
+        // sheet sweeps off to the left exactly as the previous one sweeps in.
+        // page-flip has no public API for this; it uses the flip controller's
+        // internals (pinned to page-flip 2.0.7).
+        const flip = book.getFlipController();
+        const { pageWidth, height } = book.getBoundsRect();
+        if (flip.getCalculation()) return; // a turn is already running
+        book.turnToNextPage();
+        if (!flip.start({ x: 10, y: 1 })) return;
+        flip.setState("flipping");
+        // Same path flipPrev() animates (Flip.flip), run backwards
+        const margin = height / 10;
+        flip.animateFlippingTo({ x: -pageWidth, y: 0 }, { x: pageWidth - margin, y: margin }, false);
+        return;
+      }
+      book.flipNext();
     }
   };
 
@@ -104,28 +120,29 @@ export default function TenantFlipbook({
   };
 
   return (
-    <div className="w-full flex flex-col items-center pb-16 md:pb-[112px]">
+    <div className="w-full flex flex-col items-center">
       {showHeading && (
-        <header className="w-full hos-gutter pt-12 md:pt-[78px] text-center">
-          <p className="hos-label mb-3" style={{ color: "var(--foreground)" }}>
-            Our menu
-          </p>
-          <h1 className="hos-display lowercase" style={{ color: "var(--color-main)" }}>
-            {tenantName}
-          </h1>
+        <header className="w-full hs-shell pt-14 md:pt-20">
+          <div className="hs-main grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(0,300px)] gap-x-10 gap-y-6 items-start">
+            <h1 className="hs-hero animate-rise text-center lg:text-left">the menu</h1>
+            <p className="text-[1.1875rem] leading-[1.25] tracking-[-0.015em] xl:pt-3 text-center lg:text-left animate-rise" style={{ color: "var(--pen)" }}>
+              Tonight at {tenantName.toLowerCase()}. Drag a corner, or use the arrows, to turn the page.
+            </p>
+          </div>
         </header>
       )}
 
       {isLoading && (
-        <p className="mt-16 animate-pulse" style={{ color: "var(--color-ink-muted)" }} role="status">
+        <p className="hs-note mt-16 animate-pulse" role="status">
           Opening the menu…
         </p>
       )}
 
       {error && (
         <div className="mt-16 text-center hos-gutter">
-          <p className="mb-6" style={{ color: "var(--color-ink)" }}>{error}</p>
-          <button onClick={() => window.location.reload()} className="hos-btn hos-btn-solid">
+          <p className="hs-title mb-3" style={{ color: "var(--ink)" }}>The menu got stuck between pages.</p>
+          <p className="hs-meta mb-6">{error}</p>
+          <button onClick={() => window.location.reload()} className="hs-btn hs-btn-solid">
             Try again
           </button>
         </div>
@@ -155,9 +172,9 @@ export default function TenantFlipbook({
       {!isLoading && !error && totalPages > 0 && (
         <>
           <div
-            className="flex justify-center items-center w-full relative mt-8 md:mt-[34px] py-8 md:py-14 overflow-hidden"
+            className="flex justify-center items-center w-full relative mt-12 md:mt-20 py-10 md:py-16 overflow-hidden"
             style={{
-              minHeight: isMobile ? "564px" : "862px",
+              minHeight: isMobile ? "580px" : "880px",
               backgroundColor: "var(--paper-2)",
             }}
           >
@@ -172,7 +189,7 @@ export default function TenantFlipbook({
                   showCover={false}
                   mobileScrollSupport={true}
                   onFlip={onFlip}
-                  className="shadow-[0_24px_60px_-28px_color-mix(in_oklab,var(--foreground)_45%,transparent)]"
+                  className="shadow-[0_30px_60px_-30px_color-mix(in_oklab,var(--ink)_55%,transparent)]"
                   startPage={0}
                   drawShadow={true}
                   flippingTime={600}
@@ -215,7 +232,7 @@ export default function TenantFlipbook({
                 showCover={false}
                 mobileScrollSupport={true}
                 onFlip={onFlip}
-                className="shadow-[0_24px_60px_-28px_color-mix(in_oklab,var(--foreground)_45%,transparent)]"
+                className="shadow-[0_30px_60px_-30px_color-mix(in_oklab,var(--ink)_55%,transparent)]"
                 startPage={0}
                 drawShadow={true}
                 flippingTime={600}
@@ -253,18 +270,19 @@ export default function TenantFlipbook({
           </div>
 
           {/* Navigation Controls */}
-          <div className="mt-6 md:mt-8 flex items-center gap-6 md:gap-10">
+          <div className="mt-8 md:mt-10 flex items-center gap-8 md:gap-12">
             <button
               onClick={prevPage}
               disabled={currentPage <= 0}
-              className="hos-btn hos-btn-outline min-h-0 w-12 h-12 p-0 rounded-full disabled:opacity-30 disabled:pointer-events-none"
-              style={{ color: "var(--color-main)" }}
+              className="hs-icon-btn"
               aria-label="Previous page"
             >
-              <ChevronLeft strokeWidth={1.25} className="w-5 h-5" />
+              <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                <path d="M10 3L5 8l5 5" strokeLinecap="square" />
+              </svg>
             </button>
 
-            <span className="font-serif text-[1.375rem] tabular-nums min-w-[7ch] text-center" style={{ color: "var(--color-ink)" }} aria-live="polite">
+            <span className="hs-ui text-[0.9375rem] tabular-nums min-w-[7ch] text-center" style={{ color: "var(--ink)" }} aria-live="polite">
               {isMobile
                 ? `${currentPage + 1} / ${totalPages}`
                 : `${currentPage + 1}–${Math.min(currentPage + 2, totalPages)} / ${totalPages}`}
@@ -273,16 +291,14 @@ export default function TenantFlipbook({
             <button
               onClick={nextPage}
               disabled={currentPage >= totalPages - (isMobile ? 1 : 2)}
-              className="hos-btn hos-btn-outline min-h-0 w-12 h-12 p-0 rounded-full disabled:opacity-30 disabled:pointer-events-none"
-              style={{ color: "var(--color-main)" }}
+              className="hs-icon-btn"
               aria-label="Next page"
             >
-              <ChevronRight strokeWidth={1.25} className="w-5 h-5" />
+              <svg viewBox="0 0 16 16" className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                <path d="M10 3L5 8l5 5" strokeLinecap="square" />
+              </svg>
             </button>
           </div>
-          <p className="mt-3 text-[14px]" style={{ color: "var(--color-ink-muted)" }}>
-            Drag a corner or tap the arrows to turn the page
-          </p>
         </>
       )}
     </div>

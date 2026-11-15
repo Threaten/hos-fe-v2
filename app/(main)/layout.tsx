@@ -3,7 +3,6 @@ import "../globals.css";
 import Topbar from "./components/Topbar";
 import Navbar from "./components/Navbar";
 import SiteHeader from "./components/SiteHeader";
-import Breadcrumbs from "./components/Breadcrumbs";
 import Footer from "./components/Footer";
 import PageTransition from "./components/PageTransition";
 import { TenantProvider } from "../contexts/TenantContext";
@@ -20,13 +19,16 @@ export default function MainLayout({
 }>) {
   return (
     <TenantProvider>
-      <SiteHeader>
-        <Topbar />
-        <Navbar />
-      </SiteHeader>
-      <Breadcrumbs />
-      <PageTransition>{children}</PageTransition>
-      <Footer />
+      <div className="hs-paper min-h-screen flex flex-col">
+        <SiteHeader>
+          <Topbar />
+          <Navbar />
+        </SiteHeader>
+        <main className="flex-1">
+          <PageTransition>{children}</PageTransition>
+        </main>
+        <Footer />
+      </div>
     </TenantProvider>
   );
 }

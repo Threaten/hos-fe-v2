@@ -21,7 +21,9 @@ export default async function Home() {
   return (
     <>
       <JsonLd data={buildRootJsonLd(branches, homeInfo?.logo?.url)} />
-      <Welcome initialBranches={branches as Tenant[]} initialHomeInfo={homeInfo} />
+      <div className="font-legacy">
+        <Welcome initialBranches={branches as Tenant[]} initialHomeInfo={homeInfo} />
+      </div>
     </>
   );
 }
