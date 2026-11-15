@@ -11,6 +11,83 @@ if (typeof window !== "undefined") {
   pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 }
 
+/**
+ * The turn page-flip draws in single-page (phone) mode, sampled frame by frame:
+ * [progress, x / sheet width, y / sheet height, rotation in degrees] of the
+ * incoming sheet's top-left corner. Desktop buttons replay it on the spread.
+ */
+const PHONE_TURN: Array<[number, number, number, number]> = [
+  [0, -1.09, -0.575, 74],
+  [0.15, -1.43, -0.284, 31.8],
+  [0.27, -1.29, -0.14, 17.7],
+  [0.4, -1.08, -0.071, 10.7],
+  [0.52, -0.856, -0.035, 6.6],
+  [0.65, -0.623, -0.015, 4],
+  [0.77, -0.391, -0.005, 2.1],
+  [0.9, -0.149, -0.0006, 0.7],
+  [1, 0, 0, 0],
+];
+const PHONE_TURN_MS = 420;
+
+/** A static copy of the spread page-flip is showing, placed over it */
+function snapshotSpread(stage: HTMLElement): HTMLElement | null {
+  const pages = [...stage.querySelectorAll<HTMLElement>(".stf__item")].filter(
+    (el) => getComputedStyle(el).display !== "none" && el.getBoundingClientRect().width > 0,
+  );
+  if (!pages.length) return null;
+  const box = stage.getBoundingClientRect();
+  const rects = pages.map((el) => el.getBoundingClientRect());
+  const left = Math.min(...rects.map((r) => r.left));
+  const top = Math.min(...rects.map((r) => r.top));
+  const width = Math.max(...rects.map((r) => r.right)) - left;
+  const height = Math.max(...rects.map((r) => r.bottom)) - top;
+
+  const layer = document.createElement("div");
+  layer.style.cssText = `position:absolute;left:${left - box.left}px;top:${top - box.top}px;width:${width}px;height:${height}px;z-index:20;pointer-events:none;transform-origin:0 0;background:#fff;`;
+  pages.forEach((el, i) => {
+    const copy = el.cloneNode(true) as HTMLElement;
+    // Not a page-flip page any more, so later snapshots ignore it
+    copy.className = copy.className.replace(/\bstf__\S+/g, "");
+    copy.style.cssText = `position:absolute;left:${rects[i].left - left}px;top:${rects[i].top - top}px;width:${rects[i].width}px;height:${rects[i].height}px;display:block;transform:none;clip-path:none;`;
+    // Cloning a canvas copies the element, not its pixels
+    const from = el.querySelectorAll("canvas");
+    copy.querySelectorAll("canvas").forEach((c, k) => c.getContext("2d")?.drawImage(from[k], 0, 0));
+    layer.appendChild(copy);
+  });
+  return layer;
+}
+
+/** Sweep a sheet in from the left ("in") or off to the left ("out"); starts paused */
+function phoneTurn(sheet: HTMLElement, direction: "in" | "out"): Animation {
+  const w = sheet.offsetWidth;
+  const h = sheet.offsetHeight;
+  const frames = PHONE_TURN.map(([offset, x, y, deg]) => ({
+    offset,
+    transform: `translate(${x * w}px, ${y * h}px) rotate(${deg}deg)`,
+  }));
+  const keyframes =
+    direction === "in" ? frames : frames.map((f) => ({ ...f, offset: 1 - f.offset })).reverse();
+  sheet.style.boxShadow = "0 18px 40px -12px rgb(0 0 0 / 0.35)";
+  const animation = sheet.animate(keyframes, { duration: PHONE_TURN_MS, easing: "linear", fill: "both" });
+  animation.pause();
+  return animation;
+}
+
+/** A desktop turn in progress: its animation, and how to tidy up afterwards */
+interface DesktopTurn {
+  animation: Animation;
+  /** Put page-flip back on the spread the turn started from */
+  undo: () => void;
+  cleanup: () => void;
+}
+
+/** Drag at least this far before it counts as a drag rather than a click */
+const DRAG_START_PX = 6;
+/** Let go past this share of the turn and it completes; otherwise it falls back */
+const DRAG_COMMIT = 0.25;
+
+const nextFrame = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+
 interface TenantFlipbookProps {
   menuUrl: string;
   tenantName: string;
@@ -33,6 +110,9 @@ export default function TenantFlipbook({
   const [pageWidth, setPageWidth] = useState(500);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const flipBookRef = useRef<any>(null);
+  /** The grey stage around the book; desktop turn animations are drawn in it */
+  const stageRef = useRef<HTMLDivElement>(null);
+  const turningRef = useRef(false);
   const imagePageUrls = imagePages
     .map((page) => resolveBackendMediaUrl(page))
     .filter(Boolean);
@@ -105,15 +185,169 @@ export default function TenantFlipbook({
         flip.animateFlippingTo({ x: -pageWidth, y: 0 }, { x: pageWidth - margin, y: margin }, false);
         return;
       }
-      book.flipNext();
+      // Desktop: the current spread sweeps off to the left, as on phones
+      desktopTurn("next");
     }
   };
 
   const prevPage = () => {
-    if (flipBookRef.current && currentPage > 0) {
+    if (!flipBookRef.current || currentPage <= 0) return;
+    if (isMobile) {
       flipBookRef.current.pageFlip().flipPrev();
+      return;
     }
+    // Desktop: the previous spread sweeps in from the left, as on phones
+    desktopTurn("prev");
   };
+
+  /**
+   * Desktop turns. page-flip switches spreads instantly underneath while a
+   * snapshot of the spread plays the phone sweep on top. "next": the current
+   * spread sweeps off to the left. "prev": the previous spread sweeps in from
+   * the left over a copy of the current one. Returns the paused turn.
+   */
+  async function beginDesktopTurn(direction: "next" | "prev"): Promise<DesktopTurn | null> {
+    const stage = stageRef.current;
+    const book = flipBookRef.current?.pageFlip();
+    if (!stage || !book || turningRef.current) return null;
+    turningRef.current = true;
+
+    if (direction === "next") {
+      const sheet = snapshotSpread(stage);
+      if (!sheet) return (turningRef.current = false), null;
+      stage.appendChild(sheet);
+      book.turnToNextPage();
+      return { animation: phoneTurn(sheet, "out"), undo: () => book.turnToPrevPage(), cleanup: () => sheet.remove() };
+    }
+
+    const under = snapshotSpread(stage);
+    if (!under) return (turningRef.current = false), null;
+    stage.appendChild(under); // keeps the current spread on screen meanwhile
+    book.turnToPrevPage();
+    await nextFrame(); // page-flip redraws on the next animation frame
+    const sheet = snapshotSpread(stage);
+    if (!sheet) {
+      under.remove();
+      turningRef.current = false;
+      return null;
+    }
+    sheet.style.zIndex = "21";
+    stage.appendChild(sheet);
+    return {
+      animation: phoneTurn(sheet, "in"),
+      undo: () => book.turnToNextPage(),
+      cleanup: () => {
+        sheet.remove();
+        under.remove();
+      },
+    };
+  }
+
+  /** Play a turn to the end, or back to where it started and undo it */
+  async function finishDesktopTurn(turn: DesktopTurn, complete: boolean) {
+    const { animation } = turn;
+    if (complete) animation.play();
+    else animation.reverse();
+    await animation.finished.catch(() => {});
+    if (!complete) {
+      turn.undo();
+      await nextFrame(); // let page-flip redraw before the cover comes off
+    }
+    turn.cleanup();
+    turningRef.current = false;
+  }
+
+  async function desktopTurn(direction: "next" | "prev") {
+    const turn = await beginDesktopTurn(direction);
+    if (turn) await finishDesktopTurn(turn, true);
+  }
+
+  // Latest values for the pointer handlers below, which live across renders
+  const canTurnRef = useRef({ next: false, prev: false });
+  canTurnRef.current = { next: currentPage < totalPages - 2, prev: currentPage > 0 };
+  const turnRef = useRef({ begin: beginDesktopTurn, finish: finishDesktopTurn, run: desktopTurn });
+  turnRef.current = { begin: beginDesktopTurn, finish: finishDesktopTurn, run: desktopTurn };
+
+  /**
+   * Desktop: clicking or dragging the book uses the same sweep instead of
+   * page-flip's curl. Its mouse handling (click, drag, corner hover) is
+   * blocked on the book, and pointer events drive the sweep: click the right
+   * page for next, the left page for back, or drag and the sweep follows.
+   */
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (isMobile || !stage) return;
+    const bookEl = () => stage.querySelector<HTMLElement>(".stf__parent");
+
+    // page-flip listens for mouse events; stop them before they reach it
+    const blockMouse = (e: MouseEvent) => {
+      const el = bookEl();
+      if (el && e.target instanceof Node && el.contains(e.target)) e.stopPropagation();
+    };
+    const mouseEvents = ["mousedown", "mousemove", "mouseup"] as const;
+    mouseEvents.forEach((t) => window.addEventListener(t, blockMouse, true));
+
+    let gesture: {
+      id: number;
+      startX: number;
+      width: number;
+      direction: "next" | "prev";
+      turn: Promise<DesktopTurn | null> | null;
+      progress: number;
+    } | null = null;
+
+    const onDown = (e: PointerEvent) => {
+      const el = bookEl();
+      if (e.button !== 0 || !el || !(e.target instanceof Node) || !el.contains(e.target)) return;
+      const rect = el.getBoundingClientRect();
+      const direction = e.clientX >= rect.left + rect.width / 2 ? "next" : "prev";
+      if (!canTurnRef.current[direction] || turningRef.current) return;
+      e.preventDefault();
+      stage.setPointerCapture(e.pointerId);
+      gesture = { id: e.pointerId, startX: e.clientX, width: rect.width, direction, turn: null, progress: 0 };
+    };
+
+    const onMove = (e: PointerEvent) => {
+      if (!gesture || e.pointerId !== gesture.id) return;
+      const dx = e.clientX - gesture.startX;
+      if (!gesture.turn && Math.abs(dx) < DRAG_START_PX) return;
+      if (!gesture.turn) gesture.turn = turnRef.current.begin(gesture.direction);
+      // Next follows a drag to the left, back a drag to the right
+      const travel = gesture.direction === "next" ? -dx : dx;
+      gesture.progress = Math.min(1, Math.max(0, travel / gesture.width));
+      const progress = gesture.progress;
+      gesture.turn.then((turn) => {
+        if (turn) turn.animation.currentTime = progress * PHONE_TURN_MS;
+      });
+    };
+
+    const onUp = (e: PointerEvent) => {
+      if (!gesture || e.pointerId !== gesture.id) return;
+      const { turn, progress, direction } = gesture;
+      gesture = null;
+      if (stage.hasPointerCapture(e.pointerId)) stage.releasePointerCapture(e.pointerId);
+      if (!turn) {
+        // A click: turn the whole way
+        turnRef.current.run(direction);
+        return;
+      }
+      turn.then((t) => {
+        if (t) turnRef.current.finish(t, e.type === "pointerup" && progress >= DRAG_COMMIT);
+      });
+    };
+
+    stage.addEventListener("pointerdown", onDown);
+    stage.addEventListener("pointermove", onMove);
+    stage.addEventListener("pointerup", onUp);
+    stage.addEventListener("pointercancel", onUp);
+    return () => {
+      mouseEvents.forEach((t) => window.removeEventListener(t, blockMouse, true));
+      stage.removeEventListener("pointerdown", onDown);
+      stage.removeEventListener("pointermove", onMove);
+      stage.removeEventListener("pointerup", onUp);
+      stage.removeEventListener("pointercancel", onUp);
+    };
+  }, [isMobile, isLoading, error, totalPages]);
 
   const onFlip = (e: { data: number }) => {
     setCurrentPage(e.data);
@@ -172,6 +406,7 @@ export default function TenantFlipbook({
       {!isLoading && !error && totalPages > 0 && (
         <>
           <div
+            ref={stageRef}
             className="flex justify-center items-center w-full relative mt-12 md:mt-20 py-10 md:py-16 overflow-hidden"
             style={{
               minHeight: isMobile ? "580px" : "880px",
