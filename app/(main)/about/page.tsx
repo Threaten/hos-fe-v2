@@ -6,6 +6,35 @@ import Tile from "../components/Tile";
 import RichTextRenderer from "../../components/RichTextRenderer";
 import { useTenant } from "@/app/contexts/TenantContext";
 import { toImage } from "@/app/utils/photos";
+import type { CollectionImage } from "../home/_components/Collection";
+
+type StoryState = React.ComponentProps<typeof RichTextRenderer>["data"];
+
+/** Paragraphs per passage before the story breaks for a photo */
+const PER_PASSAGE = 3;
+
+/**
+ * Cut the story into short passages so photos can sit between them. A new
+ * passage starts at each heading, or after a few paragraphs.
+ */
+function toPassages(state: StoryState): StoryState[] {
+  const nodes = (state?.root?.children ?? []) as Array<{ type?: string }>;
+  const passages: (typeof nodes)[] = [];
+  let current: typeof nodes = [];
+  let paragraphs = 0;
+  for (const node of nodes) {
+    const isHeading = node.type === "heading";
+    if (current.length && (isHeading || paragraphs >= PER_PASSAGE)) {
+      passages.push(current);
+      current = [];
+      paragraphs = 0;
+    }
+    current.push(node);
+    if (!isHeading) paragraphs++;
+  }
+  if (current.length) passages.push(current);
+  return passages.map((children) => ({ ...state, root: { ...state.root, children } }) as StoryState);
+}
 
 export default function AboutPage() {
   const { tenant } = useTenant();
@@ -18,10 +47,24 @@ export default function AboutPage() {
     alt: `Inside ${tenantName}`,
     caption: undefined,
   };
-  const collage = (tenant?.aboutPhotos ?? [])
-    .map((photo, i) => toImage(photo, `${tenantName}, photo ${i + 1}`))
-    .filter((img) => img !== null)
-    .slice(0, 2);
+
+  // Story photos chosen in the CMS first, then the branch's other photos;
+  // never the lead photo twice, never the same photo twice
+  const seen = new Set([hero.src]);
+  const photos: CollectionImage[] = [
+    ...(tenant?.aboutPhotos ?? []),
+    ...(tenant?.photoSets ?? []).flatMap((set) => set.photos ?? []),
+  ].flatMap((photo, i) => {
+    const img = toImage(photo, `${tenantName}, photo ${i + 1}`);
+    if (!img || seen.has(img.src)) return [];
+    seen.add(img.src);
+    return [img];
+  });
+
+  const passages = tenant?.aboutus ? toPassages(tenant.aboutus) : [];
+  const rows = passages.map((passage, i) => ({ passage, photo: photos[i] }));
+  // Photos the passages did not use close the story as a strip of three
+  const strip = photos.slice(rows.length, rows.length + 3);
 
   return (
     <div>
@@ -51,36 +94,64 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* The story */}
-      <section className="hs-shell pt-[var(--section)]" aria-labelledby="story-heading">
-        <h2 id="story-heading" className="hs-label mb-6 lg:mb-0">
+      {/* The story: short passages, each beside a photo, alternating sides */}
+      <section className="hs-shell pt-16 md:pt-28" aria-labelledby="story-heading">
+        <h2 id="story-heading" className="hs-label mb-8 lg:mb-0">
           <span className="hs-rail-sticky block">How it began</span>
         </h2>
-        <div className="hs-main grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(0,300px)] gap-x-10 gap-y-14">
-          <div data-reveal>
-            {tenant?.aboutus ? (
-              <RichTextRenderer data={tenant.aboutus} className="max-w-[40ch]" />
-            ) : (
-              <div className="richtext-content max-w-[40ch]">
-                <p>
-                  {tenantName} was born from a simple wish: a room where food and
-                  company take their time. A place that feels a little like
-                  coming home.
-                </p>
-                <p>
-                  Every dish starts from what we would cook for friends,
-                  with the warmth of familiar techniques and the curiosity of
-                  new flavours.
-                </p>
-                <blockquote>Good food brings people together. That is the whole idea.</blockquote>
+        <div className="hs-main flex flex-col gap-16 md:gap-24">
+          {rows.length === 0 && (
+            <div className="richtext-content max-w-[44ch]" data-reveal>
+              <p>
+                {tenantName} was born from a simple wish: a room where food and
+                company take their time. A place that feels a little like
+                coming home.
+              </p>
+              <p>
+                Every dish starts from what we would cook for friends,
+                with the warmth of familiar techniques and the curiosity of
+                new flavours.
+              </p>
+              <blockquote>Good food brings people together. That is the whole idea.</blockquote>
+            </div>
+          )}
+
+          {rows.map(({ passage, photo }, i) => {
+            const photoFirst = i % 2 === 1;
+            return (
+              <div
+                key={i}
+                className={`grid grid-cols-1 gap-y-8 gap-x-[clamp(32px,5vw,88px)] items-center ${
+                  photo
+                    ? photoFirst
+                      ? "lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]"
+                      : "lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]"
+                    : ""
+                }`}
+              >
+                <div data-reveal className={photo && photoFirst ? "lg:order-2" : ""}>
+                  <RichTextRenderer data={passage} className="max-w-[44ch] [&>*:first-child]:mt-0" />
+                </div>
+                {photo && (
+                  <div data-reveal style={{ ["--reveal-delay" as string]: "0.08s" }} className={photoFirst ? "lg:order-1" : ""}>
+                    <Tile
+                      src={photo.src}
+                      alt={photo.alt}
+                      aspect="4 / 5"
+                      title={photo.caption}
+                      sizes="(max-width: 1024px) 92vw, 34vw"
+                    />
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          {collage.length > 0 && (
-            <ul className="grid grid-cols-2 xl:grid-cols-1 gap-3 md:gap-5 content-start" data-reveal-stagger>
-              {collage.map((img) => (
-                <li key={img.src} data-reveal>
-                  <Tile src={img.src} alt={img.alt} aspect="15 / 16" title={img.caption} sizes="(max-width: 1280px) 46vw, 300px" />
+            );
+          })}
+
+          {strip.length > 0 && (
+            <ul className="grid grid-cols-2 lg:grid-cols-3 gap-x-3 md:gap-x-5 gap-y-8" data-reveal-stagger>
+              {strip.map((img, i) => (
+                <li key={img.src} data-reveal className={strip.length === 3 && i === 2 ? "col-span-2 lg:col-span-1" : ""}>
+                  <Tile src={img.src} alt={img.alt} aspect="15 / 16" title={img.caption} sizes="(max-width: 1024px) 46vw, 26vw" />
                 </li>
               ))}
             </ul>
