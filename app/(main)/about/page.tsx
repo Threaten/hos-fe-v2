@@ -10,29 +10,42 @@ import type { CollectionImage } from "../home/_components/Collection";
 
 type StoryState = React.ComponentProps<typeof RichTextRenderer>["data"];
 
-/** Paragraphs per passage before the story breaks for a photo */
-const PER_PASSAGE = 3;
+/** About how many paragraphs sit beside each photo */
+const PER_PASSAGE = 4;
 
 /**
- * Cut the story into short passages so photos can sit between them. A new
- * passage starts at each heading, or after a few paragraphs.
+ * Cut the story into passages of even length so photos can sit between
+ * them (10 paragraphs → 3 + 4 + 3). A heading always starts a new passage.
  */
 function toPassages(state: StoryState): StoryState[] {
   const nodes = (state?.root?.children ?? []) as Array<{ type?: string }>;
+  const total = nodes.filter((n) => n.type !== "heading").length;
+  const count = Math.max(1, Math.round(total / PER_PASSAGE));
+  const breaks = new Set(Array.from({ length: count - 1 }, (_, k) => Math.round(((k + 1) * total) / count)));
   const passages: (typeof nodes)[] = [];
   let current: typeof nodes = [];
-  let paragraphs = 0;
+  let paragraphs = 0; // within the passage
+  let seen = 0; // in the whole story
   for (const node of nodes) {
     const isHeading = node.type === "heading";
-    if (current.length && (isHeading || paragraphs >= PER_PASSAGE)) {
+    if (current.length && (isHeading || (breaks.has(seen) && paragraphs > 0 && current[current.length - 1]?.type !== "heading"))) {
       passages.push(current);
       current = [];
       paragraphs = 0;
     }
     current.push(node);
-    if (!isHeading) paragraphs++;
+    if (!isHeading) {
+      paragraphs++;
+      seen++;
+    }
   }
-  if (current.length) passages.push(current);
+  if (current.length) {
+    // A lone closing paragraph joins the passage before it rather than
+    // getting a photo of its own
+    const last = passages[passages.length - 1];
+    if (last && paragraphs < 2 && current[0]?.type !== "heading") last.push(...current);
+    else passages.push(current);
+  }
   return passages.map((children) => ({ ...state, root: { ...state.root, children } }) as StoryState);
 }
 
@@ -95,11 +108,11 @@ export default function AboutPage() {
       </div>
 
       {/* The story: short passages, each beside a photo, alternating sides */}
-      <section className="hs-shell pt-16 md:pt-28" aria-labelledby="story-heading">
+      <section className="hs-shell pt-14 md:pt-20" aria-labelledby="story-heading">
         <h2 id="story-heading" className="hs-label mb-8 lg:mb-0">
           <span className="hs-rail-sticky block">How it began</span>
         </h2>
-        <div className="hs-main flex flex-col gap-16 md:gap-24">
+        <div className="hs-main flex flex-col gap-14 md:gap-20">
           {rows.length === 0 && (
             <div className="richtext-content max-w-[44ch]" data-reveal>
               <p>
@@ -121,25 +134,21 @@ export default function AboutPage() {
             return (
               <div
                 key={i}
-                className={`grid grid-cols-1 gap-y-8 gap-x-[clamp(32px,5vw,88px)] items-center ${
-                  photo
-                    ? photoFirst
-                      ? "lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]"
-                      : "lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]"
-                    : ""
+                className={`grid grid-cols-1 gap-y-8 gap-x-[clamp(32px,4vw,64px)] items-center ${
+                  photo ? "lg:grid-cols-2" : ""
                 }`}
               >
                 <div data-reveal className={photo && photoFirst ? "lg:order-2" : ""}>
-                  <RichTextRenderer data={passage} className="max-w-[44ch] [&>*:first-child]:mt-0" />
+                  <RichTextRenderer data={passage} className={`${photo ? "" : "max-w-[44ch]"} [&>*:first-child]:mt-0 [&>*:last-child]:mb-0`} />
                 </div>
                 {photo && (
                   <div data-reveal style={{ ["--reveal-delay" as string]: "0.08s" }} className={photoFirst ? "lg:order-1" : ""}>
                     <Tile
                       src={photo.src}
                       alt={photo.alt}
-                      aspect="4 / 5"
+                      aspect="3 / 2"
                       title={photo.caption}
-                      sizes="(max-width: 1024px) 92vw, 34vw"
+                      sizes="(max-width: 1024px) 92vw, 40vw"
                     />
                   </div>
                 )}
