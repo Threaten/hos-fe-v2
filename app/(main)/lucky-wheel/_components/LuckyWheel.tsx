@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useTenant } from "@/app/contexts/TenantContext";
 import { createSpinHistory, API_URL } from "@/api/queries";
 import { readStaffSession, renewStaffSession, saveStaffSession, sessionFromLogin } from "@/app/utils/staffSession";
+import { copyVoucherLink, downloadVoucherQr, shareVoucher } from "@/app/utils/voucherShare";
 
 // ─── Wheel Configuration ──────────────────────────────────────────────────────
 
@@ -181,6 +182,42 @@ function LoginGate({
 
 // ─── Reward Modal ─────────────────────────────────────────────────────────────
 
+/** Share / copy / save the voucher, for guests who'd rather not scan */
+function VoucherShareButtons({ code, url }: { code: string; url: string }) {
+  const [notice, setNotice] = useState<string | null>(null);
+  const flash = (text: string) => {
+    setNotice(text);
+    window.setTimeout(() => setNotice(null), 2500);
+  };
+  const run = (action: () => Promise<string | void>, fallback: string) => async () => {
+    try {
+      const done = await action();
+      if (done === "copied") flash("Link copied");
+      else if (done !== "cancelled" && done !== "shared") flash(fallback);
+    } catch {
+      flash("That didn't work on this device");
+    }
+  };
+  return (
+    <div className="mt-6 flex flex-col items-center gap-3">
+      <div className="flex flex-wrap justify-center gap-2.5">
+        <button type="button" className="hs-btn hs-btn-solid hs-btn-sm" onClick={run(() => shareVoucher(code, url), "")}>
+          Share
+        </button>
+        <button type="button" className="hs-btn hs-btn-sm" onClick={run(() => copyVoucherLink(url), "Link copied")}>
+          Copy link
+        </button>
+        <button type="button" className="hs-btn hs-btn-sm" onClick={run(() => downloadVoucherQr(code), "QR saved")}>
+          Save QR
+        </button>
+      </div>
+      <p className="hs-note min-h-[1.25em]" aria-live="polite">
+        {notice}
+      </p>
+    </div>
+  );
+}
+
 /** The voucher issued for a winning spin, or why it could not be */
 type SpinVoucher =
   | { status: "issuing" }
@@ -271,6 +308,7 @@ function RewardModal({
                 <p className="hs-lead mt-4 text-center max-w-[30ch]">
                   Scan this with your phone to keep your voucher, then show it to us when you use it.
                 </p>
+                {voucher.url && <VoucherShareButtons code={voucher.code} url={voucher.url} />}
               </>
             )}
             {voucher?.status === "failed" && (
