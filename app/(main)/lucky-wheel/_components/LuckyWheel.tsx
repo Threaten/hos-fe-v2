@@ -181,11 +181,19 @@ function LoginGate({
 
 // ─── Reward Modal ─────────────────────────────────────────────────────────────
 
+/** The voucher issued for a winning spin, or why it could not be */
+type SpinVoucher =
+  | { status: "issuing" }
+  | { status: "issued"; code: string; url: string | null }
+  | { status: "failed"; message: string };
+
 function RewardModal({
   result,
+  voucher,
   onClose,
 }: {
   result: string;
+  voucher: SpinVoucher | null;
   onClose: () => void;
 }) {
   const noReward = isNoReward(result);
@@ -246,7 +254,30 @@ function RewardModal({
         ) : (
           <>
             <p className="hs-hero text-[clamp(2.6rem,9vw,4rem)]">{result}</p>
-            <p className="hs-lead mt-6 text-center">Show this screen to your server to redeem it.</p>
+            {voucher?.status === "issuing" && (
+              <p className="hs-note mt-6 animate-pulse">Making your voucher…</p>
+            )}
+            {voucher?.status === "issued" && (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`${API_URL}/api/vouchers/qr/${encodeURIComponent(voucher.code)}`}
+                  alt="Your voucher QR code"
+                  width={200}
+                  height={200}
+                  className="mt-6 w-[200px] h-[200px]"
+                  style={{ background: "#fff" }}
+                />
+                <p className="hs-lead mt-4 text-center max-w-[30ch]">
+                  Scan this with your phone to keep your voucher, then show it to us when you use it.
+                </p>
+              </>
+            )}
+            {voucher?.status === "failed" && (
+              <p className="hs-error mt-6 text-center max-w-[34ch]" role="alert">
+                {voucher.message} Staff can issue it from the admin instead.
+              </p>
+            )}
           </>
         )}
       </div>
@@ -274,6 +305,7 @@ export default function LuckyWheel() {
   const [spinning, setSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [result, setResult] = useState<string | null>(null);
+  const [voucher, setVoucher] = useState<SpinVoucher | null>(null);
   const rotationRef = useRef(0);
 
   // Stay signed in on this device (same rules as the admin: a week from
@@ -301,6 +333,7 @@ export default function LuckyWheel() {
 
     setSpinning(true);
     setResult(null);
+    setVoucher(null);
 
     const selectedIndex = Math.floor(Math.random() * count);
 
@@ -317,6 +350,32 @@ export default function LuckyWheel() {
       const reward = segments[selectedIndex].label;
       setResult(reward);
       setSpinning(false);
+
+      // A win becomes a voucher, issued in the name of the staff member signed in here
+      if (tenant?.id && !isNoReward(reward)) {
+        setVoucher({ status: "issuing" });
+        try {
+          const res = await fetch(`${API_URL}/api/vouchers/from-spin`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `JWT ${token}` },
+            body: JSON.stringify({ branch: tenant.id, prize: reward }),
+          });
+          const body = await res.json().catch(() => ({}));
+          setVoucher(
+            res.ok
+              ? { status: "issued", code: body.code, url: body.url ?? null }
+              : {
+                  status: "failed",
+                  message:
+                    res.status === 401
+                      ? "Your sign-in has ended, so no voucher was made."
+                      : body.error || "The voucher could not be made.",
+                },
+          );
+        } catch {
+          setVoucher({ status: "failed", message: "Could not reach the server, so no voucher was made." });
+        }
+      }
 
       if (tenant?.id) {
         try {
@@ -447,7 +506,7 @@ export default function LuckyWheel() {
 
       {/* ── Result Modal ── */}
       {result && (
-        <RewardModal result={result} onClose={() => setResult(null)} />
+        <RewardModal result={result} voucher={voucher} onClose={() => setResult(null)} />
       )}
     </>
   );
