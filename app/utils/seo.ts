@@ -66,6 +66,12 @@ export const TENANT_PAGES: Record<string, PageInfo> = {
     // A promotion, not something people search for
     noIndex: true,
   },
+  voucher: {
+    label: "Voucher",
+    description: (n) => `A ${n} voucher. Show it to our team to use it.`,
+    // Personal links; never in search results or the sitemap
+    noIndex: true,
+  },
 };
 
 function cityOf(address?: string): string {

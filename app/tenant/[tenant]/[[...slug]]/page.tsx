@@ -8,6 +8,7 @@ import ContactForm from "../../../(main)/contact/_components/ContactForm";
 import ReservationForm from "../../../(main)/reservation/_components/ReservationForm";
 import TenantFlipbookWrapper from "../../../(main)/menu/_components/TenantFlipbookWrapper";
 import LuckyWheel from "../../../(main)/lucky-wheel/_components/LuckyWheel";
+import VoucherPage from "../../../(main)/voucher/VoucherPage";
 import Link from "next/link";
 import { resolveBackendMediaUrl } from "@/app/utils/media";
 import { getMenuSource } from "@/api/queries";
@@ -23,6 +24,12 @@ export default async function TenantPage({ params }: PageProps) {
 
   const tenant = await fetchTenantServer(tenantSlug);
   if (!tenant) notFound();
+
+  // /voucher/<code>: a voucher's QR code opens here
+  if (slug[0] === "voucher") {
+    if (slug.length !== 2) notFound();
+    return <VoucherPage code={decodeURIComponent(slug[1])} tenantDomain={tenant.domain} tenantName={tenant.name} />;
+  }
 
   switch (pathname) {
     case "":
