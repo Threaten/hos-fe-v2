@@ -17,9 +17,6 @@ interface Voucher {
   title: string;
   state: "active" | "used" | "void";
   branch: { name: string; domain: string } | null;
-  reason: string | null;
-  issuedBy: string | null;
-  issuedAt: string | null;
   usedBy: string | null;
   usedAt: string | null;
   /** Only present once the voucher has been used */
@@ -167,28 +164,15 @@ export default function VoucherPage({
               </div>
             )}
 
-            <dl className="mt-10 grid grid-cols-[auto_1fr] gap-x-8 gap-y-3 max-w-[52ch] text-[1.0625rem]">
-              {voucher.reason && (
-                <>
-                  <dt className="hs-label pt-1">Reason</dt>
-                  <dd>{voucher.reason}</dd>
-                </>
-              )}
-              <dt className="hs-label pt-1">Issued</dt>
-              <dd>
-                {when(voucher.issuedAt)}
-                {voucher.issuedBy ? ` by ${voucher.issuedBy}` : ""}
-              </dd>
-              {voucher.usedAt && (
-                <>
-                  <dt className="hs-label pt-1">Used</dt>
-                  <dd>
-                    {when(voucher.usedAt)}
-                    {voucher.usedBy ? ` by ${voucher.usedBy}` : ""}
-                  </dd>
-                </>
-              )}
-            </dl>
+            {voucher.usedAt && (
+              <dl className="mt-10 grid grid-cols-[auto_1fr] gap-x-8 gap-y-3 max-w-[52ch] text-[1.0625rem]">
+                <dt className="hs-label pt-1">Used</dt>
+                <dd>
+                  {when(voucher.usedAt)}
+                  {voucher.usedBy ? ` by ${voucher.usedBy}` : ""}
+                </dd>
+              </dl>
+            )}
 
             {voucher.state === "active" && (
               <div className="mt-10">
