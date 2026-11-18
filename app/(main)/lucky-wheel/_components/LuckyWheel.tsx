@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useTenant } from "@/app/contexts/TenantContext";
 import { createSpinHistory, API_URL } from "@/api/queries";
+import { readStaffSession, renewStaffSession, saveStaffSession, sessionFromLogin } from "@/app/utils/staffSession";
 
 // ─── Wheel Configuration ──────────────────────────────────────────────────────
 
@@ -89,7 +90,7 @@ function LoginGate({
   onLogin,
 }: {
   tenantDomain: string;
-  onLogin: (token: string, name: string) => void;
+  onLogin: (token: string, name: string, exp?: number) => void;
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -120,7 +121,7 @@ function LoginGate({
         json?.user?.username ||
         json?.user?.email ||
         "Guest";
-      onLogin(json.token as string, displayName);
+      onLogin(json.token as string, displayName, json.exp);
     } catch {
       setError("Unable to connect. Please try again.");
     } finally {
@@ -275,9 +276,24 @@ export default function LuckyWheel() {
   const [result, setResult] = useState<string | null>(null);
   const rotationRef = useRef(0);
 
-  const handleLogin = (t: string, name: string) => {
+  // Stay signed in on this device (same rules as the admin: a week from
+  // last use, a month at most)
+  const domain = tenant?.domain;
+  useEffect(() => {
+    if (!domain) return;
+    const stored = readStaffSession(domain);
+    if (!stored) return;
+    renewStaffSession(domain, stored).then((s) => {
+      if (!s) return;
+      setToken(s.token);
+      setUserName(s.name);
+    });
+  }, [domain]);
+
+  const handleLogin = (t: string, name: string, exp?: number) => {
     setToken(t);
     setUserName(name);
+    if (domain) saveStaffSession(domain, sessionFromLogin({ token: t, exp, user: { username: name } }, name));
   };
 
   const spin = () => {

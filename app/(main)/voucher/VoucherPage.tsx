@@ -2,6 +2,14 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { API_URL } from "@/app/utils/constants";
+import {
+  clearStaffSession,
+  readStaffSession,
+  renewStaffSession,
+  saveStaffSession,
+  sessionFromLogin,
+  type StaffSession,
+} from "@/app/utils/staffSession";
 
 /** What the CMS returns for a voucher a staff member is allowed to see */
 interface Voucher {
@@ -16,25 +24,6 @@ interface Voucher {
   usedAt: string | null;
   /** Only present once the voucher has been used */
   details: string | null;
-}
-
-interface StaffSession {
-  token: string;
-  name: string;
-  /** ms since epoch */
-  expiresAt: number;
-}
-
-/** One sign-in per branch site, kept on this device until it expires */
-const sessionKey = (domain: string) => `hos-staff:${domain}`;
-
-function readSession(domain: string): StaffSession | null {
-  try {
-    const s = JSON.parse(localStorage.getItem(sessionKey(domain)) || "null") as StaffSession | null;
-    return s && s.token && s.expiresAt > Date.now() ? s : null;
-  } catch {
-    return null;
-  }
 }
 
 const when = (iso: string | null) =>
@@ -71,13 +60,25 @@ export default function VoucherPage({
   const [justUsed, setJustUsed] = useState(false);
 
   useEffect(() => {
-    setSession(readSession(tenantDomain));
-    setReady(true);
+    let cancelled = false;
+    const stored = readStaffSession(tenantDomain);
+    (stored ? renewStaffSession(tenantDomain, stored) : Promise.resolve(null)).then((s) => {
+      if (cancelled) return;
+      setSession(s);
+      if (stored && !s) {
+        setShowLogin(true);
+        setError("Your sign-in has ended. Please sign in again.");
+      }
+      setReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [tenantDomain]);
 
   const signOut = useCallback(
     (message?: string) => {
-      localStorage.removeItem(sessionKey(tenantDomain));
+      clearStaffSession(tenantDomain);
       setSession(null);
       setVoucher(null);
       setConfirming(false);
@@ -100,7 +101,7 @@ export default function VoucherPage({
           cache: "no-store",
         });
         const body = await res.json().catch(() => ({}));
-        if (res.status === 401) return signOut("Your sign-in has expired. Please sign in again.");
+        if (res.status === 401) return signOut("Your sign-in has ended. Please sign in again.");
         if (!res.ok) {
           setError(body.error || "Something went wrong. Please try again.");
           if (body.voucher) setVoucher(body.voucher);
@@ -256,7 +257,7 @@ export default function VoucherPage({
             setError(null);
           }}
           onSignedIn={(s) => {
-            localStorage.setItem(sessionKey(tenantDomain), JSON.stringify(s));
+            saveStaffSession(tenantDomain, s);
             setError(null);
             setSession(s);
           }}
@@ -311,11 +312,7 @@ function StaffLogin({
         setError(json?.errors?.[0]?.message ?? json?.message ?? "Those details didn't work. Please try again.");
         return;
       }
-      onSignedIn({
-        token: json.token,
-        name: json.user?.username || json.user?.email || username,
-        expiresAt: json.exp ? json.exp * 1000 : Date.now() + 2 * 60 * 60 * 1000,
-      });
+      onSignedIn(sessionFromLogin(json, username));
     } catch {
       setError("Could not reach the server. Check the connection and try again.");
     } finally {
