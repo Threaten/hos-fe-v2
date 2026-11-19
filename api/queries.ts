@@ -501,30 +501,6 @@ const CREATE_RESERVATION = `
   }
 `;
 
-const CREATE_SPIN_HISTORY = `
-  mutation CreateSpinHistory(
-    $occurredAt: String!
-    $reward: String!
-    $branch: String!
-  ) {
-    createSpinHistory(
-      data: {
-        occurredAt: $occurredAt
-        reward: $reward
-        branch: $branch
-      }
-    ) {
-      id
-      occurredAt
-      reward
-      branch {
-        id
-        name
-      }
-    }
-  }
-`;
-
 const CREATE_CONTACT_MESSAGE = `
   mutation CreateContactMessage(
     $customer: String!
@@ -689,22 +665,16 @@ export const createContactMessage = async (
 };
 
 /**
- * Create a new spin history record
- * @param occurredAt - ISO datetime string of when the spin occurred
- * @param reward - The reward content the user landed on
- * @param branchId - Branch/Tenant ID
- * @returns Promise with created spin history data
+ * Record a spin of the lucky wheel. Only the wheel page does this, signed in
+ * as the staff member running it; the CMS checks the prize is on the wheel.
  */
-export const createSpinHistory = async (
-  occurredAt: string,
-  reward: string,
-  branchId: string,
-) => {
-  return gqlMutate(CREATE_SPIN_HISTORY, {
-    occurredAt,
-    reward,
-    branch: branchId,
+export const recordSpin = async (token: string, reward: string, branchId: string) => {
+  const res = await fetch(`${API_URL}/api/spin-history/record`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `JWT ${token}` },
+    body: JSON.stringify({ branch: branchId, reward }),
   });
+  if (!res.ok) throw new Error(`Could not record the spin (${res.status})`);
 };
 
 /* END OF MUTATIONS */

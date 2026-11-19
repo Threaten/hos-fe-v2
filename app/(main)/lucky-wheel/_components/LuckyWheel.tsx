@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useTenant } from "@/app/contexts/TenantContext";
-import { createSpinHistory, API_URL } from "@/api/queries";
+import { recordSpin, API_URL } from "@/api/queries";
 import { readStaffSession, renewStaffSession, saveStaffSession, sessionFromLogin } from "@/app/utils/staffSession";
 import { copyVoucherLink, downloadVoucherQr, shareVoucher } from "@/app/utils/voucherShare";
 
@@ -417,7 +417,7 @@ export default function LuckyWheel() {
 
       if (tenant?.id) {
         try {
-          await createSpinHistory(new Date().toISOString(), reward, tenant.id);
+          await recordSpin(token, reward, tenant.id);
         } catch {
           // Silently absorb
         }
