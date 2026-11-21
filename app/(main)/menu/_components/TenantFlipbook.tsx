@@ -356,7 +356,7 @@ export default function TenantFlipbook({
   return (
     <div className="w-full flex flex-col items-center">
       {showHeading && (
-        <header className="w-full hs-shell pt-14 md:pt-20">
+        <header className="w-full hs-shell pt-8 md:pt-12">
           <div className="hs-main grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(0,300px)] gap-x-10 gap-y-6 items-start">
             <h1 className="hs-hero animate-rise text-center lg:text-left">the menu</h1>
             <p className="text-[1.1875rem] leading-[1.25] tracking-[-0.015em] xl:pt-3 text-center lg:text-left animate-rise" style={{ color: "var(--pen)" }}>
@@ -367,13 +367,13 @@ export default function TenantFlipbook({
       )}
 
       {isLoading && (
-        <p className="hs-note mt-16 animate-pulse" role="status">
+        <p className="hs-note mt-10 animate-pulse" role="status">
           Opening the menu…
         </p>
       )}
 
       {error && (
-        <div className="mt-16 text-center hos-gutter">
+        <div className="mt-10 text-center hos-gutter">
           <p className="hs-title mb-3" style={{ color: "var(--ink)" }}>The menu got stuck between pages.</p>
           <p className="hs-meta mb-6">{error}</p>
           <button onClick={() => window.location.reload()} className="hs-btn hs-btn-solid">
@@ -407,7 +407,7 @@ export default function TenantFlipbook({
         <>
           <div
             ref={stageRef}
-            className="flex justify-center items-center w-full relative mt-12 md:mt-20 py-10 md:py-16 overflow-hidden"
+            className="flex justify-center items-center w-full relative mt-8 md:mt-12 py-6 md:py-10 overflow-hidden"
             style={{
               minHeight: isMobile ? "580px" : "880px",
               backgroundColor: "var(--paper-2)",

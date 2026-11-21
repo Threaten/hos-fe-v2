@@ -37,7 +37,7 @@ const Footer: React.FC = () => {
 
       {/* Map + contacts */}
       {tenant && (
-        <section className="hs-shell mt-16 md:mt-24" aria-labelledby="footer-contacts">
+        <section className="hs-shell mt-10 md:mt-14" aria-labelledby="footer-contacts">
           <div className="hs-main grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(0,300px)] gap-x-10 gap-y-10 items-start">
             {(tenant.address || tenant.location) && (
               <div className="relative w-full aspect-[8/5] overflow-hidden" style={{ background: "var(--paper-2)" }} data-reveal>
@@ -98,7 +98,7 @@ const Footer: React.FC = () => {
 
       {/* Every home, folded away until asked for */}
       {tenants.length > 0 && (
-        <section className="hs-shell mt-20 md:mt-28" aria-labelledby="footer-locations">
+        <section className="hs-shell mt-12 md:mt-16" aria-labelledby="footer-locations">
           <h2 id="footer-locations" className="sr-only">
             Our homes
           </h2>
@@ -166,7 +166,7 @@ const Footer: React.FC = () => {
       )}
 
       {/* Fine print */}
-      <div className="hos-gutter mt-14 grid grid-cols-1 sm:grid-cols-3 gap-2 text-center sm:text-left text-[1rem] tracking-[-0.01em]" style={{ color: "var(--ink-faint)" }}>
+      <div className="hos-gutter mt-10 grid grid-cols-1 sm:grid-cols-3 gap-2 text-center sm:text-left text-[1rem] tracking-[-0.01em]" style={{ color: "var(--ink-faint)" }}>
         <p>&copy; {new Date().getFullYear()} House of Senses</p>
         <p className="sm:text-center">
           <a href="https://houseofsenses.vn" className="hover:opacity-60 transition-opacity duration-300">

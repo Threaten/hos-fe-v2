@@ -253,7 +253,7 @@ export default function VoucherPage({
 
 function Shell({ children }: { children?: React.ReactNode }) {
   return (
-    <section className="hs-shell pt-14 md:pt-20 pb-24" aria-label="Voucher">
+    <section className="hs-shell pt-8 md:pt-12 pb-14" aria-label="Voucher">
       {/* Personal links must not be indexed */}
       <meta name="robots" content="noindex, nofollow" />
       <p className="hs-label mb-6 lg:mb-0">

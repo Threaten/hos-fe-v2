@@ -58,7 +58,7 @@
 
   /* Layout */
   --gutter: clamp(20px, 1.6vw, 28px);
-  --section: clamp(96px, 11vw, 176px);
+  --section: clamp(56px, 6.5vw, 104px);
   --header-h: 68px;
 
   /* Motion */

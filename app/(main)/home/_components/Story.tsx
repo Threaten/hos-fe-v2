@@ -27,7 +27,7 @@ export default function Story({ tenant }: { tenant?: Tenant | null }) {
           {statement}
         </p>
 
-        <div className="mt-14 md:mt-24 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-10 border-t pt-8" style={{ borderColor: "var(--line)" }}>
+        <div className="mt-10 md:mt-14 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8 border-t pt-6" style={{ borderColor: "var(--line)" }}>
           {statementText && (
             <p className="hs-lead" data-reveal>
               {statementText}

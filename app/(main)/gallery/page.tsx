@@ -15,7 +15,7 @@ export default function Gallery() {
 
   return (
     <div>
-      <section className="hs-shell pt-14 md:pt-20 pb-14 md:pb-20">
+      <section className="hs-shell pt-8 md:pt-12 pb-8 md:pb-12">
         <div className="hs-main grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(0,300px)] gap-x-10 gap-y-6 items-start">
           <h1 className="hs-hero animate-rise text-center lg:text-left">gallery</h1>
           {total > 0 && (
@@ -32,7 +32,7 @@ export default function Gallery() {
 
       {tenant && total === 0 ? (
         <div className="hs-shell">
-          <div className="hs-main py-20 text-center lg:text-left">
+          <div className="hs-main py-12 text-center lg:text-left">
             <p className="hs-title" style={{ color: "var(--ink)" }}>The album is still empty.</p>
             <p className="hs-note mt-3">New photos are on their way</p>
           </div>

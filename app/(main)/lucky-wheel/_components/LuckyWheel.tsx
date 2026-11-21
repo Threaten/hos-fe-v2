@@ -437,8 +437,8 @@ export default function LuckyWheel() {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-start hos-gutter pt-12 md:pt-16">
-        <div className="text-center mb-12 animate-rise">
+      <div className="flex flex-col items-center justify-start hos-gutter pt-8 md:pt-12">
+        <div className="text-center mb-8 animate-rise">
           <p className="hs-note mb-3">{userName ? `good luck, ${userName}` : "try your luck"}</p>
           <h1 className="hs-hero text-[clamp(3rem,8vw,6.5rem)]">lucky wheel</h1>
           <p className="hs-lead mt-5 mx-auto text-center">
@@ -535,7 +535,7 @@ export default function LuckyWheel() {
         <button
           onClick={spin}
           disabled={spinning}
-          className="hs-btn hs-btn-solid mt-12 min-w-[200px]"
+          className="hs-btn hs-btn-solid mt-8 min-w-[200px]"
           aria-label={spinning ? "Spinning…" : "Spin the wheel"}
         >
           {spinning ? "spinning…" : "Spin!"}

@@ -53,7 +53,7 @@ export default async function TenantPage({ params }: PageProps) {
 
       if (!menuUrl) {
         return (
-          <section className="hs-shell pt-14 md:pt-20">
+          <section className="hs-shell pt-8 md:pt-12">
             <div className="hs-main">
               <p className="hs-note mb-6">The menu</p>
               <h1 className="hs-hero max-w-[12ch]">still being written.</h1>

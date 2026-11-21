@@ -20,7 +20,7 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
   const description = tenant?.heroDescription;
 
   return (
-    <section className="hs-shell pt-14 md:pt-20 pb-16 md:pb-28" aria-label={name}>
+    <section className="hs-shell pt-8 md:pt-12 pb-10 md:pb-16" aria-label={name}>
       <div className="hs-main grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(0,300px)] gap-x-10 gap-y-8 items-start">
         <h1 className="hs-hero animate-rise text-center lg:text-left">
           {lines.map((line, i) => (

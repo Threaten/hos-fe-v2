@@ -82,7 +82,7 @@ export default function AboutPage() {
   return (
     <div>
       {/* Headline */}
-      <section className="hs-shell pt-14 md:pt-20 pb-14 md:pb-20" aria-labelledby="about-heading">
+      <section className="hs-shell pt-8 md:pt-12 pb-8 md:pb-12" aria-labelledby="about-heading">
         <div className="hs-main grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(0,300px)] gap-x-10 gap-y-8 items-start">
           <h1 id="about-heading" className="hs-hero animate-rise text-center lg:text-left">
             {aboutTitle}
@@ -108,11 +108,11 @@ export default function AboutPage() {
       </div>
 
       {/* The story: short passages, each beside a photo, alternating sides */}
-      <section className="hs-shell pt-14 md:pt-20" aria-labelledby="story-heading">
+      <section className="hs-shell pt-8 md:pt-12" aria-labelledby="story-heading">
         <h2 id="story-heading" className="hs-label mb-8 lg:mb-0">
           <span className="hs-rail-sticky block">How it began</span>
         </h2>
-        <div className="hs-main flex flex-col gap-14 md:gap-20">
+        <div className="hs-main flex flex-col gap-10 md:gap-14">
           {rows.length === 0 && (
             <div className="richtext-content max-w-[44ch]" data-reveal>
               <p>

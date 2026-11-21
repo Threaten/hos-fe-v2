@@ -52,7 +52,7 @@ export default function Collection({ groups, name, priority = false, pageSize = 
   return (
     <section className="hs-shell" aria-label={`Photos of ${name}`}>
       <div>
-        <ul className="hs-rail-sticky flex flex-wrap lg:flex-col justify-center lg:justify-start gap-x-7 gap-y-3 lg:gap-y-2.5 mb-10 lg:mb-0" aria-label="Filter photos">
+        <ul className="hs-rail-sticky flex flex-wrap lg:flex-col justify-center lg:justify-start gap-x-7 gap-y-3 lg:gap-y-2.5 mb-8 lg:mb-0" aria-label="Filter photos">
           {filters.map((f) => (
             <li key={f.key}>
               <button
@@ -75,7 +75,7 @@ export default function Collection({ groups, name, priority = false, pageSize = 
       </div>
 
       <div className="hs-main">
-      <ul className="grid grid-cols-2 lg:grid-cols-3 gap-x-3 md:gap-x-5 gap-y-8 md:gap-y-12">
+      <ul className="grid grid-cols-2 lg:grid-cols-3 gap-x-3 md:gap-x-5 gap-y-8 md:gap-y-8">
         {visible.map((img, i) => (
           <li key={`${filter}-${img.src}-${i}`}>
             <button
@@ -103,7 +103,7 @@ export default function Collection({ groups, name, priority = false, pageSize = 
         ))}
       </ul>
       {shown.length > limit && (
-        <div className="mt-12 flex justify-center">
+        <div className="mt-8 flex justify-center">
           <button type="button" onClick={() => setExpanded(true)} className="hs-btn hs-btn-sm">
             Show all {shown.length}
           </button>

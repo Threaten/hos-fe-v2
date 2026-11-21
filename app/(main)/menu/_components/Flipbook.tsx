@@ -48,7 +48,7 @@ const Flipbook = ({ initialBranch }: { initialBranch?: string }) => {
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center">
-      <div className="shrink-0 hos-gutter pt-14 md:pt-24 flex flex-col items-center gap-4 text-center">
+      <div className="shrink-0 hos-gutter pt-8 md:pt-14 flex flex-col items-center gap-4 text-center">
         <label htmlFor="menu-branch" className="hs-note">
           The menu at
         </label>
