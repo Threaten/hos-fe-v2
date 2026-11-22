@@ -8,6 +8,7 @@ import { mapsEmbedUrl, mapsUrl } from "@/app/utils/maps";
 import SocialIcons from "./SocialIcons";
 import { BranchEntry, useBranches } from "./BranchSwitcher";
 import { ArrowRight } from "./Icons";
+import ReservationLink from "./ReservationLink";
 
 /** Wordmark, map and contacts for this branch, then every other home */
 const Footer: React.FC = () => {
@@ -87,9 +88,9 @@ const Footer: React.FC = () => {
                 <Link href="/menu" className="hs-ui hs-nav-link text-[0.9375rem]" style={{ color: "var(--pen)" }}>
                   Menu
                 </Link>
-                <Link href="/reservation" className="hs-ui hs-nav-link text-[0.9375rem] inline-flex items-center gap-1.5" style={{ color: "var(--pen)" }}>
+                <ReservationLink className="hs-ui hs-nav-link text-[0.9375rem] inline-flex items-center gap-1.5" style={{ color: "var(--pen)" }}>
                   Book a table <ArrowRight className="w-3 h-3" />
-                </Link>
+                </ReservationLink>
               </p>
             </div>
           </div>

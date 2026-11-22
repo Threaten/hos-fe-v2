@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { useTenant } from "@/app/contexts/TenantContext";
 import { ArrowRight } from "./Icons";
+import ReservationLink from "./ReservationLink";
 
 /** Closing invitation to come by */
 const CTA = () => {
@@ -22,9 +23,9 @@ const CTA = () => {
         </h2>
         <p className="hs-lead mt-6 mx-auto lg:mx-0">{ctaText}</p>
         <div className="flex flex-wrap justify-center lg:justify-start gap-2.5 mt-8">
-          <Link href="/reservation" className="hs-btn hs-btn-solid" aria-label={`Make a reservation at ${tenantName}`}>
+          <ReservationLink className="hs-btn hs-btn-solid" aria-label={`Make a reservation at ${tenantName}`}>
             Book a table <ArrowRight />
-          </Link>
+          </ReservationLink>
           <Link href="/menu" className="hs-btn" aria-label={`View ${tenantName}'s menu`}>
             See the menu <ArrowRight />
           </Link>

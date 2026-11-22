@@ -278,6 +278,26 @@ body {
     pointer-events: none;
   }
 
+  /* Disabled link-buttons (e.g. booking while a branch is closed) */
+  .hs-disabled,
+  .hs-disabled:hover {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .hs-btn.hs-disabled:hover {
+    background: transparent;
+    color: var(--pen);
+  }
+  .hs-btn-solid.hs-disabled:hover {
+    background: var(--pen);
+    border-color: var(--pen);
+    color: var(--on-pen);
+  }
+  .hs-disabled svg,
+  .hs-btn.hs-disabled:hover svg {
+    transform: none;
+  }
+
   .hs-btn-solid {
     background: var(--pen);
     border-color: var(--pen);

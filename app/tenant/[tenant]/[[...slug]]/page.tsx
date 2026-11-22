@@ -9,7 +9,7 @@ import ReservationForm from "../../../(main)/reservation/_components/Reservation
 import TenantFlipbookWrapper from "../../../(main)/menu/_components/TenantFlipbookWrapper";
 import LuckyWheel from "../../../(main)/lucky-wheel/_components/LuckyWheel";
 import VoucherPage from "../../../(main)/voucher/VoucherPage";
-import Link from "next/link";
+import ReservationLink from "../../../(main)/components/ReservationLink";
 import { resolveBackendMediaUrl } from "@/app/utils/media";
 import { getMenuSource } from "@/api/queries";
 import { fetchTenantServer } from "@/app/utils/tenantServer";
@@ -62,9 +62,9 @@ export default async function TenantPage({ params }: PageProps) {
                 {tenant.phone ? ` on ${tenant.phone}` : ""} and we&apos;ll walk you
                 through what&apos;s cooking.
               </p>
-              <Link href="/reservation" className="hs-btn hs-btn-solid mt-9">
+              <ReservationLink className="hs-btn hs-btn-solid mt-9">
                 Book a table
-              </Link>
+              </ReservationLink>
             </div>
           </section>
         );

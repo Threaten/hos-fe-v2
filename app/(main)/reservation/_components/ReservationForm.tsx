@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import { isReservationClosed } from "@/app/utils/openingStatus";
 
 // ─── Calendar Picker ─────────────────────────────────────────────────────────
 
@@ -440,6 +441,8 @@ const ReservationForm = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (reservationsClosed) return;
+
     if (!validateForm()) {
       return;
     }
@@ -548,6 +551,7 @@ const ReservationForm = ({
 
   const activeTenant =
     currentBranchTenant || tenants.find((t) => t.name === selectedBranch) || null;
+  const reservationsClosed = isReservationClosed(activeTenant);
   const hourValue = formData.time ? formData.time.split(":")[0] : "";
   const minuteValue = formData.time ? formData.time.split(":")[1] : "";
 
@@ -581,6 +585,12 @@ const ReservationForm = ({
             className="flex flex-col gap-8 max-w-[720px]"
             data-reveal
           >
+            {reservationsClosed && (
+              <p role="status" className="hs-note">
+                {activeTenant?.name ?? "This branch"} is closed at the moment, so we can&apos;t take
+                reservations. Please check back soon{activeTenant?.phone ? ` or call ${activeTenant.phone}` : ""}.
+              </p>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-7">
               <div className="hs-field">
@@ -762,7 +772,7 @@ const ReservationForm = ({
 
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || reservationsClosed}
               className="hs-btn hs-btn-solid self-start mt-2"
               aria-label="Submit reservation"
             >

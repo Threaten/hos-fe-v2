@@ -137,3 +137,12 @@ export function getOpeningState(
     ? { kind: "open", label: "Open now", detail: `until ${formatMinutes(parsed.close)}`, hours }
     : { kind: "closed", label: "Closed", detail: `opens ${formatMinutes(parsed.open)}`, hours };
 }
+
+/**
+ * Reservations are off while the CMS marks a branch "closed" or "temporarily
+ * closed". Being outside today's hours does not count: guests book ahead.
+ */
+export function isReservationClosed(branch?: { status?: string } | null): boolean {
+  const status = normalizeStatus(branch?.status);
+  return status === "closed" || status === "temporarily-closed";
+}

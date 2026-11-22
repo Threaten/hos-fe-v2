@@ -8,6 +8,7 @@ import { useTenant } from "@/app/contexts/TenantContext";
 import OpeningStatus from "@/app/components/OpeningStatus";
 import BranchSwitcher, { BranchEntry, useBranches } from "./BranchSwitcher";
 import { ArrowRight } from "./Icons";
+import ReservationLink from "./ReservationLink";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -75,10 +76,10 @@ export default function Navbar() {
             <div className="hidden lg:block">
               <BranchSwitcher />
             </div>
-            <Link href="/reservation" className="hs-btn hs-btn-solid hs-btn-sm hidden lg:inline-flex" aria-label="Make a reservation">
+            <ReservationLink className="hs-btn hs-btn-solid hs-btn-sm hidden lg:inline-flex" aria-label="Make a reservation">
               Book a table
               <ArrowRight />
-            </Link>
+            </ReservationLink>
 
             <button
               onClick={toggleMenu}
@@ -155,10 +156,10 @@ export default function Navbar() {
         </nav>
 
         <div className="hos-gutter pb-8 pt-4 shrink-0">
-          <Link href="/reservation" className="hs-btn hs-btn-solid w-full" onClick={toggleMenu}>
+          <ReservationLink className="hs-btn hs-btn-solid w-full" onClick={toggleMenu}>
             Book a table
             <ArrowRight />
-          </Link>
+          </ReservationLink>
         </div>
       </div>
     </>

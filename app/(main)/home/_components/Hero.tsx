@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { Tenant } from "@/api/queries";
 import OpeningStatus from "@/app/components/OpeningStatus";
 import { ArrowRight } from "../../components/Icons";
+import ReservationLink from "../../components/ReservationLink";
 import { mapsUrl } from "@/app/utils/maps";
 
 interface HeroProps {
@@ -48,9 +49,9 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
             </p>
           )}
           <div className="flex flex-wrap justify-center lg:justify-start gap-2.5 mt-7">
-            <Link href="/reservation" className="hs-btn hs-btn-solid hs-btn-sm">
+            <ReservationLink className="hs-btn hs-btn-solid hs-btn-sm">
               Book a table <ArrowRight />
-            </Link>
+            </ReservationLink>
             <Link href="/menu" className="hs-btn hs-btn-sm">
               The menu <ArrowRight />
             </Link>
