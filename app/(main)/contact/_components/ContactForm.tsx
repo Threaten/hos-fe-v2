@@ -31,19 +31,23 @@ interface Toast {
 const ContactForm = ({
   initialBranch,
   currentTenant,
+  initialTenant,
 }: {
   initialBranch?: string;
   currentTenant?: string;
+  /** The branch, fetched on the server: the page then arrives complete (address, phone, form) */
+  initialTenant?: Tenant | null;
 }) => {
-  const [tenants, setTenants] = useState<Tenant[]>([]);
+  const [tenants, setTenants] = useState<Tenant[]>(initialTenant ? [initialTenant] : []);
   const [currentBranchTenant, setCurrentBranchTenant] = useState<Tenant | null>(
-    null,
+    initialTenant ?? null,
   );
-  const [selectedBranch, setSelectedBranch] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [selectedBranch, setSelectedBranch] = useState<string>(initialTenant?.name ?? "");
+  const [isLoading, setIsLoading] = useState(!initialTenant);
 
-  // Fetch tenants from API and detect subdomain
+  // Fetch tenants from API and detect subdomain (not needed when the server passed the branch)
   useEffect(() => {
+    if (initialTenant) return;
     const loadTenants = async () => {
       try {
         // Detect if we're on a tenant subdomain
@@ -89,12 +93,12 @@ const ContactForm = ({
     };
 
     loadTenants();
-  }, [currentTenant, initialBranch]);
+  }, [currentTenant, initialBranch, initialTenant]);
 
   const [formData, setFormData] = useState<FormData>({
     name: "",
     phone: "",
-    branch: "",
+    branch: initialTenant?.name ?? "",
     message: "",
   });
 

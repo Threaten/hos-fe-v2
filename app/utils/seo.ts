@@ -90,6 +90,15 @@ function tenantImage(tenant: Tenant): string {
   );
 }
 
+/** Collapse stray spaces typed into CMS titles ("Red Space  |  Restaurant") */
+function tidy(text: string): string {
+  return text.replace(/\s+/g, " ").trim();
+}
+
+/** Language of the site's text; Open Graph should say the same as <html lang> */
+const LOCALE = "en_US";
+const ALTERNATE_LOCALE = "vi_VN";
+
 /** Keep descriptions inside the ~160 characters Google shows */
 function clamp(text: string, max = 160): string {
   const t = text.replace(/\s+/g, " ").trim();
@@ -113,12 +122,18 @@ export function buildTenantMetadata(tenant: Tenant, path = ""): Metadata {
   const baseUrl = getTenantBaseUrl(tenant.domain);
   const page = path ? TENANT_PAGES[path] : undefined;
 
-  // Each page gets its own title; the CMS meta title only applies to the home page
-  const title = page
-    ? `${page.label} | ${name}`
-    : tenant.meta?.title || `${name} | House of Senses`;
+  // Each page gets its own title. The CMS can override any of them (SEO tab: home page
+  // fields, and "Other pages" for the rest); otherwise one is written from the name and city.
+  const override = page ? tenant.meta?.pages?.[path as keyof NonNullable<NonNullable<Tenant["meta"]>["pages"]>] : null;
+  const title = tidy(
+    page
+      ? override?.title || `${page.label} | ${name}`
+      : tenant.meta?.title || `${name} | House of Senses`,
+  );
   const description = clamp(
-    page ? page.description(name, city) : tenantHomeDescription(tenant, name, city),
+    page
+      ? override?.description || page.description(name, city)
+      : tenantHomeDescription(tenant, name, city),
   );
   const url = page ? `${baseUrl}/${path}` : `${baseUrl}/`;
   const image = tenantImage(tenant);
@@ -132,8 +147,8 @@ export function buildTenantMetadata(tenant: Tenant, path = ""): Metadata {
       description,
       url,
       siteName: name,
-      locale: "vi_VN",
-      alternateLocale: "en_US",
+      locale: LOCALE,
+      alternateLocale: ALTERNATE_LOCALE,
       type: "website",
       images: [{ url: image, alt: name }],
     },
@@ -271,8 +286,8 @@ export function buildRootMetadata(branches: TenantSummary[]): Metadata {
       description,
       url: `${SITE_URL}/`,
       siteName: "House of Senses",
-      locale: "vi_VN",
-      alternateLocale: "en_US",
+      locale: LOCALE,
+      alternateLocale: ALTERNATE_LOCALE,
       type: "website",
       images: [{ url: DEFAULT_IMAGE, alt: "House of Senses" }],
     },

@@ -140,6 +140,8 @@ export interface Tenant {
     };
     id?: string;
   }>;
+  /** The menu as plain text ("## Section", "Name | description | price"), shown under the flip book */
+  menuText?: string | null;
   /** Lucky wheel slices, in order */
   spinWheelPrizes?: Array<{ label: string; id?: string }>;
   newMenu?: Array<{
@@ -179,6 +181,10 @@ export interface Tenant {
       url: string;
       filename?: string;
     };
+    /** Search title/description per page (SEO tab → Other pages); empty = default */
+    pages?: Partial<
+      Record<"menu" | "reservation" | "about" | "contact" | "gallery", { title?: string | null; description?: string | null } | null>
+    > | null;
   };
 }
 

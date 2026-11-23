@@ -7,12 +7,13 @@ import GalleryPage from "../../../(main)/gallery/page";
 import ContactForm from "../../../(main)/contact/_components/ContactForm";
 import ReservationForm from "../../../(main)/reservation/_components/ReservationForm";
 import TenantFlipbookWrapper from "../../../(main)/menu/_components/TenantFlipbookWrapper";
+import MenuText from "../../../(main)/menu/_components/MenuText";
 import LuckyWheel from "../../../(main)/lucky-wheel/_components/LuckyWheel";
 import VoucherPage from "../../../(main)/voucher/VoucherPage";
 import ReservationLink from "../../../(main)/components/ReservationLink";
 import { resolveBackendMediaUrl } from "@/app/utils/media";
 import { getMenuSource } from "@/api/queries";
-import { fetchTenantServer } from "@/app/utils/tenantServer";
+import { displayName, fetchTenantServer } from "@/app/utils/tenantServer";
 
 interface PageProps {
   params: Promise<{ tenant: string; slug?: string[] }>;
@@ -69,13 +70,24 @@ export default async function TenantPage({ params }: PageProps) {
           </section>
         );
       }
+      const isPdf = /\.pdf(\?|$)/i.test(menuUrl);
       return (
         <div>
+          {/* The page's heading for search engines and screen readers; the flip book is the visual title */}
+          <h1 className="sr-only">{displayName(tenant.name)} menu</h1>
           <TenantFlipbookWrapper
             menuUrl={menuUrl}
             tenantName={tenant.name}
             imagePages={menu.pages}
           />
+          <MenuText text={tenant.menuText} tenantName={displayName(tenant.name)} />
+          {isPdf && (
+            <p className="hs-shell pt-8">
+              <a href={menuUrl} className="hs-link hs-main" target="_blank" rel="noopener">
+                Open the {displayName(tenant.name)} menu as a PDF
+              </a>
+            </p>
+          )}
           <CTA />
         </div>
       );
@@ -85,7 +97,7 @@ export default async function TenantPage({ params }: PageProps) {
       return <GalleryPage />;
 
     case "contact":
-      return <ContactForm currentTenant={tenant.domain} />;
+      return <ContactForm currentTenant={tenant.domain} initialTenant={tenant} />;
 
     case "reservation":
       return <ReservationForm currentTenant={tenant.domain} />;
