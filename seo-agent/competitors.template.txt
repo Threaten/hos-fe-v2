@@ -1,0 +1,4 @@
+# Restaurants and pages the SEO agent studies every week. One URL per line.
+# "site <address>" = the site's homepage plus up to 5 relevant pages from its sitemap.
+# Empty until the target keywords are set: then add the restaurants that rank on Google page 1-2
+# for them. The agent also adds pages it finds (marked "added by agent").

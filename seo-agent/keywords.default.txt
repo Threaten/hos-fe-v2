@@ -1,0 +1,5 @@
+# Searches we want House of Senses and its branches to rank for, one per line.
+# Write each in Vietnamese with accents; add the no-accent and English versions people also type.
+# The agent reads ~/.seo-agent-hos/state/keywords.txt every run (this file is only the starting copy).
+# Empty for now: until keywords are added, the agent fixes technical and content quality,
+# measures what people already find us for in Search Console, and suggests keywords to the owner.
