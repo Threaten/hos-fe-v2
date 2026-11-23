@@ -142,6 +142,18 @@ export interface Tenant {
   }>;
   /** The menu as plain text ("## Section", "Name | description | price"), shown under the flip book */
   menuText?: string | null;
+  /** English guide and FAQ at the bottom of the home page (CMS tab "Guide & FAQ") */
+  guide?: GuideContent | null;
+  /** The branch page in Vietnamese at /vi (CMS tab "Vietnamese page") */
+  vi?: (GuideContent & {
+    enabled?: boolean | null;
+    metaTitle?: string | null;
+    metaDescription?: string | null;
+    bookLabel?: string | null;
+    menuLabel?: string | null;
+    switchLabel?: string | null;
+    englishLabel?: string | null;
+  }) | null;
   /** Lucky wheel slices, in order */
   spinWheelPrizes?: Array<{ label: string; id?: string }>;
   newMenu?: Array<{
@@ -186,6 +198,22 @@ export interface Tenant {
       Record<"menu" | "reservation" | "about" | "contact" | "gallery", { title?: string | null; description?: string | null } | null>
     > | null;
   };
+}
+
+/** Search-friendly text blocks written in the CMS (guide sections and questions) */
+export interface GuideContent {
+  label?: string | null;
+  title?: string | null;
+  intro?: string | null;
+  sections?: Array<{
+    heading?: string | null;
+    body?: string | null;
+    linkLabel?: string | null;
+    linkHref?: string | null;
+    id?: string | null;
+  }> | null;
+  faqTitle?: string | null;
+  faq?: Array<{ question?: string | null; answer?: string | null; id?: string | null }> | null;
 }
 
 export interface HomeInformation {

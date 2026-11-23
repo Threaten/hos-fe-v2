@@ -115,11 +115,52 @@ function tenantHomeDescription(tenant: Tenant, name: string, city: string): stri
   );
 }
 
-/** Metadata for a branch page ("" = home, or a key of TENANT_PAGES) */
+/** The Vietnamese page (/vi) is live for this branch */
+export function hasVietnamesePage(tenant: Pick<Tenant, "vi">): boolean {
+  return !!tenant.vi?.enabled;
+}
+
+/** English home and its Vietnamese version point at each other (hreflang) */
+function languageAlternates(tenant: Tenant, baseUrl: string) {
+  return hasVietnamesePage(tenant)
+    ? { "en": `${baseUrl}/`, "vi": `${baseUrl}/vi`, "x-default": `${baseUrl}/` }
+    : undefined;
+}
+
+/** Metadata for the branch page in Vietnamese (/vi); text from the CMS tab "Vietnamese page" */
+function buildVietnameseMetadata(tenant: Tenant, name: string, baseUrl: string): Metadata {
+  const vi = tenant.vi ?? {};
+  const title = tidy(vi.metaTitle || vi.title || `${name} | Nhà hàng tại TP.HCM`);
+  const description = clamp(vi.metaDescription || vi.intro || `${name}: thực đơn, giờ mở cửa và đặt bàn trực tuyến.`);
+  const url = `${baseUrl}/vi`;
+  const image = tenantImage(tenant);
+  return {
+    title: { absolute: title },
+    description,
+    alternates: { canonical: url, languages: languageAlternates(tenant, baseUrl) },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: name,
+      locale: "vi_VN",
+      alternateLocale: LOCALE,
+      type: "website",
+      images: [{ url: image, alt: name }],
+    },
+    twitter: { card: "summary_large_image", title, description, images: [image] },
+    robots: hasVietnamesePage(tenant)
+      ? { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } }
+      : { index: false, follow: true },
+  };
+}
+
+/** Metadata for a branch page ("" = home, "vi", or a key of TENANT_PAGES) */
 export function buildTenantMetadata(tenant: Tenant, path = ""): Metadata {
   const name = displayName(tenant.name);
   const city = cityOf(tenant.address);
   const baseUrl = getTenantBaseUrl(tenant.domain);
+  if (path === "vi") return buildVietnameseMetadata(tenant, name, baseUrl);
   const page = path ? TENANT_PAGES[path] : undefined;
 
   // Each page gets its own title. The CMS can override any of them (SEO tab: home page
@@ -141,7 +182,7 @@ export function buildTenantMetadata(tenant: Tenant, path = ""): Metadata {
   return {
     title: { absolute: title },
     description,
-    alternates: { canonical: url },
+    alternates: { canonical: url, ...(page ? {} : { languages: languageAlternates(tenant, baseUrl) }) },
     openGraph: {
       title,
       description,
@@ -253,6 +294,22 @@ export function buildTenantJsonLd(tenant: Tenant, path = ""): object {
     },
     restaurant,
   ];
+
+  // Questions written in the CMS, on the page that shows them
+  const faqSource = path === "vi" ? (hasVietnamesePage(tenant) ? tenant.vi : null) : path ? null : tenant.guide;
+  const faq = (faqSource?.faq ?? []).filter((q) => q.question?.trim() && q.answer?.trim());
+  if (faq.length) {
+    graph.push({
+      "@type": "FAQPage",
+      "@id": `${baseUrl}/${path}#faq`,
+      inLanguage: path === "vi" ? "vi" : "en",
+      mainEntity: faq.map((q) => ({
+        "@type": "Question",
+        name: q.question!.trim(),
+        acceptedAnswer: { "@type": "Answer", text: q.answer!.trim() },
+      })),
+    });
+  }
 
   if (page) {
     graph.push({

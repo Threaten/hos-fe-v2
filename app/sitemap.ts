@@ -19,6 +19,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     { url: `${SITE_URL}/`, ...(latest ? { lastModified: new Date(latest) } : {}), priority: 1 },
-    ...branches.flatMap((b) => tenantSitemapEntries(b.domain, b.updatedAt)),
+    ...branches.flatMap((b) => tenantSitemapEntries(b.domain, b.updatedAt, !!b.vi?.enabled)),
   ];
 }

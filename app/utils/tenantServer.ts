@@ -26,7 +26,7 @@ export async function fetchTenantServer(slug: string): Promise<Tenant | null> {
 
 export type TenantSummary = Pick<
   Tenant,
-  "id" | "name" | "domain" | "address" | "phone" | "email" | "mainColor" | "status" | "openingHours"
+  "id" | "name" | "domain" | "address" | "phone" | "email" | "mainColor" | "status" | "openingHours" | "vi"
 > & { updatedAt?: string };
 
 export async function fetchTenantsServer(): Promise<TenantSummary[]> {

@@ -17,7 +17,7 @@ export async function GET(
   if (!tenant) return new Response("Not found", { status: 404 });
 
   const updatedAt = (tenant as { updatedAt?: string }).updatedAt;
-  return new Response(toSitemapXml(tenantSitemapEntries(tenant.domain, updatedAt)), {
+  return new Response(toSitemapXml(tenantSitemapEntries(tenant.domain, updatedAt, !!tenant.vi?.enabled)), {
     headers: { "Content-Type": "application/xml; charset=utf-8" },
   });
 }

@@ -1,5 +1,42 @@
 # Searches we want House of Senses and its branches to rank for, one per line.
-# Write each in Vietnamese with accents; add the no-accent and English versions people also type.
+# Main area: District 3 (Quận 3), Ho Chi Minh City. Vietnamese with and without accents, and English.
 # The agent reads ~/.seo-agent-hos/state/keywords.txt every run (this file is only the starting copy).
-# Empty for now: until keywords are added, the agent fixes technical and content quality,
-# measures what people already find us for in Search Console, and suggests keywords to the owner.
+
+# Vietnamese: District 3
+nhà hàng quận 3
+nha hang quan 3
+nhà hàng ngon quận 3
+nha hang ngon quan 3
+quán ăn ngon quận 3
+quan an ngon quan 3
+bistro quận 3
+bistro quan 3
+nhà hàng âu quận 3
+nhà hàng lãng mạn quận 3
+nhà hàng hẹn hò quận 3
+ăn tối quận 3
+đặt bàn nhà hàng quận 3
+# Vietnamese: Ho Chi Minh City
+nhà hàng tphcm
+nha hang tphcm
+nhà hàng ngon sài gòn
+bistro sài gòn
+bistro tphcm
+trattoria sài gòn
+quán ăn ngon sài gòn
+
+# English: District 3
+restaurant district 3
+restaurants in district 3 ho chi minh city
+best restaurants district 3 saigon
+bistro district 3
+food district 3 saigon
+dinner district 3 saigon
+romantic restaurant district 3
+# English: Ho Chi Minh City
+restaurant ho chi minh city
+bistro saigon
+bistro ho chi minh city
+trattoria saigon
+trattoria ho chi minh city
+date night restaurant saigon

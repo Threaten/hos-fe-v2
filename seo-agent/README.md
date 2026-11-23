@@ -5,10 +5,13 @@ and every branch site (red-space., blue-bistro., and new branches automatically)
 your **Claude Pro/Max subscription**: no API credit. Same toolkit as the Skill & Mix agent; this site's
 settings are in `site.conf`, its instructions in `PROMPT.md`.
 
-Each night it measures (Search Console, a page audit of every branch), picks 1–3 improvements (search titles
-and descriptions per page, the menu as text from the menu PDF, structured data, alt text, technical fixes),
+Target: restaurant, bistro, food and trattoria searches in Vietnamese and English, mainly District 3 and
+Ho Chi Minh City (`keywords.default.txt`). Each night it measures (Search Console, a page audit of every
+branch), picks 1–3 improvements (search titles and descriptions per page, the English guide and FAQ on each
+branch home page, the Vietnamese page at /vi, the menu as text from the menu PDF, structured data, alt text),
 makes them through the CMS API or as small code commits it pushes and deploys (with rollback), and keeps a
-journal plus a to-do list for you. It only uses facts from the CMS, the menu or `facts.md`.
+journal plus a to-do list for you. It only uses facts from the CMS, the menu or `facts.md`, and everything
+it writes is in CMS fields you can edit (Branches → a branch → tabs "Guide & FAQ", "Vietnamese page", "SEO", "Menu").
 
 ## Install (once, on the VPS)
 

@@ -51,6 +51,7 @@ export function fold(text) {
     .normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D")
     .toLowerCase()
     .replace(/\b(tp\.?\s*hcm|tp\.?\s*ho chi minh|thanh pho ho chi minh|ho chi minh city|hcmc|sai gon|saigon)\b/g, "tphcm")
+    .replace(/\b(?:district|dist\.?|q\.)\s*(\d{1,2})\b/g, "quan $1")
     .replace(/\s+/g, " ");
 }
 const LOCATION = /\b(tphcm|ha noi|hanoi|da nang|quan \d+|q\d+)\b/g;

@@ -1,4 +1,12 @@
 # Restaurants and pages the SEO agent studies every week. One URL per line.
 # "site <address>" = the site's homepage plus up to 5 relevant pages from its sitemap.
-# Empty until the target keywords are set: then add the restaurants that rank on Google page 1-2
-# for them. The agent also adds pages it finds (marked "added by agent").
+# Seeded 2026-11-23 from web searches (US-based, so not exactly Google Vietnam). Owner: search the
+# keywords on Google in Vietnam and add the restaurants on page 1-2 that have their own website.
+# The agent adds more each month (marked "added by agent").
+
+# District 3 restaurants with their own listing pages
+https://guide.michelin.com/en/ho-chi-minh/ho-chi-minh_2978179/restaurant/nha-tu
+https://guide.michelin.com/en/ho-chi-minh/ho-chi-minh_2978179/restaurant/coco-dining
+# "Best restaurants in District 3" lists (also outreach targets: ask to be included)
+https://theculturetrip.com/asia/vietnam/articles/the-best-restaurants-in-district-3-ho-chi-minh-city
+https://www.greensm.com/vn-vi/news/quan-an-quan-3

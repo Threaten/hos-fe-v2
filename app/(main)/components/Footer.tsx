@@ -174,7 +174,15 @@ const Footer: React.FC = () => {
             houseofsenses.vn
           </a>
         </p>
-        <p className="sm:text-right">Saigon</p>
+        <p className="sm:text-right flex gap-5 justify-center sm:justify-end">
+          {/* Link to the branch's page in Vietnamese, when it is switched on in the CMS */}
+          {tenant?.vi?.enabled && (
+            <Link href="/vi" hrefLang="vi" lang="vi" className="hover:opacity-60 transition-opacity duration-300">
+              {tenant.vi.switchLabel || "Tiếng Việt"}
+            </Link>
+          )}
+          <span>Saigon</span>
+        </p>
       </div>
     </footer>
   );

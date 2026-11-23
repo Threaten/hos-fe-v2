@@ -16,11 +16,15 @@ const PAGE_PRIORITY: Record<string, number> = {
 export function tenantSitemapEntries(
   domain: string,
   updatedAt?: string,
+  /** The branch's Vietnamese page (/vi) is live */
+  hasVietnamese = false,
 ): MetadataRoute.Sitemap {
   const base = tenantSiteUrl(domain);
   const lastModified = updatedAt ? new Date(updatedAt) : undefined;
-  return Object.entries(PAGE_PRIORITY)
-    .filter(([path]) => !path || !TENANT_PAGES[path]?.noIndex)
+  const pages = Object.entries(PAGE_PRIORITY);
+  if (hasVietnamese) pages.splice(1, 0, ["vi", 0.9]);
+  return pages
+    .filter(([path]) => !path || path === "vi" || !TENANT_PAGES[path]?.noIndex)
     .map(([path, priority]) => ({
       url: path ? `${base}/${path}` : `${base}/`,
       ...(lastModified ? { lastModified } : {}),
