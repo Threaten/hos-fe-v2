@@ -10,6 +10,8 @@ import dictionary from "./vi.json";
 export type Lang = "en" | "vi";
 
 const exact = new Map<string, string>();
+/** Vietnamese → English, for switching back (e.g. the browser tab title) */
+const reverse = new Map<string, string>();
 /** Every key as written, placeholders included, for format() */
 const templates = new Map<string, string>();
 const patterns: Array<{ re: RegExp; names: string[]; to: string }> = [];
@@ -33,6 +35,7 @@ for (const [from, to] of Object.entries(dictionary as Record<string, string>)) {
     patterns.push({ re: new RegExp(`^${source}$`), names, to });
   } else {
     exact.set(normalize(from), to);
+    reverse.set(normalize(to), from);
   }
 }
 
@@ -51,6 +54,11 @@ export function translate(text: string, lang: Lang = "vi"): string {
     if (m) return p.names.reduce((out, name, i) => out.replaceAll(`{${name}}`, m[i + 1]), p.to);
   }
   return text;
+}
+
+/** The English for a translated text (exact entries only), or the text itself */
+export function untranslate(text: string): string {
+  return reverse.get(normalize(text ?? "")) ?? text;
 }
 
 /** Text with placeholders filled in: format("opens {time}", { time: "16:00" }, "vi") */

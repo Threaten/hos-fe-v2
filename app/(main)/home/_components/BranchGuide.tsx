@@ -1,7 +1,10 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import type { GuideContent } from "@/api/queries";
 import { ArrowRight } from "../../components/Icons";
+import { useTranslated } from "@/app/i18n/useT";
 
 /** Paragraphs are separated by an empty line in the CMS textarea */
 function paragraphs(text?: string | null): string[] {
@@ -38,7 +41,7 @@ export function usableFaq(content?: GuideContent | null) {
  * `asPage` makes the heading the page's H1 (the Vietnamese page).
  */
 export default function BranchGuide({
-  content,
+  content: source,
   asPage = false,
   children,
 }: {
@@ -47,6 +50,7 @@ export default function BranchGuide({
   /** Extra content under the introduction (e.g. booking buttons) */
   children?: React.ReactNode;
 }) {
+  const content = useTranslated(source);
   if (!content) return null;
   const sections = (content.sections ?? []).filter((s) => s.heading?.trim() || s.body?.trim());
   const faq = usableFaq(content);

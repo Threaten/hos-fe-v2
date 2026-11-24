@@ -13,7 +13,6 @@ import LuckyWheel from "../../../(main)/lucky-wheel/_components/LuckyWheel";
 import VoucherPage from "../../../(main)/voucher/VoucherPage";
 import ReservationLink from "../../../(main)/components/ReservationLink";
 import BranchGuide from "../../../(main)/home/_components/BranchGuide";
-import { translateDeep } from "@/app/i18n/translate";
 import { resolveBackendMediaUrl } from "@/app/utils/media";
 import { getMenuSource } from "@/api/queries";
 import { displayName, fetchTenantServer } from "@/app/utils/tenantServer";
@@ -49,16 +48,16 @@ export default async function TenantPage({ params }: PageProps) {
       );
     }
 
-    // The same home page in Vietnamese: every text through app/i18n/vi.json (kept up to
-    // date by the SEO agent); switched on per branch in the CMS ("Show the Vietnamese page")
+    // The same home page in Vietnamese: each section translates its own text from the
+    // address (app/i18n, kept up to date by the SEO agent), so it gets the English data and
+    // can switch back in place. Switched on per branch in the CMS ("Show the Vietnamese page").
     case "vi": {
       if (!tenant.vi?.enabled) notFound();
-      const vi = translateDeep(tenant);
       const hasUpdates = (tenant.newMenu?.length ?? 0) > 0;
       return (
         <>
-          <HomeSections tenant={vi} prioritizeImages={!hasUpdates} />
-          <BranchGuide content={vi.guide} />
+          <HomeSections tenant={tenant} prioritizeImages={!hasUpdates} />
+          <BranchGuide content={tenant.guide} />
           <TenantHomeInteractive newMenu={tenant.newMenu ?? []} tenantName={tenant.name} />
         </>
       );

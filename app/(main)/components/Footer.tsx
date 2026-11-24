@@ -9,7 +9,7 @@ import SocialIcons from "./SocialIcons";
 import { BranchEntry, useBranches } from "./BranchSwitcher";
 import { ArrowRight } from "./Icons";
 import ReservationLink from "./ReservationLink";
-import { useLang, useT } from "@/app/i18n/useT";
+import { switchLanguageInPlace, useLang, useT } from "@/app/i18n/useT";
 
 
 /** Wordmark, map and contacts for this branch, then every other home */
@@ -181,12 +181,12 @@ const Footer: React.FC = () => {
         <p className="sm:text-right flex gap-5 justify-center sm:justify-end">
           {/* Link to the branch's page in Vietnamese, when it is switched on in the CMS */}
           {lang === "vi" ? (
-            <Link href="/" hrefLang="en" lang="en" className="hover:opacity-60 transition-opacity duration-300">
+            <Link href="/" scroll={false} onClick={(e) => switchLanguageInPlace(e, "en")} hrefLang="en" lang="en" className="hover:opacity-60 transition-opacity duration-300">
               English
             </Link>
           ) : (
             tenant?.vi?.enabled && (
-              <Link href="/vi" hrefLang="vi" lang="vi" className="hover:opacity-60 transition-opacity duration-300">
+              <Link href="/vi" scroll={false} onClick={(e) => switchLanguageInPlace(e, "vi")} hrefLang="vi" lang="vi" className="hover:opacity-60 transition-opacity duration-300">
                 Tiếng Việt
               </Link>
             )

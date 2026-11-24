@@ -72,7 +72,10 @@ export function TenantProvider({
     };
 
     loadTenant();
-  }, [params?.tenant, pathname]);
+    // Once per branch, not on every page change: the server already sends fresh data with
+    // each page, and a refetch would redraw the whole page (e.g. when switching language)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params?.tenant]);
 
   // On the Vietnamese page every component reads the branch's text in Vietnamese
   const lang = langFromPath(pathname);

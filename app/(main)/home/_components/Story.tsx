@@ -4,11 +4,12 @@ import React from "react";
 import Link from "next/link";
 import type { Tenant } from "@/api/queries";
 import { ArrowRight } from "../../components/Icons";
-import { useT } from "@/app/i18n/useT";
+import { useT, useTranslated } from "@/app/i18n/useT";
 
 
 /** The branch in a few sentences: a statement, then a quieter note beside it */
-export default function Story({ tenant }: { tenant?: Tenant | null }) {
+export default function Story({ tenant: source }: { tenant?: Tenant | null }) {
+  const tenant = useTranslated(source);
   const t = useT();
   const statement =
     tenant?.shortAboutTitle || t("More than a restaurant: a space to reconnect, unwind, and stay awhile.");

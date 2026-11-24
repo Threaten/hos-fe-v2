@@ -7,7 +7,7 @@ import OpeningStatus from "@/app/components/OpeningStatus";
 import { ArrowRight } from "../../components/Icons";
 import ReservationLink from "../../components/ReservationLink";
 import { mapsUrl } from "@/app/utils/maps";
-import { useT } from "@/app/i18n/useT";
+import { useT, useTranslated } from "@/app/i18n/useT";
 
 
 interface HeroProps {
@@ -15,7 +15,8 @@ interface HeroProps {
 }
 
 /** Big headline in the branch colour, with the practical details beside it */
-const Hero: React.FC<HeroProps> = ({ tenant }) => {
+const Hero: React.FC<HeroProps> = ({ tenant: source }) => {
+  const tenant = useTranslated(source);
   // The CMS writes titles like "Red_Space"; the underscore is a line break
   const title = (tenant?.heroTitle || tenant?.name || "House of Senses").toLowerCase();
   const lines = title.split(/_+/).map((p) => p.trim()).filter(Boolean);

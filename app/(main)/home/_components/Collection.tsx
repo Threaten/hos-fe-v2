@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from "react";
 import Tile from "../../components/Tile";
 import ImageLightbox from "../../components/ImageLightbox";
-import { useT } from "@/app/i18n/useT";
+import { useT, useTranslated } from "@/app/i18n/useT";
 
 
 export interface CollectionImage {
@@ -32,7 +32,9 @@ interface CollectionProps {
  * Photo index: a rail of filters with counts on the left (a row on mobile)
  * and the photos as tiles, each tagged with its group.
  */
-export default function Collection({ groups, name, priority = false, pageSize = Infinity }: CollectionProps) {
+export default function Collection({ groups: source, name, priority = false, pageSize = Infinity }: CollectionProps) {
+  // Labels, alt texts and captions come from the CMS: shown in the page's language
+  const groups = useTranslated(source);
   const visibleGroups = groups.filter((g) => g.images.length > 0);
   const [filter, setFilter] = useState<string>("all");
   const [openIndex, setOpenIndex] = useState<number | null>(null);
