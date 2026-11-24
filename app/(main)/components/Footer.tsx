@@ -9,6 +9,8 @@ import SocialIcons from "./SocialIcons";
 import { BranchEntry, useBranches } from "./BranchSwitcher";
 import { ArrowRight } from "./Icons";
 import ReservationLink from "./ReservationLink";
+import { useLang, useT } from "@/app/i18n/useT";
+
 
 /** Wordmark, map and contacts for this branch, then every other home */
 const Footer: React.FC = () => {
@@ -16,6 +18,8 @@ const Footer: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
   const { tenant } = useTenant();
   const name = (tenant?.name ?? "House of Senses").toLowerCase();
+  const t = useT();
+  const lang = useLang();
 
   return (
     <footer className="relative mt-[var(--section)] pb-8 overflow-x-clip">
@@ -43,7 +47,7 @@ const Footer: React.FC = () => {
             {(tenant.address || tenant.location) && (
               <div className="relative w-full aspect-[8/5] overflow-hidden" style={{ background: "var(--paper-2)" }} data-reveal>
                 <iframe
-                  title={`Map to ${tenant.name}`}
+                  title={t("Map to {name}", { name: tenant.name })}
                   src={mapsEmbedUrl(tenant)}
                   className="absolute inset-0 w-full h-full border-0 grayscale-[0.35]"
                   loading="lazy"
@@ -54,13 +58,13 @@ const Footer: React.FC = () => {
 
             <div className="text-center lg:text-left" data-reveal style={{ ["--reveal-delay" as string]: "0.08s" }}>
               <h2 id="footer-contacts" className="hs-display mb-6" style={{ color: "var(--ink)" }}>
-                contacts
+                {t("contacts")}
               </h2>
               <p className="text-[1.1875rem] leading-[1.25] tracking-[-0.015em]" style={{ color: "var(--ink)" }}>
                 <OpeningStatus branch={tenant} showHours />
                 {tenant.address && (
                   <>
-                    {" "}at{" "}
+                    {" "}{t("at")}{" "}
                     <a href={mapsUrl(tenant)} target="_blank" rel="noopener noreferrer" className="hs-link">
                       {tenant.address.toLowerCase()}
                     </a>
@@ -86,10 +90,10 @@ const Footer: React.FC = () => {
               </ul>
               <p className="mt-9 flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-2">
                 <Link href="/menu" className="hs-ui hs-nav-link text-[0.9375rem]" style={{ color: "var(--pen)" }}>
-                  Menu
+                  {t("Menu")}
                 </Link>
                 <ReservationLink className="hs-ui hs-nav-link text-[0.9375rem] inline-flex items-center gap-1.5" style={{ color: "var(--pen)" }}>
-                  Book a table <ArrowRight className="w-3 h-3" />
+                  {t("Book a table")} <ArrowRight className="w-3 h-3" />
                 </ReservationLink>
               </p>
             </div>
@@ -101,7 +105,7 @@ const Footer: React.FC = () => {
       {tenants.length > 0 && (
         <section className="hs-shell mt-12 md:mt-16" aria-labelledby="footer-locations">
           <h2 id="footer-locations" className="sr-only">
-            Our homes
+            {t("Our homes")}
           </h2>
           <div className="lg:col-span-2">
             <button
@@ -113,7 +117,7 @@ const Footer: React.FC = () => {
               style={{ borderColor: "var(--line)" }}
             >
               <span className="hs-label">
-                Our homes<span className="hs-count">{tenants.length}</span>
+                {t("Our homes")}<span className="hs-count">{tenants.length}</span>
               </span>
               <span className="flex flex-wrap items-baseline justify-center lg:justify-between gap-x-6 gap-y-2">
                 <span className="text-[1.5rem] md:text-[1.75rem] leading-tight tracking-[-0.03em]">
@@ -125,7 +129,7 @@ const Footer: React.FC = () => {
                   ))}
                 </span>
                 <span className="hs-ui inline-flex items-center gap-2 group-hover:opacity-60 transition-opacity duration-300" style={{ color: "var(--pen)" }}>
-                  {expanded ? "Fold away" : "Show all"}
+                  {expanded ? t("Fold away") : t("Show all")}
                   <svg
                     width="10"
                     height="6"
@@ -176,10 +180,16 @@ const Footer: React.FC = () => {
         </p>
         <p className="sm:text-right flex gap-5 justify-center sm:justify-end">
           {/* Link to the branch's page in Vietnamese, when it is switched on in the CMS */}
-          {tenant?.vi?.enabled && (
-            <Link href="/vi" hrefLang="vi" lang="vi" className="hover:opacity-60 transition-opacity duration-300">
-              {tenant.vi.switchLabel || "Tiếng Việt"}
+          {lang === "vi" ? (
+            <Link href="/" hrefLang="en" lang="en" className="hover:opacity-60 transition-opacity duration-300">
+              English
             </Link>
+          ) : (
+            tenant?.vi?.enabled && (
+              <Link href="/vi" hrefLang="vi" lang="vi" className="hover:opacity-60 transition-opacity duration-300">
+                Tiếng Việt
+              </Link>
+            )
           )}
           <span>Saigon</span>
         </p>

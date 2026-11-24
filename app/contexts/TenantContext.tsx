@@ -1,6 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
+import { langFromPath, translateDeep } from "@/app/i18n/translate";
 import { useParams, usePathname } from "next/navigation";
 import { fetchTenantBySlug, type Tenant } from "@/api/queries";
 import { getCurrentSubdomain } from "@/app/utils/domain";
@@ -73,8 +74,12 @@ export function TenantProvider({
     loadTenant();
   }, [params?.tenant, pathname]);
 
+  // On the Vietnamese page every component reads the branch's text in Vietnamese
+  const lang = langFromPath(pathname);
+  const shown = useMemo(() => translateDeep(tenant, lang), [tenant, lang]);
+
   return (
-    <TenantContext.Provider value={{ tenant, loading, setTenant }}>
+    <TenantContext.Provider value={{ tenant: shown, loading, setTenant }}>
       {tenant?.mainColor && (
         <style>{`:root { --color-main: ${tenant.mainColor}; }`}</style>
       )}

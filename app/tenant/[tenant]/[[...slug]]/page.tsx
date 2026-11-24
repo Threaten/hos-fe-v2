@@ -13,8 +13,7 @@ import LuckyWheel from "../../../(main)/lucky-wheel/_components/LuckyWheel";
 import VoucherPage from "../../../(main)/voucher/VoucherPage";
 import ReservationLink from "../../../(main)/components/ReservationLink";
 import BranchGuide from "../../../(main)/home/_components/BranchGuide";
-import { ArrowRight } from "../../../(main)/components/Icons";
-import Link from "next/link";
+import { translateDeep } from "@/app/i18n/translate";
 import { resolveBackendMediaUrl } from "@/app/utils/media";
 import { getMenuSource } from "@/api/queries";
 import { displayName, fetchTenantServer } from "@/app/utils/tenantServer";
@@ -50,26 +49,18 @@ export default async function TenantPage({ params }: PageProps) {
       );
     }
 
-    // The branch in Vietnamese; written in the CMS (tab "Vietnamese page")
+    // The same home page in Vietnamese: every text through app/i18n/vi.json (kept up to
+    // date by the SEO agent); switched on per branch in the CMS ("Show the Vietnamese page")
     case "vi": {
-      const vi = tenant.vi;
-      if (!vi?.enabled) notFound();
+      if (!tenant.vi?.enabled) notFound();
+      const vi = translateDeep(tenant);
+      const hasUpdates = (tenant.newMenu?.length ?? 0) > 0;
       return (
-        <div lang="vi">
-          <BranchGuide content={vi} asPage>
-            <div className="flex flex-wrap gap-2.5 mt-8">
-              <ReservationLink className="hs-btn hs-btn-solid">
-                {vi.bookLabel || "Đặt bàn"} <ArrowRight />
-              </ReservationLink>
-              <Link href="/menu" className="hs-btn">
-                {vi.menuLabel || "Xem thực đơn"} <ArrowRight />
-              </Link>
-              <Link href="/" className="hs-btn" hrefLang="en" lang="en">
-                {vi.englishLabel || "English"}
-              </Link>
-            </div>
-          </BranchGuide>
-        </div>
+        <>
+          <HomeSections tenant={vi} prioritizeImages={!hasUpdates} />
+          <BranchGuide content={vi.guide} />
+          <TenantHomeInteractive newMenu={tenant.newMenu ?? []} tenantName={tenant.name} />
+        </>
       );
     }
 

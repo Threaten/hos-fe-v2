@@ -6,6 +6,8 @@ import {
   getOpeningState,
   type OpeningKind,
 } from "@/app/utils/openingStatus";
+import { translate } from "@/app/i18n/translate";
+import { useLang } from "@/app/i18n/useT";
 
 const DOT_COLOR: Record<OpeningKind, string> = {
   open: "var(--status-open)",
@@ -48,6 +50,8 @@ export default function OpeningStatus({
   className = "",
 }: OpeningStatusProps) {
   const now = useNow();
+  const lang = useLang();
+  const tr = (text: string) => translate(text, lang);
   if (!now) return null;
 
   if (variant === "status") {
@@ -62,7 +66,7 @@ export default function OpeningStatus({
               className="inline-block w-[7px] h-[7px] rounded-full shrink-0"
               style={{ backgroundColor: DOT_COLOR[status.kind] }}
             />
-            <span>{status.label}</span>
+            <span>{tr(status.label)}</span>
           </>
         )}
         {status.hours && (
@@ -87,13 +91,13 @@ export default function OpeningStatus({
             className="inline-block w-[7px] h-[7px] rounded-full shrink-0"
             style={{ backgroundColor: DOT_COLOR[state.kind] }}
           />
-          <span>{state.label}</span>
+          <span>{tr(state.label)}</span>
         </>
       )}
       {showDetail && state.detail && (
         <>
           <span aria-hidden="true">·</span>
-          <span>{state.detail}</span>
+          <span>{tr(state.detail)}</span>
         </>
       )}
       {showHours && state.hours && (

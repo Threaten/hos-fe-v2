@@ -3,6 +3,8 @@
 import React, { useMemo, useState } from "react";
 import Tile from "../../components/Tile";
 import ImageLightbox from "../../components/ImageLightbox";
+import { useT } from "@/app/i18n/useT";
+
 
 export interface CollectionImage {
   src: string;
@@ -35,6 +37,7 @@ export default function Collection({ groups, name, priority = false, pageSize = 
   const [filter, setFilter] = useState<string>("all");
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const t = useT();
 
   const all = useMemo(
     () => visibleGroups.flatMap((g) => g.images.map((img) => ({ ...img, group: g.label, key: g.key }))),
@@ -46,13 +49,13 @@ export default function Collection({ groups, name, priority = false, pageSize = 
 
   if (all.length === 0) return null;
 
-  const filters = [{ key: "all", label: "All", count: all.length }, ...visibleGroups.map((g) => ({ key: g.key, label: g.label, count: g.images.length }))];
+  const filters = [{ key: "all", label: t("All"), count: all.length }, ...visibleGroups.map((g) => ({ key: g.key, label: g.label, count: g.images.length }))];
   const current = openIndex != null ? shown[openIndex] : null;
 
   return (
-    <section className="hs-shell" aria-label={`Photos of ${name}`}>
+    <section className="hs-shell" aria-label={t("Photos of {name}", { name })}>
       <div>
-        <ul className="hs-rail-sticky flex flex-wrap lg:flex-col justify-center lg:justify-start gap-x-7 gap-y-3 lg:gap-y-2.5 mb-8 lg:mb-0" aria-label="Filter photos">
+        <ul className="hs-rail-sticky flex flex-wrap lg:flex-col justify-center lg:justify-start gap-x-7 gap-y-3 lg:gap-y-2.5 mb-8 lg:mb-0" aria-label={t("Filter photos")}>
           {filters.map((f) => (
             <li key={f.key}>
               <button
@@ -82,7 +85,7 @@ export default function Collection({ groups, name, priority = false, pageSize = 
               type="button"
               onClick={() => setOpenIndex(i)}
               className="group block w-full text-left"
-              aria-label={`Open photo${img.caption ? `: ${img.caption}` : ` ${i + 1}`}`}
+              aria-label={img.caption ? t("Open photo: {caption}", { caption: img.caption }) : t("Open photo {n}", { n: String(i + 1) })}
             >
               <Tile
                 inline
@@ -90,7 +93,7 @@ export default function Collection({ groups, name, priority = false, pageSize = 
                 alt={img.alt}
                 aspect="15 / 16"
                 tag={img.group}
-                label={`No. ${String(i + 1).padStart(2, "0")}`}
+                label={t("No. {n}", { n: String(i + 1).padStart(2, "0") })}
                 title={img.caption || undefined}
                 priority={priority && i < 3}
                 reveal={priority && i < 3 ? "load" : "scroll"}
@@ -105,7 +108,7 @@ export default function Collection({ groups, name, priority = false, pageSize = 
       {shown.length > limit && (
         <div className="mt-8 flex justify-center">
           <button type="button" onClick={() => setExpanded(true)} className="hs-btn hs-btn-sm">
-            Show all {shown.length}
+            {t("Show all {count}", { count: String(shown.length) })}
           </button>
         </div>
       )}

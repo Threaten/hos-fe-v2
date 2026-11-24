@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import SkeletonImage from "@/app/components/SkeletonImage";
 import { resolveBackendMediaUrl } from "@/app/utils/media";
+import { useT } from "@/app/i18n/useT";
+
 
 interface NewMenuImage {
   src?: {
@@ -26,6 +28,7 @@ export default function NewMenuModal({
   tenantName,
 }: NewMenuModalProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const t = useT();
   // Thumbnails wait for the main image so they don't compete with it for bandwidth
   const [mainLoaded, setMainLoaded] = useState(false);
 
@@ -89,9 +92,9 @@ export default function NewMenuModal({
       >
         <div className="flex items-start justify-between gap-6 px-5 md:px-9 pt-7 md:pt-9 pb-4">
           <div>
-            <p className="hs-note mb-2">Updates</p>
+            <p className="hs-note mb-2">{t("Updates")}</p>
             <h2 id="updates-heading" className="hs-title" style={{ color: "var(--ink)" }}>
-              What&apos;s new{tenantName ? ` at ${tenantName.toLowerCase()}` : ""}
+              {tenantName ? t("What's new at {name}", { name: tenantName.toLowerCase() }) : t("What's new")}
             </h2>
             {images.length > 1 && (
               <p className="hs-label mt-2">
@@ -102,7 +105,7 @@ export default function NewMenuModal({
           <button
             onClick={onClose}
             className="hs-icon-btn !w-9 !h-9 shrink-0"
-            aria-label="Close updates"
+            aria-label={t("Close updates")}
           >
             <svg viewBox="0 0 16 16" className="w-4 h-4 rotate-45" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
               <path d="M8 2v12M2 8h12" />
@@ -130,14 +133,14 @@ export default function NewMenuModal({
               <button
                 onClick={handlePrevious}
                 className="hs-icon-btn absolute left-2 md:left-4 top-1/2 -translate-y-1/2"
-                aria-label="Previous update"
+                aria-label={t("Previous update")}
               >
                 <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">{arrow}</svg>
               </button>
               <button
                 onClick={handleNext}
                 className="hs-icon-btn absolute right-2 md:right-4 top-1/2 -translate-y-1/2"
-                aria-label="Next update"
+                aria-label={t("Next update")}
               >
                 <svg viewBox="0 0 16 16" className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">{arrow}</svg>
               </button>

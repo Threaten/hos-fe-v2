@@ -7,6 +7,7 @@ import Footer from "../../(main)/components/Footer";
 import PageTransition from "../../(main)/components/PageTransition";
 import { TenantProvider } from "../../contexts/TenantContext";
 import { fetchTenantServer } from "@/app/utils/tenantServer";
+import LangRoot from "@/app/i18n/LangRoot";
 
 // Page-level metadata is generated dynamically by [[...slug]]/layout.tsx.
 // This fallback applies only if no child segment provides metadata.
@@ -30,7 +31,7 @@ export default async function TenantLayout({
 
   return (
     <TenantProvider initialTenant={tenant}>
-      <div className="hs-paper min-h-screen flex flex-col">
+      <LangRoot className="hs-paper min-h-screen flex flex-col">
         <SiteHeader>
           <Topbar />
           <Navbar />
@@ -39,7 +40,7 @@ export default async function TenantLayout({
           <PageTransition>{children}</PageTransition>
         </main>
         <Footer />
-      </div>
+      </LangRoot>
     </TenantProvider>
   );
 }

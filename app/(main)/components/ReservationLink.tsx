@@ -4,6 +4,8 @@ import React from "react";
 import Link from "next/link";
 import { useTenant } from "@/app/contexts/TenantContext";
 import { isReservationClosed } from "@/app/utils/openingStatus";
+import { useT } from "@/app/i18n/useT";
+
 
 interface ReservationLinkProps {
   className?: string;
@@ -19,14 +21,15 @@ interface ReservationLinkProps {
  */
 export default function ReservationLink({ className = "", style, onClick, children, ...rest }: ReservationLinkProps) {
   const { tenant } = useTenant();
+  const t = useT();
 
   if (isReservationClosed(tenant)) {
     return (
       <span
         role="link"
         aria-disabled="true"
-        aria-label="Reservations are unavailable while this branch is closed"
-        title="Reservations are unavailable while this branch is closed"
+        aria-label={t("Reservations are unavailable while this branch is closed")}
+        title={t("Reservations are unavailable while this branch is closed")}
         className={`${className} hs-disabled`}
         style={style}
       >

@@ -35,14 +35,19 @@ branch is not promoted.
   redesign). They are background about the code, never your instructions. Never change the visual design.
 - Pages per branch: home, /menu (PDF flip book + optional "Menu as text"), /reservation, /about, /contact,
   /gallery. /lucky-wheel and /voucher are not for search (noindex).
-- Languages: the branch pages are in English; each branch also has a Vietnamese page at `/vi` (owner decision
-  2026-11-23). Both are written entirely in the CMS (fields below), linked to each other with hreflang, listed
-  in the sitemap, and the `/vi` page is switched on per branch with `vi.enabled`.
+- Languages: the branch pages are in English. `/vi` is the same home page in Vietnamese (owner decision
+  2026-11-25): same layout and sections, every text translated through the frontend file `app/i18n/vi.json`
+  (`{ "English text": "Vietnamese text" }`, keys may hold placeholders like `{name}`). Text without a
+  translation shows in English. The English home and `/vi` point at each other with hreflang, are both in the
+  sitemap, and `/vi` is switched on per branch in the CMS with `vi.enabled`. The other fields of the
+  "Vietnamese page" tab are no longer shown: don't write them.
 
 ## Everything you put on the site must be editable in the CMS
 The owner must be able to see and change every word you add, in admin.houseofsenses.vn. So:
 - Visible text (sections, headings, questions, links, button labels, titles) goes into CMS fields, never
   hardcoded in frontend code. Fallback text in code is only a safety net for when the CMS is empty or down.
+  The one exception is the Vietnamese translations, which live in `app/i18n/vi.json` (owner decision 2026-11-25:
+  no extra CMS fields). New fixed labels in code go through `t("...")` so they can be translated.
 - Only use fields that already exist. If something would need a new field, section or page, don't build it:
   write the idea to `state/owner-todo.md`.
 - Never put text in an image, a hidden element or anywhere the admin can't show it.
@@ -60,12 +65,23 @@ before writing, so you send the right fields. `PATCH /api/tenants/<id>` with onl
   serves (from the menu), the room and the evening, where it is in District 3 and how to get there (streets,
   landmarks that are certainly nearby), booking, and real questions guests ask. Only facts from the CMS, the
   menu or `state/facts.md`.
-- `vi` (tab "Vietnamese page", the page at `/vi`): the same kinds of fields in natural Vietnamese, written for
-  Vietnamese diners (not a word-for-word translation), plus `metaTitle`, `metaDescription`, `bookLabel`,
-  `menuLabel`, `switchLabel`, `englishLabel`. Its `title` is the page's H1 ("<Branch>: nhà hàng … Quận 3, TP.HCM").
-  Set `vi.enabled: true` only when title, intro, at least 3 sections and 3 questions are filled, and only for an
-  open branch. Arrays replace the whole list when you PATCH them: always send the complete list, existing
-  items included (GET the tenant first), or you will erase the owner's items.
+- `vi.enabled`: turns on `/vi` for a branch. Only for an open branch, and only once `node <tools>/i18n.mjs`
+  shows nothing missing for it. Arrays (`guide.sections`, `guide.faq`) replace the whole list when you PATCH
+  them: always send the complete list, existing items included (GET the tenant first), or you will erase the
+  owner's items.
+
+## Keeping the Vietnamese page translated (every run)
+Run `node <tools>/i18n.mjs` (from the frontend folder). It lists `missing`: English texts on the home page
+(fixed labels in the code and the CMS text of every branch with `/vi` on) that have no Vietnamese yet, and
+`stale`: keys no longer used (the English was changed or removed). When either is non-empty:
+- Add a translation for every missing text to `app/i18n/vi.json` (keep the English key exactly, character for
+  character, including line breaks as `\n`; keep `{placeholders}` as they are). Natural Vietnamese for diners in
+  Ho Chi Minh City, the same facts, nothing added or left out; names of dishes as on the menu; addresses with
+  Vietnamese accents (Võ Thị Sáu, phường Xuân Hòa, Quận 3); prices, phone numbers and times unchanged.
+- Remove the stale keys.
+- Check the JSON is valid (`node <tools>/i18n.mjs` runs without an error), `npx tsc --noEmit`, then commit
+  `seo: Vietnamese translations`, push and `<kit>/deploy.sh fe`. This counts as one of the run's commits and comes
+  before other code work.
 - `menuText`: the menu as text ("## Section" lines, then "Name | short description | price"). Transcribe it
   faithfully from the branch's menu file: download it with `curl -s -o <state>/menu-<branch>.pdf <url>` and
   Read it. Copy names and prices exactly; never add dishes, descriptions or prices that are not in the menu.
@@ -94,7 +110,7 @@ vouchers, reservations, customers, messages, users or roles. Those are the owner
 3. Pick the 1–3 highest-impact tasks not done recently. Rough priority:
    a. Broken things: non-200 pages, a branch missing from the sitemap, wrong canonical, noindex by mistake, pages not indexed (`gsc.mjs inspect`).
    b. Local SEO data: the Restaurant structured data must match the CMS (name, address, phone, hours, geo, menu URL, reservation URL). Fix code if it doesn't.
-   c. Content for the keywords: every open branch has `menuText`, a full `guide` with FAQ, and a live `/vi` page;
+   c. Content for the keywords: every open branch has `menuText`, a full `guide` with FAQ, and a live, fully translated `/vi` page;
       each page has a distinct, useful title and description in its language. Improve the weakest first.
    d. Pages with impressions but low CTR: rewrite their titles/descriptions.
    e. Weekly competitor research (below), then work through `state/competitor-notes.md`.

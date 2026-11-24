@@ -8,10 +8,12 @@ settings are in `site.conf`, its instructions in `PROMPT.md`.
 Target: restaurant, bistro, food and trattoria searches in Vietnamese and English, mainly District 3 and
 Ho Chi Minh City (`keywords.default.txt`). Each night it measures (Search Console, a page audit of every
 branch), picks 1–3 improvements (search titles and descriptions per page, the English guide and FAQ on each
-branch home page, the Vietnamese page at /vi, the menu as text from the menu PDF, structured data, alt text),
+branch home page, the Vietnamese translations of the home page at /vi (`app/i18n/vi.json`), the menu as text from the menu PDF, structured data, alt text),
 makes them through the CMS API or as small code commits it pushes and deploys (with rollback), and keeps a
 journal plus a to-do list for you. It only uses facts from the CMS, the menu or `facts.md`, and everything
-it writes is in CMS fields you can edit (Branches → a branch → tabs "Guide & FAQ", "Vietnamese page", "SEO", "Menu").
+it writes is in CMS fields you can edit (Branches → a branch → tabs "Guide & FAQ", "SEO", "Menu"), except the
+Vietnamese translations: those are in the frontend file `app/i18n/vi.json` (edit it and redeploy, or ask the agent).
+The page /vi is switched on per branch with "Show the Vietnamese page" in the tab "Vietnamese page".
 
 ## Install (once, on the VPS)
 

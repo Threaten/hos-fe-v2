@@ -7,6 +7,8 @@ import OpeningStatus from "@/app/components/OpeningStatus";
 import { ArrowRight } from "../../components/Icons";
 import ReservationLink from "../../components/ReservationLink";
 import { mapsUrl } from "@/app/utils/maps";
+import { useT } from "@/app/i18n/useT";
+
 
 interface HeroProps {
   tenant?: Tenant | null;
@@ -19,6 +21,7 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
   const lines = title.split(/_+/).map((p) => p.trim()).filter(Boolean);
   const name = tenant?.name ?? "House of Senses";
   const description = tenant?.heroDescription;
+  const t = useT();
 
   return (
     <section className="hs-shell pt-8 md:pt-12 pb-10 md:pb-16" aria-label={name}>
@@ -40,7 +43,7 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
               <OpeningStatus branch={tenant} showDetail />
               {tenant.address && (
                 <>
-                  {" "}at{" "}
+                  {" "}{t("at")}{" "}
                   <a href={mapsUrl(tenant)} target="_blank" rel="noopener noreferrer" className="hs-link">
                     {tenant.address.toLowerCase()}
                   </a>
@@ -50,10 +53,10 @@ const Hero: React.FC<HeroProps> = ({ tenant }) => {
           )}
           <div className="flex flex-wrap justify-center lg:justify-start gap-2.5 mt-7">
             <ReservationLink className="hs-btn hs-btn-solid hs-btn-sm">
-              Book a table <ArrowRight />
+              {t("Book a table")} <ArrowRight />
             </ReservationLink>
             <Link href="/menu" className="hs-btn hs-btn-sm">
-              The menu <ArrowRight />
+              {t("The menu")} <ArrowRight />
             </Link>
           </div>
         </div>

@@ -9,6 +9,8 @@ import OpeningStatus from "@/app/components/OpeningStatus";
 import BranchSwitcher, { BranchEntry, useBranches } from "./BranchSwitcher";
 import { ArrowRight } from "./Icons";
 import ReservationLink from "./ReservationLink";
+import { useT } from "@/app/i18n/useT";
+
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -24,6 +26,7 @@ export default function Navbar() {
   const { tenant } = useTenant();
   const branches = useBranches();
   const brandName = (tenant?.name ?? "House of Senses").toLowerCase();
+  const t = useT();
 
   // Close the mobile menu on navigation and lock page scroll while it is open
   useEffect(() => setIsMenuOpen(false), [pathname]);
@@ -39,7 +42,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav aria-label="Site navigation" className="relative z-40 hs-paper hos-gutter" style={{ height: "var(--header-h)" }}>
+      <nav aria-label={t("Site navigation")} className="relative z-40 hs-paper hos-gutter" style={{ height: "var(--header-h)" }}>
         <div className="h-full grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center gap-6">
           {/* Desktop: page links on the left */}
           <ul className="hidden lg:flex items-center gap-6 justify-self-start">
@@ -51,7 +54,7 @@ export default function Navbar() {
                   className="hs-ui hs-nav-link text-[0.9375rem]"
                   style={{ color: "var(--pen)" }}
                 >
-                  {label}
+                  {t(label)}
                 </Link>
               </li>
             ))}
@@ -62,7 +65,7 @@ export default function Navbar() {
             href="/"
             className="justify-self-start lg:justify-self-center text-[1.75rem] lg:text-[2rem] leading-none tracking-[-0.045em] whitespace-nowrap transition-opacity duration-300 hover:opacity-70"
             style={{ color: "var(--pen)" }}
-            aria-label={`${brandName} home`}
+            aria-label={t("{name} home", { name: brandName })}
           >
             {brandName}
           </Link>
@@ -76,15 +79,15 @@ export default function Navbar() {
             <div className="hidden lg:block">
               <BranchSwitcher />
             </div>
-            <ReservationLink className="hs-btn hs-btn-solid hs-btn-sm hidden lg:inline-flex" aria-label="Make a reservation">
-              Book a table
+            <ReservationLink className="hs-btn hs-btn-solid hs-btn-sm hidden lg:inline-flex" aria-label={t("Make a reservation")}>
+              {t("Book a table")}
               <ArrowRight />
             </ReservationLink>
 
             <button
               onClick={toggleMenu}
               className="lg:hidden hs-icon-btn !w-9 !h-9"
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              aria-label={isMenuOpen ? t("Close menu") : t("Open menu")}
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
             >
@@ -109,14 +112,14 @@ export default function Navbar() {
           <Link href="/" className="text-[1.75rem] leading-none tracking-[-0.045em]" style={{ color: "var(--pen)" }} onClick={toggleMenu}>
             {brandName}
           </Link>
-          <button onClick={toggleMenu} className="hs-icon-btn !w-9 !h-9" aria-label="Close menu">
+          <button onClick={toggleMenu} className="hs-icon-btn !w-9 !h-9" aria-label={t("Close menu")}>
             <svg viewBox="0 0 16 16" className="w-4 h-4 rotate-45" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
               <path d="M8 2v12M2 8h12" />
             </svg>
           </button>
         </div>
 
-        <nav aria-label="Main navigation menu" className="flex-1 overflow-y-auto hos-gutter pt-10 pb-8 flex flex-col">
+        <nav aria-label={t("Main navigation menu")} className="flex-1 overflow-y-auto hos-gutter pt-10 pb-8 flex flex-col">
           <ul className="flex flex-col">
             {NAV_LINKS.map(({ href, label }, i) => (
               <li key={href} className="hos-menu-item" style={{ "--i": i } as React.CSSProperties}>
@@ -127,7 +130,7 @@ export default function Navbar() {
                   style={{ color: "var(--pen)" }}
                   onClick={toggleMenu}
                 >
-                  {label}
+                  {t(label)}
                 </Link>
               </li>
             ))}
@@ -142,7 +145,7 @@ export default function Navbar() {
           {branches.length > 1 && (
             <div className="mt-10 hos-menu-item" style={{ "--i": NAV_LINKS.length + 1 } as React.CSSProperties}>
               <p className="hs-label mb-5">
-                Our homes<span className="hs-count">{branches.length}</span>
+                {t("Our homes")}<span className="hs-count">{branches.length}</span>
               </p>
               <ul className="flex flex-col gap-7">
                 {branches.map((b) => (
@@ -157,7 +160,7 @@ export default function Navbar() {
 
         <div className="hos-gutter pb-8 pt-4 shrink-0">
           <ReservationLink className="hs-btn hs-btn-solid w-full" onClick={toggleMenu}>
-            Book a table
+            {t("Book a table")}
             <ArrowRight />
           </ReservationLink>
         </div>

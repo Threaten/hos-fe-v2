@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { Tenant } from "@/api/queries";
 import { resolveBackendMediaUrl } from "@/app/utils/media";
 import { parseOpeningHours } from "@/app/utils/openingStatus";
+import { translate, translateDeep } from "@/app/i18n/translate";
 import {
   SITE_URL,
   displayName,
@@ -127,11 +128,20 @@ function languageAlternates(tenant: Tenant, baseUrl: string) {
     : undefined;
 }
 
-/** Metadata for the branch page in Vietnamese (/vi); text from the CMS tab "Vietnamese page" */
+/** The Vietnamese of a CMS text, or null while it has no translation yet */
+function translated(text?: string | null): string | null {
+  if (!text?.trim()) return null;
+  const out = translate(text);
+  return out !== text ? out : null;
+}
+
+/** Metadata for the home page in Vietnamese (/vi): the home page's search title and description, translated */
 function buildVietnameseMetadata(tenant: Tenant, name: string, baseUrl: string): Metadata {
   const vi = tenant.vi ?? {};
-  const title = tidy(vi.metaTitle || vi.title || `${name} | Nhà hàng tại TP.HCM`);
-  const description = clamp(vi.metaDescription || vi.intro || `${name}: thực đơn, giờ mở cửa và đặt bàn trực tuyến.`);
+  const title = tidy(translated(tenant.meta?.title) || vi.metaTitle || `${name} | Nhà hàng Quận 3, TP.HCM`);
+  const description = clamp(
+    translated(tenant.meta?.description) || vi.metaDescription || `${name}: thực đơn, giờ mở cửa và đặt bàn trực tuyến.`,
+  );
   const url = `${baseUrl}/vi`;
   const image = tenantImage(tenant);
   return {
@@ -296,7 +306,7 @@ export function buildTenantJsonLd(tenant: Tenant, path = ""): object {
   ];
 
   // Questions written in the CMS, on the page that shows them
-  const faqSource = path === "vi" ? (hasVietnamesePage(tenant) ? tenant.vi : null) : path ? null : tenant.guide;
+  const faqSource = path === "vi" ? (hasVietnamesePage(tenant) ? translateDeep(tenant.guide) : null) : path ? null : tenant.guide;
   const faq = (faqSource?.faq ?? []).filter((q) => q.question?.trim() && q.answer?.trim());
   if (faq.length) {
     graph.push({
