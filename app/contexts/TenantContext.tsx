@@ -17,6 +17,16 @@ const TenantContext = createContext<TenantContextType>({
   setTenant: () => {},
 });
 
+/**
+ * The browser's refetch asks for fewer fields than the server render did:
+ * keep the server's fields for the same branch so nothing it showed disappears.
+ */
+function mergeTenant(prev: Tenant | null, data: Tenant | null): Tenant | null {
+  if (!data) return prev;
+  if (prev && prev.id === data.id) return { ...prev, ...data };
+  return data;
+}
+
 export function TenantProvider({
   children,
   initialTenant = null,
@@ -41,7 +51,7 @@ export function TenantProvider({
 
       if (tenantSlug && typeof tenantSlug === "string") {
         const data = await fetchTenantBySlug(tenantSlug);
-        setTenant((prev) => data ?? prev);
+        setTenant((prev) => mergeTenant(prev, data));
         setLoading(false);
         return;
       }
@@ -50,7 +60,7 @@ export function TenantProvider({
       const subdomain = getCurrentSubdomain();
       if (subdomain && subdomain !== "www" && subdomain !== "admin") {
         const data = await fetchTenantBySlug(subdomain);
-        setTenant((prev) => data ?? prev);
+        setTenant((prev) => mergeTenant(prev, data));
         setLoading(false);
         return;
       }

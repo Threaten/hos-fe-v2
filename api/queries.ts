@@ -447,6 +447,10 @@ const GET_TENANT = `
           enabled
           message
         }
+        vi {
+          enabled
+          switchLabel
+        }
         meta {
           title
           description
