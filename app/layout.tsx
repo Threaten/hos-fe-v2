@@ -1,28 +1,13 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, Inter_Tight, IBM_Plex_Mono } from "next/font/google";
+import { Inconsolata } from "next/font/google";
 import "./globals.css";
 import ScrollReveal from "./components/ScrollReveal";
 
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin", "latin-ext"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-instrument-serif",
-  display: "swap",
-});
-
-// Branch sites: a tight grotesk for headlines and reading, and a mono for
-// the small uppercase labels. Both cover Vietnamese.
-const grotesk = Inter_Tight({
+// One typeface everywhere: headlines, reading text and the small uppercase
+// labels. Covers Vietnamese.
+const inconsolata = Inconsolata({
   subsets: ["latin", "latin-ext", "vietnamese"],
-  variable: "--font-grotesk",
-  display: "swap",
-});
-
-const mono = IBM_Plex_Mono({
-  subsets: ["latin", "latin-ext", "vietnamese"],
-  weight: ["400", "500"],
-  variable: "--font-plex-mono",
+  variable: "--font-inconsolata",
   display: "swap",
 });
 
@@ -43,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${instrumentSerif.variable} ${grotesk.variable} ${mono.variable}`}>
+    <html lang="en" className={inconsolata.variable}>
       <body>
         {children}
         <ScrollReveal />
