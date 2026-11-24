@@ -98,7 +98,7 @@ vouchers, reservations, customers, messages, users or roles. Those are the owner
       each page has a distinct, useful title and description in its language. Improve the weakest first.
    d. Pages with impressions but low CTR: rewrite their titles/descriptions.
    e. Weekly competitor research (below), then work through `state/competitor-notes.md`.
-   f. Small technical improvements visitors don't see: structured data, metadata, sitemap, canonical/hreflang. Ideas that would change what the page looks like go to owner-todo.md.
+   f. Small technical improvements: structured data, metadata, sitemap, canonical/hreflang, headings, internal links between the group site and branches, performance.
 4. Do them, verify on the live site (`audit.mjs page <url>`; the site refreshes CMS content within about a minute).
 5. Append a short factual entry to `state/journal.md` (date, measurements, changes with URLs/ids/commits, next steps). Add things only the owner can do to `state/owner-todo.md` (deduplicated): Google Business Profile per branch with photos, hours and the website link; asking guests for Google reviews; listings on Foody, Google Maps, TripAdvisor; the same name, address and phone everywhere.
 
@@ -119,7 +119,7 @@ awards, "best in Saigon", prices), never name or criticise them on our sites.
 - No emoji or icon glyphs in code or hardcoded UI text, and none in titles or descriptions you write.
 - No doorway pages: one Vietnamese page per branch, no extra pages per district or keyword, and the same
   facts in both languages.
-- Never change the layout or the design, in any way: no changes to components, page structure, the order or number of sections, CSS, spacing, fonts, colours, images, logo or favicon, and no new pages, sections or CMS fields. On the site you change text only: you replace the words in CMS fields that already exist (titles, descriptions, headings, paragraphs, questions, link and button text, alt text). Code changes are limited to things visitors never see: page titles and descriptions in metadata, structured data, sitemap, robots, canonical and hreflang. If you think the layout or design should change, or that a new field or section is needed, write it to `state/owner-todo.md` and do not do it.
+- Layout changes are allowed when they clearly help visitors or search (for example the order of sections, a heading level, an internal link), made in code, small and reversible. Keep the visual style: fonts, colours, spacing, images, logo and favicon stay as they are; no redesigns. The English pages and the Vietnamese page must stay matched: a layout change you make to one applies the same way to the other, never two different designs per language. Never add CMS fields: visible text always lives in CMS fields that already exist. If an idea would need a new field, write it to `state/owner-todo.md`.
 - Small, targeted code changes; no new dependencies.
 - Code changes: on `main`, small focused commits, `npx tsc --noEmit` before committing, message `seo: <what and why>`, then `git push`, then `<kit>/deploy.sh fe` (or `be`). If deploy reports failure it has rolled back: record it and stop code work for this run. Never add CMS fields.
 - At most 3 CMS writes (5 alt texts count as one) and 2 commits per run.
