@@ -43,9 +43,8 @@ branch is not promoted.
 The owner must be able to see and change every word you add, in admin.houseofsenses.vn. So:
 - Visible text (sections, headings, questions, links, button labels, titles) goes into CMS fields, never
   hardcoded in frontend code. Fallback text in code is only a safety net for when the CMS is empty or down.
-- If something needs a field that doesn't exist, add it to the backend first (optional field, in the right
-  tab of `src/collections/Tenants/`), deploy the backend, then make the frontend read it, then fill it
-  through the API. Code changes are for structure (markup, structured data, sitemaps, performance), not copy.
+- Only use fields that already exist. If something would need a new field, section or page, don't build it:
+  write the idea to `state/owner-todo.md`.
 - Never put text in an image, a hidden element or anywhere the admin can't show it.
 
 ## What you may change in the CMS (always through `<tools>/payload.sh`, which holds the key)
@@ -99,7 +98,7 @@ vouchers, reservations, customers, messages, users or roles. Those are the owner
       each page has a distinct, useful title and description in its language. Improve the weakest first.
    d. Pages with impressions but low CTR: rewrite their titles/descriptions.
    e. Weekly competitor research (below), then work through `state/competitor-notes.md`.
-   f. Small technical improvements in code: structured data, headings, internal links between the group site and branches, image alt text, performance.
+   f. Small technical improvements visitors don't see: structured data, metadata, sitemap, canonical/hreflang. Ideas that would change what the page looks like go to owner-todo.md.
 4. Do them, verify on the live site (`audit.mjs page <url>`; the site refreshes CMS content within about a minute).
 5. Append a short factual entry to `state/journal.md` (date, measurements, changes with URLs/ids/commits, next steps). Add things only the owner can do to `state/owner-todo.md` (deduplicated): Google Business Profile per branch with photos, hours and the website link; asking guests for Google reviews; listings on Foody, Google Maps, TripAdvisor; the same name, address and phone everywhere.
 
@@ -120,8 +119,9 @@ awards, "best in Saigon", prices), never name or criticise them on our sites.
 - No emoji or icon glyphs in code or hardcoded UI text, and none in titles or descriptions you write.
 - No doorway pages: one Vietnamese page per branch, no extra pages per district or keyword, and the same
   facts in both languages.
-- Keep the visual design. Small, targeted code changes; no new dependencies.
-- Code changes: on `main`, small focused commits, `npx tsc --noEmit` before committing, message `seo: <what and why>`, then `git push`, then `<kit>/deploy.sh fe` (or `be`). If deploy reports failure it has rolled back: record it and stop code work for this run. New CMS fields must be optional.
+- Never change the layout or the design, in any way: no changes to components, page structure, the order or number of sections, CSS, spacing, fonts, colours, images, logo or favicon, and no new pages, sections or CMS fields. On the site you change text only: you replace the words in CMS fields that already exist (titles, descriptions, headings, paragraphs, questions, link and button text, alt text). Code changes are limited to things visitors never see: page titles and descriptions in metadata, structured data, sitemap, robots, canonical and hreflang. If you think the layout or design should change, or that a new field or section is needed, write it to `state/owner-todo.md` and do not do it.
+- Small, targeted code changes; no new dependencies.
+- Code changes: on `main`, small focused commits, `npx tsc --noEmit` before committing, message `seo: <what and why>`, then `git push`, then `<kit>/deploy.sh fe` (or `be`). If deploy reports failure it has rolled back: record it and stop code work for this run. Never add CMS fields.
 - At most 3 CMS writes (5 alt texts count as one) and 2 commits per run.
 - A temporarily closed branch: keep its pages accurate, don't promote it, and don't remove it from search.
 - If something looks wrong or risky, don't do it: write it to `state/owner-todo.md`.
