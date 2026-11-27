@@ -1,0 +1,112 @@
+{
+  "heroSubtitle": "A House of Senses bistro in District 3",
+  "heroDescription": "Blue Bistro is taking a short break. While we get ready to welcome you back, our sister restaurant Red Space is open from 4pm on Võ Thị Sáu.",
+  "shortAboutTitle": "A bistro on Trần Quốc Thảo",
+  "shortAboutText": "Blue Bistro is a House of Senses bistro at 123E4 Trần Quốc Thảo, Xuân Hòa ward (District 3). It is temporarily closed; follow us for news of the reopening.",
+  "galleryTitle": "Made for sharing",
+  "galleryText": "Dishes to pass around, lamps on every table and conversations that run past dessert. We can't wait to set the table again.",
+  "ctaTitle": "Blue Bistro will be back soon",
+  "ctaText": "In the meantime, you are very welcome at Red Space, our sister restaurant in District 3.",
+  "aboutTitle": "About Blue Bistro",
+  "aboutSubtitle": "A House of Senses bistro in District 3",
+  "aboutus": {
+    "root": {
+      "direction": "ltr",
+      "format": "",
+      "indent": 0,
+      "version": 1,
+      "type": "root",
+      "children": [
+        {
+          "direction": "ltr",
+          "format": "",
+          "indent": 0,
+          "version": 1,
+          "type": "paragraph",
+          "textFormat": 0,
+          "children": [
+            {
+              "type": "text",
+              "text": "Blue Bistro is a House of Senses bistro at 123E4 Trần Quốc Thảo, Xuân Hòa ward, in the area still known as District 3.",
+              "format": 0,
+              "detail": 0,
+              "mode": "normal",
+              "style": "",
+              "version": 1
+            }
+          ]
+        },
+        {
+          "direction": "ltr",
+          "format": "",
+          "indent": 0,
+          "version": 1,
+          "type": "paragraph",
+          "textFormat": 0,
+          "children": [
+            {
+              "type": "text",
+              "text": "The bistro is temporarily closed. We will share the reopening date here and on our social channels.",
+              "format": 0,
+              "detail": 0,
+              "mode": "normal",
+              "style": "",
+              "version": 1
+            }
+          ]
+        },
+        {
+          "direction": "ltr",
+          "format": "",
+          "indent": 0,
+          "version": 1,
+          "type": "paragraph",
+          "textFormat": 0,
+          "children": [
+            {
+              "type": "text",
+              "text": "Until then, ",
+              "format": 0,
+              "detail": 0,
+              "mode": "normal",
+              "style": "",
+              "version": 1
+            },
+            {
+              "direction": "ltr",
+              "format": "",
+              "indent": 0,
+              "version": 3,
+              "type": "link",
+              "fields": {
+                "linkType": "custom",
+                "url": "https://red-space.houseofsenses.vn",
+                "newTab": false
+              },
+              "children": [
+                {
+                  "type": "text",
+                  "text": "Red Space",
+                  "format": 0,
+                  "detail": 0,
+                  "mode": "normal",
+                  "style": "",
+                  "version": 1
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": ", our sister restaurant at 146/6E Võ Thị Sáu, is open from 4pm to 11pm.",
+              "format": 0,
+              "detail": 0,
+              "mode": "normal",
+              "style": "",
+              "version": 1
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

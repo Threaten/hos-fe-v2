@@ -1,0 +1,99 @@
+{
+  "heroSubtitle": "A House of Senses restaurant in District 3",
+  "heroDescription": "Pasta, bánh mì, Kobe steak and desserts, served from 4pm to 11pm in a lamp-lit dining room off Võ Thị Sáu, District 3.",
+  "shortAboutTitle": "A dining room made for long evenings",
+  "shortAboutText": "Tucked into an alley off Võ Thị Sáu, Red Space keeps the lights low and the pace easy. Dinner here is meant to take its time.",
+  "galleryTitle": "Good food is only the beginning",
+  "galleryText": "The rest is the lamplight, the drawings on the walls, the friends across the table and the dessert you said you wouldn't order.",
+  "ctaTitle": "See you at Red Space",
+  "ctaText": "Book a table for tonight or the weekend, or take a look at the menu first.",
+  "aboutTitle": "About Red Space",
+  "aboutSubtitle": "Dinner, lamplight and good company in District 3",
+  "aboutus": {
+    "root": {
+      "direction": "ltr",
+      "format": "",
+      "indent": 0,
+      "version": 1,
+      "type": "root",
+      "children": [
+        {
+          "direction": "ltr",
+          "format": "",
+          "indent": 0,
+          "version": 1,
+          "type": "paragraph",
+          "textFormat": 0,
+          "children": [
+            {
+              "type": "text",
+              "text": "Red Space is a House of Senses restaurant at 146/6E Võ Thị Sáu, in Xuân Hòa ward, the part of Ho Chi Minh City most people still call District 3. We open at 4pm and close at 11pm.",
+              "format": 0,
+              "detail": 0,
+              "mode": "normal",
+              "style": "",
+              "version": 1
+            }
+          ]
+        },
+        {
+          "direction": "ltr",
+          "format": "",
+          "indent": 0,
+          "version": 1,
+          "type": "paragraph",
+          "textFormat": 0,
+          "children": [
+            {
+              "type": "text",
+              "text": "The kitchen cooks Western comfort food with a Vietnamese accent. There are eleven pastas, two of them tossed in garlic and fish sauce; bánh mì with pâté chaud under a creamy mushroom sauce, or with seared Kobe beef and cheese; salads, soups, Kobe steak, pan-seared salmon and a goose breast we smoke ourselves. To finish, there is taro and coconut mousse, caramel flan and a homemade fruit yoghurt, with fruit teas on the side.",
+              "format": 0,
+              "detail": 0,
+              "mode": "normal",
+              "style": "",
+              "version": 1
+            }
+          ]
+        },
+        {
+          "direction": "ltr",
+          "format": "",
+          "indent": 0,
+          "version": 1,
+          "type": "paragraph",
+          "textFormat": 0,
+          "children": [
+            {
+              "type": "text",
+              "text": "The dining room is lit by table lamps and paper lanterns, with drawings and posters on the walls. It suits a quiet dinner for two as well as a table of friends sharing half the menu.",
+              "format": 0,
+              "detail": 0,
+              "mode": "normal",
+              "style": "",
+              "version": 1
+            }
+          ]
+        },
+        {
+          "direction": "ltr",
+          "format": "",
+          "indent": 0,
+          "version": 1,
+          "type": "paragraph",
+          "textFormat": 0,
+          "children": [
+            {
+              "type": "text",
+              "text": "Planning a birthday or a group dinner? Contact us beforehand and we will prepare a table that suits the occasion. We look forward to welcoming you.",
+              "format": 0,
+              "detail": 0,
+              "mode": "normal",
+              "style": "",
+              "version": 1
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
