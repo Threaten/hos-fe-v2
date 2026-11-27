@@ -122,9 +122,16 @@ wrote it for a friend:
   "something for everyone", lists of exactly three adjectives, and sentences that start with the restaurant's
   name over and over.
 - Banned, in Vietnamese: word-for-word translation from English ("được chuẩn bị một cách chu đáo", "trải nghiệm
-  ẩm thực tuyệt vời", "hãy đến với chúng tôi", "điểm đến lý tưởng"), and too many "của chúng tôi". Write the way
+  ẩm thực tuyệt vời", "hãy đến với chúng tôi", "điểm đến lý tưởng", "không chỉ... mà còn...", "hành trình ẩm thực",
+  "thiên đường", "đánh thức vị giác", "tinh hoa"), and too many "của chúng tôi". Write the way
   people in Saigon talk about a place to eat: "quán", "ghé", "gọi món", "chừa bụng", "đi nhóm", "nghìn".
 - Keep it short: a guide section is 2–5 sentences, an FAQ answer 1–3.
+- No formula: every branch and every page gets its own opening and ending. Don't open with "Short answer:" or
+  by repeating the heading as a question, don't copy the same closing lines (address + book a table) across
+  sections or branches, don't put the keyword in every heading. If two of your texts start or end the same way,
+  rewrite one.
+- Keywords once in a heading and where they fit in a sentence, the way a person would say them; never a
+  sentence written only to hold a keyword.
 - Before you save, read it aloud in your head. If it sounds like an ad or a brochure, rewrite it.
 - Still only true facts: style never adds a claim (no "best", "famous", "authentic", no chef, no awards).
 
