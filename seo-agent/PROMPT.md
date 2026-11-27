@@ -91,8 +91,9 @@ Run `node <tools>/i18n.mjs` (from the frontend folder). It lists `missing`: Engl
 (fixed labels in the code and the CMS text of every branch with `/vi` on) that have no Vietnamese yet, and
 `stale`: keys no longer used (the English was changed or removed). When either is non-empty:
 - Add a translation for every missing text to `app/i18n/vi.json` (keep the English key exactly, character for
-  character, including line breaks as `\n`; keep `{placeholders}` as they are). Natural Vietnamese for diners in
-  Ho Chi Minh City, the same facts, nothing added or left out; names of dishes as on the menu; addresses with
+  character, including line breaks as `\n`; keep `{placeholders}` as they are). Vietnamese for diners in
+  Ho Chi Minh City in the restaurant's voice (professional, warm, a little playful; see "Write like a person"
+  below), not a word-for-word translation, with the same facts, nothing added or left out; names of dishes as on the menu; addresses with
   Vietnamese accents (Võ Thị Sáu, phường Xuân Hòa, Quận 3); prices, phone numbers and times unchanged.
 - Remove the stale keys.
 - Check the JSON is valid (`node <tools>/i18n.mjs` runs without an error), `npx tsc --noEmit`, then commit
@@ -121,10 +122,16 @@ wrote it for a friend:
   thoughtfully prepared, warm hospitality, whether you're... or..., look no further, a must-visit, hidden gem,
   "something for everyone", lists of exactly three adjectives, and sentences that start with the restaurant's
   name over and over.
-- Banned, in Vietnamese: word-for-word translation from English ("được chuẩn bị một cách chu đáo", "trải nghiệm
-  ẩm thực tuyệt vời", "hãy đến với chúng tôi", "điểm đến lý tưởng", "không chỉ... mà còn...", "hành trình ẩm thực",
-  "thiên đường", "đánh thức vị giác", "tinh hoa"), and too many "của chúng tôi". Write the way
-  people in Saigon talk about a place to eat: "quán", "ghé", "gọi món", "chừa bụng", "đi nhóm", "nghìn".
+- Vietnamese voice (owner decision 2026-11-28): professional, warm and a little playful, the way a good
+  restaurant or bistro speaks to its guests. Polished, well-formed written Vietnamese with full sentences;
+  "bạn" for the guest, "Red Space" / "nhà hàng" / "chúng tôi" for us. Warmth comes from what you describe (the
+  evening, the dishes, sharing a table), and a light, witty touch now and then ("nhớ chừa chỗ cho món tráng
+  miệng"), never from slang or street talk. Not stiff or administrative either: no "quý khách vui lòng", no
+  legal-sounding sentences.
+- Banned, in Vietnamese: slang and spoken shortcuts ("quán" as our name, "ghé chơi", "đói thật thì", "lỡ đi
+  lạc", "nha", "nhé", "cứ", "đám bạn", "nhắn quán"); word-for-word translation from English ("được chuẩn bị một
+  cách chu đáo", "trải nghiệm ẩm thực tuyệt vời", "hãy đến với chúng tôi", "điểm đến lý tưởng", "không chỉ...
+  mà còn...", "hành trình ẩm thực", "thiên đường", "đánh thức vị giác", "tinh hoa"); and too many "của chúng tôi".
 - Keep it short: a guide section is 2–5 sentences, an FAQ answer 1–3.
 - No formula: every branch and every page gets its own opening and ending. Don't open with "Short answer:" or
   by repeating the heading as a question, don't copy the same closing lines (address + book a table) across
