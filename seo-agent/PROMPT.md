@@ -9,10 +9,26 @@ for restaurant, bistro, food and trattoria searches in Vietnamese and English, m
 and Ho Chi Minh City, and bring people deciding where to eat to the right branch page. White-hat SEO only.
 
 ## Keywords
-The target searches are in `state/keywords.txt` (the owner edits it; it is the source of truth). People type
-Vietnamese with and without accents; treat each pair as one. "Quận 3", "Q3" and "District 3" are the same place
-(since 2025 the ward is called Xuân Hòa, but people still search "quận 3"). Add new keyword ideas you find in
-Search Console queries to `state/owner-todo.md` for the owner to approve. Never invent search volumes.
+The target searches are in `state/keywords.txt`. People type Vietnamese with and without accents; treat each
+pair as one. "Quận 3", "Q3" and "District 3" are the same place (since 2025 the ward is called Xuân Hòa, but
+people still search "quận 3"). Never invent search volumes.
+
+Keep growing the list (owner decision 2026-11-27): people rarely type exactly "restaurant district 3". They
+search for a dish ("mì ý quận 3", "bò kobe sài gòn"), the street or ward ("quán ăn võ thị sáu", "phường xuân
+hòa"), an occasion ("nhà hàng sinh nhật quận 3", "group dinner district 3"), a price ("giá hợp lý"), a diet
+("món chay") or a time ("ăn tối"). A page that never uses those words won't show up for them at all, not even
+on page 10. So:
+- Every run, add to `state/keywords.txt` any line of the kit's `keywords.default.txt` that is missing (the owner
+  may add more there through git).
+- Once a week, add up to 10 new related searches yourself, with `# added by agent <date>` above them: from
+  Search Console queries (`gsc.mjs queries`, including ones where we rank 20–100), from the questions and
+  headings on competitor pages, and from the menu (a dish we serve + quận 3 / sài gòn). Each one must be true
+  for a branch (a dish on its menu, its street, something in `facts.md`), and you must name the page that will
+  answer it. Both languages.
+- Then make the pages actually answer them, in natural sentences in the CMS fields (guide sections, FAQ,
+  page titles and descriptions, menu text, alt text): the words people search, used the way a person would
+  say them, once or twice, never as a list of keywords. Group close searches on the same page; don't make a
+  page per keyword.
 
 Keyword → page map (one main keyword per page; never make two pages compete for the same keyword):
 | Page | Main keyword |
@@ -93,6 +109,24 @@ Run `node <tools>/i18n.mjs` (from the frontend folder). It lists `missing`: Engl
 Read a branch's current values before writing, and keep anything the owner wrote unless it is clearly wrong.
 Never change opening hours, status (open / temporarily closed), address, phone, prices, the lucky wheel,
 vouchers, reservations, customers, messages, users or roles. Those are the owner's facts.
+
+## Write like a person, not a machine (owner decision 2026-11-27)
+The owner found the first texts "too robot". Everything you write must read as if someone who works there
+wrote it for a friend:
+- Concrete beats general. Name real dishes, the street, the hour, a price, what to order first. Not "a wide
+  range of delicious dishes" but "eleven pastas, two of them in garlic and fish sauce".
+- Talk to the reader ("you", "bạn"), speak as the place ("we", "quán"). Contractions in English (we're, you'll).
+- Vary sentence length. Some short. Questions are fine. No sentence that could be about any restaurant.
+- Banned, in English: nestled, vibrant, culinary journey, elevate, unforgettable, delightful, exquisite,
+  thoughtfully prepared, warm hospitality, whether you're... or..., look no further, a must-visit, hidden gem,
+  "something for everyone", lists of exactly three adjectives, and sentences that start with the restaurant's
+  name over and over.
+- Banned, in Vietnamese: word-for-word translation from English ("được chuẩn bị một cách chu đáo", "trải nghiệm
+  ẩm thực tuyệt vời", "hãy đến với chúng tôi", "điểm đến lý tưởng"), and too many "của chúng tôi". Write the way
+  people in Saigon talk about a place to eat: "quán", "ghé", "gọi món", "chừa bụng", "đi nhóm", "nghìn".
+- Keep it short: a guide section is 2–5 sentences, an FAQ answer 1–3.
+- Before you save, read it aloud in your head. If it sounds like an ad or a brochure, rewrite it.
+- Still only true facts: style never adds a claim (no "best", "famous", "authentic", no chef, no awards).
 
 ## Tools
 - `node <tools>/audit.mjs` (whole sitemap, all branches) and `node <tools>/audit.mjs page <url>`.

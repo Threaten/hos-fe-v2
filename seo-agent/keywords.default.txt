@@ -40,3 +40,50 @@ bistro ho chi minh city
 trattoria saigon
 trattoria ho chi minh city
 date night restaurant saigon
+
+# Added 2026-11-27: the searches around the main terms. People rarely type "restaurant district 3";
+# they search for a dish, a street, an occasion or a price. Each one is true for Red Space's menu.
+# Vietnamese: dishes
+mì ý quận 3
+mi y quan 3
+mì ý ngon sài gòn
+pasta quận 3
+bánh mì pate chaud sài gòn
+pate chaud quận 3
+bò kobe quận 3
+bít tết quận 3
+steak quận 3
+món âu quận 3
+mon au quan 3
+quán ăn món âu sài gòn
+nhà hàng âu việt sài gòn
+# Vietnamese: the street and the new ward name
+quán ăn võ thị sáu
+nhà hàng võ thị sáu
+nhà hàng võ thị sáu quận 3
+quán ăn phường xuân hòa
+nhà hàng phường xuân hòa
+# Vietnamese: occasions and practical searches
+quán ăn tối quận 3
+chỗ ăn tối quận 3
+nhà hàng sinh nhật quận 3
+nhà hàng cho nhóm đông quận 3
+quán ăn có món chay quận 3
+nhà hàng giá hợp lý quận 3
+quán ăn mở cửa đến 11 giờ quận 3
+# English: dishes
+pasta district 3 saigon
+best pasta saigon
+banh mi pate chaud saigon
+kobe steak saigon
+steak district 3 saigon
+western food district 3
+european restaurant district 3 saigon
+fusion restaurant saigon
+# English: street, occasions, practical
+restaurant vo thi sau street
+where to eat in district 3 saigon
+group dinner district 3 saigon
+birthday dinner saigon
+vegetarian options district 3 saigon
+casual dinner saigon

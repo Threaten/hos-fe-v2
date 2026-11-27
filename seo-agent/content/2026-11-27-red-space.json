@@ -1,0 +1,87 @@
+{
+  "meta": {
+    "title": "Red Space | Restaurant in District 3, Ho Chi Minh City",
+    "description": "Pasta, bánh mì, Kobe steak and fruit teas down an alley on Võ Thị Sáu, District 3. Open 4pm to 11pm. See the menu or book a table at Red Space.",
+    "image": "6a9f91f79656d8b36ae1a343",
+    "pages": {
+      "menu": {
+        "title": "Red Space Menu | District 3, Ho Chi Minh City",
+        "description": "The Red Space menu: salads, appetizers, bánh mì, soup, pasta, mains, desserts and drinks, with Vietnamese and English names. Restaurant in District 3, Saigon."
+      },
+      "reservation": {
+        "title": "Book a Table at Red Space | District 3, HCMC",
+        "description": "Book a table at Red Space, Vo Thi Sau Street, District 3, Ho Chi Minh City. Pick a date, time and party size online; open 16:00–23:00."
+      },
+      "about": {
+        "title": "About Red Space | Restaurant in District 3, HCMC",
+        "description": "The story behind Red Space, a House of Senses restaurant on Vo Thi Sau Street, District 3, Ho Chi Minh City: the room, the kitchen and the evening."
+      },
+      "contact": {
+        "title": "Red Space Address & Contact | District 3, HCMC",
+        "description": "Red Space address: 146/6E Vo Thi Sau Street, Xuan Hoa Ward (old District 3), Ho Chi Minh City. Phone 0795077886, open 16:00–23:00."
+      },
+      "gallery": {
+        "title": "Red Space Photos | Restaurant in District 3, HCMC",
+        "description": "Photos of Red Space on Vo Thi Sau Street, District 3, Ho Chi Minh City: the dining room, the dishes and evenings at the table."
+      }
+    }
+  },
+  "guide": {
+    "label": "Good to know",
+    "title": "A restaurant in District 3 for long, easy evenings",
+    "intro": "Red Space is a House of Senses restaurant tucked into alley 146 off Võ Thị Sáu, in the part of town everyone still calls District 3. We open at 4pm and stay open until 11pm, so it works just as well for a quick bite after work as for a slow dinner that runs late.",
+    "faqTitle": "Questions people ask us",
+    "sections": [
+      {
+        "heading": "What's on the menu",
+        "body": "Western comfort food with a Saigon accent. There are eleven pastas, and two of them are tossed in garlic and fish sauce (mắm tỏi). The bánh mì come with pâté chaud under a creamy mushroom sauce, or with seared Kobe beef and cheese. The chicken wings are fried crisp and dusted with our own salted plum.\n\nIf you're properly hungry, go for a main: Kobe steak, pan-seared salmon or our home-smoked goose breast, around 300k each with vegetables and mashed potato. Pastas are 135k to 175k. Leave room for the taro and coconut mousse with salted caramel.",
+        "linkLabel": "See the whole menu",
+        "linkHref": "/menu"
+      },
+      {
+        "heading": "Early or late, alone or with a crowd",
+        "body": "Come early for a bowl of soup and a fruit tea while it's still light out, or come late with friends and order half the menu to share. Got a big group, a birthday or something to celebrate? Message us before you come and we'll work out a table that suits you.",
+        "linkLabel": "See photos of the place",
+        "linkHref": "/gallery"
+      },
+      {
+        "heading": "Finding us",
+        "body": "We're at 146/6E Võ Thị Sáu, Xuân Hòa Ward. The ward got a new name in 2025, but taxi and Grab drivers still know the area as District 3 (Quận 3).\n\nWe're down an alley, so if you get turned around, call 0795 077 886 and we'll talk you in.",
+        "linkLabel": "Address and map",
+        "linkHref": "/contact"
+      },
+      {
+        "heading": "Booking a table",
+        "body": "Pick a date, a time and how many of you are coming on the booking page, and we'll confirm with you. For bigger groups it's easier to message or call us first.",
+        "linkLabel": "Book a table",
+        "linkHref": "/reservation"
+      }
+    ],
+    "faq": [
+      {
+        "question": "Where exactly is Red Space?",
+        "answer": "146/6E Võ Thị Sáu, Xuân Hòa Ward, Ho Chi Minh City. It's down an alley in the area most people still call District 3."
+      },
+      {
+        "question": "What time are you open?",
+        "answer": "From 4pm to 11pm."
+      },
+      {
+        "question": "How do I book a table?",
+        "answer": "Use the booking page on this site, or call us on 0795 077 886. For groups, the earlier you let us know, the better."
+      },
+      {
+        "question": "What kind of food is it?",
+        "answer": "Western dishes with Vietnamese touches: salads, soups, pasta, bánh mì, steak and salmon, plus homemade desserts and fruit teas. The full menu, in English and Vietnamese, is on the menu page."
+      },
+      {
+        "question": "How much does dinner cost?",
+        "answer": "Most pastas and bánh mì are 135k to 175k, mains are around 300k, desserts start at 40k and fruit teas are 55k."
+      },
+      {
+        "question": "Is there anything for vegetarians?",
+        "answer": "Yes: a vegan green salad, vegan roasted vegetables with black pepper and oyster mushroom sauce, and a vegetarian mushroom bánh mì with cheese."
+      }
+    ]
+  }
+}
