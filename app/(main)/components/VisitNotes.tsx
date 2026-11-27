@@ -18,7 +18,7 @@ export default function VisitNotes({
     <div className="flex flex-col gap-10">
       {intro}
       {tenant && (
-        <dl className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-x-10 gap-y-7 text-[1.0625rem] leading-snug border-t pt-8" style={{ borderColor: "var(--line)" }}>
+        <dl className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-x-10 gap-y-7 text-[1.125rem] leading-snug border-t pt-8" style={{ borderColor: "var(--line)" }}>
           <div className="sm:col-span-2">
             <dt className="hs-label mb-2">Find us</dt>
             <dd>

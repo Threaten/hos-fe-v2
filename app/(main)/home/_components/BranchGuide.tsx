@@ -121,7 +121,7 @@ export default function BranchGuide({
             <dl className="flex flex-col max-w-[760px]">
               {faq.map((q, i) => (
                 <div key={q.id ?? i} className="border-t py-5" style={{ borderColor: "var(--line)" }}>
-                  <dt className="text-[1.0625rem] font-medium">{q.question}</dt>
+                  <dt className="text-[1.125rem] font-medium">{q.question}</dt>
                   <dd className="mt-2 opacity-80 leading-snug">{q.answer}</dd>
                 </div>
               ))}

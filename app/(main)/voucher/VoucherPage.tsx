@@ -165,7 +165,7 @@ export default function VoucherPage({
             )}
 
             {voucher.usedAt && (
-              <dl className="mt-10 grid grid-cols-[auto_1fr] gap-x-8 gap-y-3 max-w-[52ch] text-[1.0625rem]">
+              <dl className="mt-10 grid grid-cols-[auto_1fr] gap-x-8 gap-y-3 max-w-[52ch] text-[1.125rem]">
                 <dt className="hs-label pt-1">Used</dt>
                 <dd>
                   {when(voucher.usedAt)}

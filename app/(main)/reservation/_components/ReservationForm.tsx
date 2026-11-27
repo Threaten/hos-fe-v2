@@ -172,7 +172,7 @@ function CalendarPicker({
 
           <div className="grid grid-cols-7 mb-1">
             {DAY_NAMES.map((d) => (
-              <div key={d} className="hs-ui text-center text-[0.75rem] pb-1" style={{ color: "var(--ink-soft)" }}>
+              <div key={d} className="hs-ui text-center text-[0.8125rem] pb-1" style={{ color: "var(--ink-soft)" }}>
                 {d}
               </div>
             ))}
@@ -196,7 +196,7 @@ function CalendarPicker({
                   onClick={() => select(day)}
                   aria-pressed={sel}
                   aria-label={`${day} ${MONTH_NAMES[viewMonth]}`}
-                  className="w-9 h-9 mx-auto flex items-center justify-center text-[0.9rem] tabular-nums transition-colors"
+                  className="w-9 h-9 mx-auto flex items-center justify-center text-[0.9375rem] tabular-nums transition-colors"
                   style={{
                     color: sel ? "var(--on-pen)" : "var(--ink)",
                     backgroundColor: sel ? "var(--pen)" : "transparent",
@@ -742,7 +742,7 @@ const ReservationForm = ({
                       aria-checked={on}
                       aria-label={`${num} ${num === 1 ? "guest" : "guests"}`}
                       onClick={() => setFormData((prev) => ({ ...prev, quantity: num }))}
-                      className="hs-ui w-11 h-11 text-[0.9375rem] tabular-nums transition-[background-color,color] duration-300"
+                      className="hs-ui w-11 h-11 text-[1rem] tabular-nums transition-[background-color,color] duration-300"
                       style={{
                         border: "1px solid var(--pen)",
                         borderRadius: 3,

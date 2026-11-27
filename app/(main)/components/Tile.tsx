@@ -75,7 +75,7 @@ export default function Tile({
         <Cap className="block pt-4 hs-ui">
           {label && <span className="block mb-3" style={{ color: "var(--ink-faint)" }}>{label}</span>}
           {title && (
-            <span className="block text-[1.0625rem] mb-2" style={{ color: "var(--pen)" }}>
+            <span className="block text-[1.125rem] mb-2" style={{ color: "var(--pen)" }}>
               {title}
             </span>
           )}

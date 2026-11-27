@@ -72,7 +72,7 @@ const Footer: React.FC = () => {
                 )}
               </p>
               <SocialIcons tenant={tenant} className="mt-6 justify-center lg:justify-start" iconClassName="w-[18px] h-[18px]" />
-              <ul className="hs-ui mt-7 flex flex-col items-center lg:items-start gap-2.5 text-[0.9375rem]">
+              <ul className="hs-ui mt-7 flex flex-col items-center lg:items-start gap-2.5 text-[1rem]">
                 {tenant.phone && (
                   <li>
                     <a href={`tel:${tenant.phone.replace(/\s+/g, "")}`} className="hs-link">
@@ -89,10 +89,10 @@ const Footer: React.FC = () => {
                 )}
               </ul>
               <p className="mt-9 flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-2">
-                <Link href="/menu" className="hs-ui hs-nav-link text-[0.9375rem]" style={{ color: "var(--pen)" }}>
+                <Link href="/menu" className="hs-ui hs-nav-link text-[1rem]" style={{ color: "var(--pen)" }}>
                   {t("Menu")}
                 </Link>
-                <ReservationLink className="hs-ui hs-nav-link text-[0.9375rem] inline-flex items-center gap-1.5" style={{ color: "var(--pen)" }}>
+                <ReservationLink className="hs-ui hs-nav-link text-[1rem] inline-flex items-center gap-1.5" style={{ color: "var(--pen)" }}>
                   {t("Book a table")} <ArrowRight className="w-3 h-3" />
                 </ReservationLink>
               </p>
@@ -171,7 +171,7 @@ const Footer: React.FC = () => {
       )}
 
       {/* Fine print */}
-      <div className="hos-gutter mt-10 grid grid-cols-1 sm:grid-cols-3 gap-2 text-center sm:text-left text-[1rem] tracking-[-0.01em]" style={{ color: "var(--ink-faint)" }}>
+      <div className="hos-gutter mt-10 grid grid-cols-1 sm:grid-cols-3 gap-2 text-center sm:text-left text-[1.125rem] tracking-[-0.01em]" style={{ color: "var(--ink-faint)" }}>
         <p>&copy; {new Date().getFullYear()} House of Senses</p>
         <p className="sm:text-center">
           <a href="https://houseofsenses.vn" className="hover:opacity-60 transition-opacity duration-300">

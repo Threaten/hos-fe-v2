@@ -67,7 +67,7 @@ export default function MenuText({ text, tenantName }: { text?: string | null; t
               {section.items.map((item, j) => (
                 <li key={`${item.name}-${j}`} className="border-b pb-4" style={{ borderColor: "var(--line)" }}>
                   <div className="flex items-baseline justify-between gap-6">
-                    <span className="text-[1.0625rem] font-medium">{item.name}</span>
+                    <span className="text-[1.125rem] font-medium">{item.name}</span>
                     {item.price && <span className="shrink-0 tabular-nums">{item.price}</span>}
                   </div>
                   {item.description && <p className="mt-1 opacity-80 leading-snug">{item.description}</p>}

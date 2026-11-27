@@ -51,7 +51,7 @@ export default function Navbar() {
                 <Link
                   href={href}
                   aria-current={isActive(href) ? "page" : undefined}
-                  className="hs-ui hs-nav-link text-[0.9375rem]"
+                  className="hs-ui hs-nav-link text-[1rem]"
                   style={{ color: "var(--pen)" }}
                 >
                   {t(label)}

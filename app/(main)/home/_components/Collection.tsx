@@ -68,7 +68,7 @@ export default function Collection({ groups: source, name, priority = false, pag
                 }}
                 aria-pressed={filter === f.key}
                 aria-current={filter === f.key ? "page" : undefined}
-                className="hs-ui hs-nav-link text-[0.9375rem] lg:text-[1.0625rem]"
+                className="hs-ui hs-nav-link text-[1rem] lg:text-[1.125rem]"
                 style={{ color: "var(--pen)" }}
               >
                 {f.label}

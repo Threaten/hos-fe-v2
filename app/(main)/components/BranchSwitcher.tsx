@@ -42,10 +42,10 @@ export function BranchEntry({ tenant, isCurrent }: { tenant: Tenant; isCurrent: 
       <span className="hs-ui block mb-1.5" style={{ color: "var(--ink-soft)" }}>
         <OpeningStatus branch={tenant} showHours />
       </span>
-      <span className="block text-[0.9375rem] leading-snug" style={{ color: "var(--ink)" }}>
+      <span className="block text-[1rem] leading-snug" style={{ color: "var(--ink)" }}>
         {tenant.address}
       </span>
-      <span className="block text-[0.9375rem]" style={{ color: "var(--ink-soft)" }}>
+      <span className="block text-[1rem]" style={{ color: "var(--ink-soft)" }}>
         {tenant.phone}
       </span>
     </a>

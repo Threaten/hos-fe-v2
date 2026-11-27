@@ -305,16 +305,16 @@ export default function Welcome({
                         }`}
                       >
                         <div className="flex flex-col w-full">
-                          <span className="text-[0.95rem]">
+                          <span className="text-[1rem]">
                             {branch.name.toLowerCase()}
                           </span>
                           <OpeningStatus
                             branch={branch}
                             variant="status"
-                            className="text-[0.72rem] not-italic text-gray-600 mt-0.5"
+                            className="text-[0.8rem] not-italic text-gray-600 mt-0.5"
                           />
                           {branch.address && (
-                            <span className="text-[0.69rem] text-gray-500 not-italic">
+                            <span className="text-[0.78rem] text-gray-500 not-italic">
                               {branch.address}
                             </span>
                           )}

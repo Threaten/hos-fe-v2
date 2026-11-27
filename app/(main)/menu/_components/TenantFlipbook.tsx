@@ -517,7 +517,7 @@ export default function TenantFlipbook({
               </svg>
             </button>
 
-            <span className="hs-ui text-[0.9375rem] tabular-nums min-w-[7ch] text-center" style={{ color: "var(--ink)" }} aria-live="polite">
+            <span className="hs-ui text-[1rem] tabular-nums min-w-[7ch] text-center" style={{ color: "var(--ink)" }} aria-live="polite">
               {isMobile
                 ? `${currentPage + 1} / ${totalPages}`
                 : `${currentPage + 1}–${Math.min(currentPage + 2, totalPages)} / ${totalPages}`}
